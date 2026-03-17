@@ -179,6 +179,35 @@
     .mode-text { font-size: 13px; color: var(--text); }
     .mode-text small { display: block; font-size: 11px; color: var(--muted); margin-top: 1px; }
 
+    /* ── Settings footer ── */
+    .settings-footer {
+      padding: 10px 10px 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .counter-line {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .counter-line span {
+      color: var(--accent2);
+      font-weight: 600;
+    }
+    .disclaimer {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .attribution {
+      font-size: 11px;
+      color: var(--dim);
+      line-height: 1.4;
+    }
+
     /* ── Inertia control ── */
     .inertia-row {
       display: none;
@@ -249,7 +278,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.2.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.3.0</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -287,6 +316,12 @@
           <span>Snappy</span><span>Medium</span><span>Floaty</span>
         </div>
       </div>
+    </div>
+    <!-- Counter -->
+    <div class="settings-footer">
+      <div class="counter-line">Opened by <span id="counterVal">…</span> unique devices</div>
+      <div class="disclaimer">Patient Metrics is provided as a convenience tool for rapid estimation only. Values are mathematically derived and do not substitute for clinical judgement or validated dosing references. Use at your own risk.</div>
+      <div class="attribution">Built by u/narcolepticdoc. Not affiliated with any institution or pharmaceutical company. Free to use and share.</div>
     </div>
   </div>
 
@@ -724,6 +759,44 @@ inertiaSlider.addEventListener('input', () => {
 // Seed slider to match default state.wtInertia
 inertiaSlider.value = Math.round((state.wtInertia - 0.80) / (0.97 - 0.80) * 100);
 updateInertiaDisplay();
+
+// ═══════════════════════════════════════════════════
+// USER COUNTER
+// Uses countapi.xyz — free, no auth, no backend.
+// UUID in localStorage ensures each device only
+// increments once regardless of how many times
+// the app is opened.
+// ═══════════════════════════════════════════════════
+(async function initCounter() {
+  const NAMESPACE = 'narcolepticdoc-patient-metrics';
+  const KEY       = 'opens';
+  const LS_KEY    = 'pm_uuid';
+  const LS_COUNTED = 'pm_counted';
+
+  // Generate or retrieve persistent device UUID
+  let uuid = localStorage.getItem(LS_KEY);
+  if (!uuid) {
+    uuid = crypto.randomUUID ? crypto.randomUUID()
+           : Math.random().toString(36).slice(2) + Date.now().toString(36);
+    localStorage.setItem(LS_KEY, uuid);
+  }
+
+  try {
+    // Only hit the increment endpoint once per device
+    const alreadyCounted = localStorage.getItem(LS_COUNTED);
+    if (!alreadyCounted) {
+      await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`);
+      localStorage.setItem(LS_COUNTED, '1');
+    }
+    // Always fetch current count to display
+    const res  = await fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`);
+    const data = await res.json();
+    const n = data.value ?? '?';
+    $('counterVal').textContent = Number(n).toLocaleString();
+  } catch {
+    $('counterVal').textContent = '—';
+  }
+})();
 
 // ═══════════════════════════════════════════════════
 // SETTINGS

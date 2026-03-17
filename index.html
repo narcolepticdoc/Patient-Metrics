@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#0f1923">
+  <title>Patient Metrics</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0f1923;
+      --surface: #162130;
+      --card:    #1c2d3e;
+      --border:  #253d54;
+      --accent:  #00b4d8;
+      --accent2: #48cae4;
+      --warn:    #f4a261;
+      --text:    #e0eaf4;
+      --muted:   #7a99b4;
+      --dim:     #3a566e;
+      --radius:  6px;
+      --mono:    'IBM Plex Mono', monospace;
+      --sans:    'IBM Plex Sans', sans-serif;
+      --item-h:  44px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior: none;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100dvh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .brand { font-family: var(--mono); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 500; }
+    .brand span { color: var(--muted); font-weight: 400; }
+    .settings-btn {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      padding: 5px 10px; border-radius: var(--radius);
+      font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+      cursor: pointer; transition: border-color .15s, color .15s;
+    }
+    .settings-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── Main ── */
+    main {
+      flex: 1; padding: 20px 16px 40px;
+      max-width: 520px; width: 100%; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+
+    /* ── Card ── */
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .card-header {
+      background: var(--surface); padding: 8px 14px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);
+    }
+    .card-body { padding: 16px 14px; display: flex; flex-direction: column; gap: 14px; }
+
+    /* ── Field helpers ── */
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: end; }
+    .field { display: flex; flex-direction: column; gap: 5px; }
+    label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+    /* ── Text input ── */
+    .text-input {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text); font-family: var(--mono); font-size: 18px; font-weight: 500;
+      padding: 8px 10px; width: 100%; transition: border-color .15s; -webkit-appearance: none;
+    }
+    .text-input:focus { outline: none; border-color: var(--accent); }
+    .text-input::placeholder { color: var(--dim); font-size: 14px; }
+    input[type=number].text-input::-webkit-inner-spin-button,
+    input[type=number].text-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    /* ── Select ── */
+    .select-input {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text); font-family: var(--mono); font-size: 18px; font-weight: 500;
+      padding: 8px 28px 8px 10px; width: 100%; cursor: pointer;
+      -webkit-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a99b4'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 10px center;
+    }
+    .select-input:focus { outline: none; border-color: var(--accent); }
+
+    /* ── Metric output ── */
+    .metric-out {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 8px 10px; font-family: var(--mono); font-size: 18px; font-weight: 500;
+      color: var(--accent2); min-height: 40px; display: flex; align-items: center;
+    }
+    .metric-out.dim { color: var(--dim); font-size: 13px; font-weight: 400; }
+
+    /* ── Factor ── */
+    .factor-row { display: flex; flex-direction: column; gap: 8px; }
+    .factor-header { display: flex; justify-content: space-between; align-items: baseline; }
+    .factor-val { font-family: var(--mono); font-size: 18px; font-weight: 600; color: var(--warn); }
+    .factor-result { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; }
+
+    /* ── Range slider ── */
+    .slider-wrap { position: relative; padding: 4px 0; }
+    input[type=range] {
+      -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 2px;
+      background: linear-gradient(to right, var(--accent) var(--pct,50%), var(--dim) var(--pct,50%));
+      outline: none; cursor: pointer;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+      background: var(--warn); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--warn); cursor: pointer;
+    }
+    input[type=range]::-moz-range-thumb {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--warn); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--warn); cursor: pointer;
+    }
+    .slider-ticks { display: flex; justify-content: space-between; margin-top: 4px; }
+    .slider-ticks span { font-family: var(--mono); font-size: 9px; color: var(--dim); }
+
+    .adj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
+    .adj-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; }
+    .adj-item label { display: block; margin-bottom: 4px; }
+    .adj-item .val { font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--warn); }
+
+    .divider { border: none; border-top: 1px solid var(--border); }
+
+    /* ── Settings panel ── */
+    .settings-panel { display: none; background: var(--card); border: 1px solid var(--accent); border-radius: var(--radius); overflow: hidden; }
+    .settings-panel.open { display: block; }
+    .settings-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+    .mode-opt {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+      cursor: pointer; transition: border-color .15s, background .15s;
+    }
+    .mode-opt:hover { border-color: var(--accent); }
+    .mode-opt.active { border-color: var(--accent); background: rgba(0,180,216,.08); }
+    .mode-opt input[type=radio] { display: none; }
+    .mode-radio-dot {
+      width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--dim);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      transition: border-color .15s;
+    }
+    .mode-opt.active .mode-radio-dot { border-color: var(--accent); }
+    .mode-radio-dot::after {
+      content: ''; width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); opacity: 0; transition: opacity .15s;
+    }
+    .mode-opt.active .mode-radio-dot::after { opacity: 1; }
+    .mode-text { font-size: 13px; color: var(--text); }
+    .mode-text small { display: block; font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+    /* ═══════════════════════════════════════════
+       DRUM / WHEEL PICKER
+    ═══════════════════════════════════════════ */
+    .drum-wrap {
+      position: relative;
+      height: calc(var(--item-h) * 5);
+      overflow: hidden;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      touch-action: none;
+      cursor: ns-resize;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .drum-list {
+      position: absolute;
+      left: 0; right: 0; top: 0;
+      will-change: transform;
+    }
+
+    .drum-item {
+      height: var(--item-h);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--dim);
+      pointer-events: none;
+      transition: color .08s;
+    }
+    .drum-item.near { color: var(--muted); font-size: 19px; }
+    .drum-item.selected { color: var(--text); font-size: 22px; font-weight: 600; }
+
+    .drum-fade-top, .drum-fade-bot {
+      position: absolute; left: 0; right: 0;
+      height: calc(var(--item-h) * 2);
+      pointer-events: none; z-index: 2;
+    }
+    .drum-fade-top { top: 0; background: linear-gradient(to bottom, var(--surface) 10%, transparent 100%); }
+    .drum-fade-bot { bottom: 0; background: linear-gradient(to top,   var(--surface) 10%, transparent 100%); }
+
+    .drum-reticle {
+      position: absolute; left: 10px; right: 10px;
+      top: calc(var(--item-h) * 2);
+      height: var(--item-h);
+      border-top: 1.5px solid var(--accent);
+      border-bottom: 1.5px solid var(--accent);
+      border-radius: 2px;
+      pointer-events: none; z-index: 3;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Patient <span>Metrics</span></div>
+  <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
+</header>
+
+<main>
+
+  <!-- Settings panel -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="card-header">Input Mode</div>
+    <div class="settings-body" id="modeGroup">
+      <label class="mode-opt active" data-mode="wheel">
+        <input type="radio" name="inputMode" value="wheel" checked>
+        <div class="mode-radio-dot"></div>
+        <div class="mode-text">Scroll wheel <small>Swipe up/down to spin the drum</small></div>
+      </label>
+      <label class="mode-opt" data-mode="popup">
+        <input type="radio" name="inputMode" value="popup">
+        <div class="mode-radio-dot"></div>
+        <div class="mode-text">Popup select <small>Native OS picker list</small></div>
+      </label>
+      <label class="mode-opt" data-mode="text">
+        <input type="radio" name="inputMode" value="text">
+        <div class="mode-radio-dot"></div>
+        <div class="mode-text">Text entry <small>Type the number directly</small></div>
+      </label>
+    </div>
+  </div>
+
+  <!-- Height card -->
+  <div class="card">
+    <div class="card-header">Height</div>
+    <div class="card-body">
+      <div class="field-row">
+        <div class="field"><label>Feet</label><div id="htFeetWrap"></div></div>
+        <div class="field"><label>Inches</label><div id="htInchesWrap"></div></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Centimetres (cm)</label><div class="metric-out" id="outCm">—</div></div>
+        <div class="field"><label>Metres (m)</label><div class="metric-out" id="outM">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Weight card -->
+  <div class="card">
+    <div class="card-header">Weight</div>
+    <div class="card-body">
+      <div class="field"><label>Pounds (lb)</label><div id="wtImperialWrap"></div></div>
+      <div class="field-row">
+        <div class="field"><label>Kilograms (kg)</label><div class="metric-out" id="outKg">—</div></div>
+        <div class="field"><label>BMI</label><div class="metric-out" id="outBmi">—</div></div>
+      </div>
+      <hr class="divider">
+      <!-- Factor -->
+      <div class="factor-row">
+        <div class="factor-header">
+          <label>Weight factor</label>
+          <div><span class="factor-val" id="factorDisplay">1.00</span><span class="factor-result" id="factorResultLabel"></span></div>
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="factorSlider" min="0" max="80" value="40" step="1">
+          <div class="slider-ticks">
+            <span>0.6</span><span>0.7</span><span>0.8</span><span>0.9</span>
+            <span>1.0</span><span>1.1</span><span>1.2</span><span>1.3</span><span>1.4</span>
+          </div>
+        </div>
+        <div class="adj-grid">
+          <div class="adj-item"><label>Adj. lb</label><div class="val" id="adjLb">—</div></div>
+          <div class="adj-item"><label>Adj. kg</label><div class="val" id="adjKg">—</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+const state = {
+  inputMode: 'wheel',
+  lbs:    null,
+  feet:   null,
+  inches: null,
+  factor: 1.00
+};
+
+const $ = id => document.getElementById(id);
+const lbToKg    = lb  => lb * 0.45359237;
+const ftInToCm  = (ft, inch) => (ft * 12 + inch) * 2.54;
+const calcBmi   = (kg, cm)   => kg / Math.pow(cm / 100, 2);
+const bmiCat    = b  => b < 18.5 ? 'Underweight' : b < 25 ? 'Normal' :
+                         b < 30  ? 'Overweight'  : b < 35 ? 'Obese I' :
+                         b < 40  ? 'Obese II'    : 'Obese III';
+
+// ═══════════════════════════════════════════════════
+// RECALC
+// ═══════════════════════════════════════════════════
+function recalc() {
+  const kg = state.lbs !== null ? lbToKg(state.lbs) : null;
+  const cm = state.feet !== null && state.inches !== null
+             ? ftInToCm(state.feet, state.inches) : null;
+
+  $('outKg').textContent = kg !== null ? kg.toFixed(1) + ' kg' : '—';
+  $('outCm').textContent = cm !== null ? cm.toFixed(1) + ' cm' : '—';
+  $('outM').textContent  = cm !== null ? (cm / 100).toFixed(2) + ' m' : '—';
+
+  if (kg !== null && cm !== null) {
+    const b = calcBmi(kg, cm);
+    $('outBmi').textContent = b.toFixed(1);
+    $('outBmi').title = bmiCat(b);
+    $('outBmi').className = 'metric-out';
+  } else {
+    $('outBmi').textContent = '—';
+    $('outBmi').className = 'metric-out dim';
+  }
+
+  const f = state.factor;
+  if (kg !== null) {
+    $('adjKg').textContent = (kg * f).toFixed(1) + ' kg';
+    $('adjLb').textContent = (state.lbs * f).toFixed(1) + ' lb';
+    $('factorResultLabel').textContent = '= ' + (kg * f).toFixed(1) + ' kg';
+  } else {
+    $('adjKg').textContent = '—';
+    $('adjLb').textContent = '—';
+    $('factorResultLabel').textContent = '';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// DRUM WHEEL FACTORY
+// opts      : array of numbers
+// initVal   : initially selected value (or null → middle)
+// onChange  : fn(value)
+// unitSuffix: string appended to each label
+// ═══════════════════════════════════════════════════
+function makeDrum(opts, initVal, onChange, unitSuffix = '') {
+  const ITEM_H   = 44;   // px — must match CSS --item-h
+  const VISIBLE  = 5;
+  const CENTER   = 2;    // which slot (0-based) is the selection
+
+  // resolve initial index
+  let selIdx = initVal !== null ? opts.indexOf(initVal) : -1;
+  if (selIdx < 0) selIdx = Math.floor(opts.length / 2);
+
+  // ── build DOM ──────────────────────────────────
+  const wrap = document.createElement('div');
+  wrap.className = 'drum-wrap';
+
+  const list = document.createElement('div');
+  list.className = 'drum-list';
+
+  // ghost padding rows so first/last items can reach the centre slot
+  const PAD = CENTER;
+  const total = PAD + opts.length + PAD;
+
+  for (let i = 0; i < total; i++) {
+    const realI = i - PAD;          // index into opts; <0 or >=length → ghost
+    const el = document.createElement('div');
+    el.className = 'drum-item';
+    if (realI >= 0 && realI < opts.length) {
+      el.textContent = opts[realI] + (unitSuffix ? ' ' + unitSuffix : '');
+      el.dataset.idx = realI;
+    }
+    list.appendChild(el);
+  }
+
+  const ft = document.createElement('div'); ft.className = 'drum-fade-top';
+  const fb = document.createElement('div'); fb.className = 'drum-fade-bot';
+  const rt = document.createElement('div'); rt.className = 'drum-reticle';
+
+  wrap.appendChild(list);
+  wrap.appendChild(ft);
+  wrap.appendChild(fb);
+  wrap.appendChild(rt);
+
+  // ── coordinate helpers ─────────────────────────
+  // Y that places opts[idx] in the centre slot
+  function yForIdx(idx) {
+    return -((idx + PAD) * ITEM_H) + CENTER * ITEM_H;
+  }
+
+  const minY = yForIdx(opts.length - 1);
+  const maxY = yForIdx(0);
+
+  let currentY = yForIdx(selIdx);
+
+  function clampY(y) {
+    return Math.max(minY, Math.min(maxY, y));
+  }
+
+  function idxFromY(y) {
+    return Math.round(-(y - CENTER * ITEM_H) / ITEM_H - PAD);
+  }
+
+  function setTransform(y, animated) {
+    list.style.transition = animated
+      ? 'transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+      : 'none';
+    list.style.transform = `translateY(${y}px)`;
+  }
+
+  function highlightFromY(y) {
+    const live = Math.round(-(y - CENTER * ITEM_H) / ITEM_H - PAD);
+    const items = list.children;
+    for (let i = 0; i < items.length; i++) {
+      const di = i - PAD;         // opts index
+      const dist = Math.abs(di - live);
+      items[i].classList.toggle('selected', di === live);
+      items[i].classList.toggle('near', dist === 1);
+    }
+  }
+
+  function commitSnap(y) {
+    const idx = Math.max(0, Math.min(opts.length - 1, idxFromY(y)));
+    const snappedY = yForIdx(idx);
+    selIdx = idx;
+    currentY = snappedY;
+    setTransform(snappedY, true);
+    highlightFromY(snappedY);
+    onChange(opts[idx]);
+  }
+
+  // initial render
+  setTransform(currentY, false);
+  highlightFromY(currentY);
+
+  // ── touch / pointer handling ───────────────────
+  let active     = false;
+  let pointerY0  = 0;
+  let listY0     = 0;
+  let prevY      = 0;
+  let prevT      = 0;
+  let velY       = 0;
+  let rafId      = null;
+
+  function getEY(e) {
+    return e.touches ? e.touches[0].clientY : e.clientY;
+  }
+
+  wrap.addEventListener('touchstart',  onDown, { passive: false });
+  wrap.addEventListener('mousedown',   onDown);
+
+  function onDown(e) {
+    e.preventDefault();
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    active    = true;
+    pointerY0 = getEY(e);
+    listY0    = currentY;
+    prevY     = pointerY0;
+    prevT     = performance.now();
+    velY      = 0;
+    list.style.transition = 'none';
+
+    // attach move/end to window so we catch drags that leave the element
+    window.addEventListener('touchmove',  onMove, { passive: false });
+    window.addEventListener('mousemove',  onMove);
+    window.addEventListener('touchend',   onUp);
+    window.addEventListener('mouseup',    onUp);
+  }
+
+  function onMove(e) {
+    if (!active) return;
+    e.preventDefault();
+    const ey  = getEY(e);
+    const now = performance.now();
+    const dt  = Math.max(1, now - prevT);
+    velY  = (ey - prevY) / dt * 16;   // px / 60fps-frame
+    prevY = ey;
+    prevT = now;
+    const dy  = ey - pointerY0;
+    currentY  = clampY(listY0 + dy);
+    setTransform(currentY, false);
+    highlightFromY(currentY);
+  }
+
+  function onUp(e) {
+    if (!active) return;
+    active = false;
+    window.removeEventListener('touchmove',  onMove);
+    window.removeEventListener('mousemove',  onMove);
+    window.removeEventListener('touchend',   onUp);
+    window.removeEventListener('mouseup',    onUp);
+
+    // momentum coast then snap
+    const decay = 0.86;
+    function coast() {
+      velY *= decay;
+      if (Math.abs(velY) < 0.5) {
+        commitSnap(currentY);
+        return;
+      }
+      currentY = clampY(currentY + velY);
+      if (currentY <= minY || currentY >= maxY) velY = 0;
+      setTransform(currentY, false);
+      highlightFromY(currentY);
+      rafId = requestAnimationFrame(coast);
+    }
+    rafId = requestAnimationFrame(coast);
+  }
+
+  // mouse wheel / trackpad
+  let wheelTimer = null;
+  wrap.addEventListener('wheel', e => {
+    e.preventDefault();
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    const step = e.deltaY > 0 ? 1 : -1;
+    const newIdx = Math.max(0, Math.min(opts.length - 1, selIdx + step));
+    selIdx   = newIdx;
+    currentY = yForIdx(newIdx);
+    setTransform(currentY, true);
+    highlightFromY(currentY);
+    onChange(opts[newIdx]);
+  }, { passive: false });
+
+  // public API
+  wrap._getValue  = () => opts[selIdx];
+  wrap._snapTo    = val => {
+    const i = opts.indexOf(val);
+    if (i >= 0) {
+      selIdx   = i;
+      currentY = yForIdx(i);
+      setTransform(currentY, false);
+      highlightFromY(currentY);
+    }
+  };
+
+  return wrap;
+}
+
+// ═══════════════════════════════════════════════════
+// OPTION ARRAYS
+// ═══════════════════════════════════════════════════
+function range(a, b) { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; }
+const WT_OPTS     = range(50, 500);
+const FEET_OPTS   = range(3, 7);
+const INCHES_OPTS = range(0, 11);
+
+// ═══════════════════════════════════════════════════
+// RENDER INPUTS
+// ═══════════════════════════════════════════════════
+function renderInputs() {
+  const wWrap = $('wtImperialWrap');
+  const fWrap = $('htFeetWrap');
+  const iWrap = $('htInchesWrap');
+  wWrap.innerHTML = '';
+  fWrap.innerHTML = '';
+  iWrap.innerHTML = '';
+
+  const mode = state.inputMode;
+
+  if (mode === 'wheel') {
+    // Seed defaults so outputs show immediately
+    if (state.lbs    === null) state.lbs    = 160;
+    if (state.feet   === null) state.feet   = 5;
+    if (state.inches === null) state.inches = 6;
+
+    const wDrum = makeDrum(WT_OPTS,     state.lbs,    v => { state.lbs    = v; recalc(); }, 'lb');
+    const fDrum = makeDrum(FEET_OPTS,   state.feet,   v => { state.feet   = v; recalc(); }, 'ft');
+    const iDrum = makeDrum(INCHES_OPTS, state.inches, v => { state.inches = v; recalc(); }, 'in');
+
+    wWrap.appendChild(wDrum);
+    fWrap.appendChild(fDrum);
+    iWrap.appendChild(iDrum);
+
+  } else if (mode === 'popup') {
+    wWrap.appendChild(mkSelect(WT_OPTS,     'Select lb', v => { state.lbs    = v; recalc(); }, state.lbs));
+    fWrap.appendChild(mkSelect(FEET_OPTS,   'Feet',      v => { state.feet   = v; recalc(); }, state.feet));
+    iWrap.appendChild(mkSelect(INCHES_OPTS, 'Inches',    v => { state.inches = v; recalc(); }, state.inches));
+
+  } else {
+    wWrap.appendChild(mkText('e.g. 160', v => { state.lbs    = v; recalc(); }, state.lbs,    10, 1000));
+    fWrap.appendChild(mkText('ft',       v => { state.feet   = v; recalc(); }, state.feet,    1, 9));
+    iWrap.appendChild(mkText('in',       v => { state.inches = v; recalc(); }, state.inches,  0, 11));
+  }
+
+  recalc();
+}
+
+function mkSelect(opts, placeholder, onChange, cur) {
+  const sel = document.createElement('select');
+  sel.className = 'select-input';
+  const ph = document.createElement('option');
+  ph.value = ''; ph.textContent = placeholder; ph.hidden = true; ph.selected = (cur === null);
+  sel.appendChild(ph);
+  opts.forEach(v => {
+    const o = document.createElement('option');
+    o.value = v; o.textContent = v;
+    if (v === cur) o.selected = true;
+    sel.appendChild(o);
+  });
+  sel.addEventListener('change', () => onChange(sel.value === '' ? null : Number(sel.value)));
+  return sel;
+}
+
+function mkText(placeholder, onChange, cur, min, max) {
+  const inp = document.createElement('input');
+  inp.type = 'number'; inp.className = 'text-input';
+  inp.placeholder = placeholder; inp.min = min; inp.max = max;
+  if (cur !== null) inp.value = cur;
+  inp.addEventListener('input', () => onChange(inp.value === '' ? null : Number(inp.value)));
+  return inp;
+}
+
+// ═══════════════════════════════════════════════════
+// FACTOR SLIDER
+// ═══════════════════════════════════════════════════
+const fSlider = $('factorSlider');
+function updateSliderBg() {
+  fSlider.style.setProperty('--pct', (fSlider.value / 80 * 100) + '%');
+}
+fSlider.addEventListener('input', () => {
+  state.factor = 0.60 + Number(fSlider.value) * (0.80 / 80);
+  $('factorDisplay').textContent = state.factor.toFixed(2);
+  updateSliderBg();
+  recalc();
+});
+
+// ═══════════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════════
+$('settingsToggle').addEventListener('click', () => {
+  $('settingsPanel').classList.toggle('open');
+});
+
+document.querySelectorAll('.mode-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.mode-opt').forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+    state.inputMode = opt.dataset.mode;
+    renderInputs();
+  });
+});
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+updateSliderBg();
+renderInputs();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>

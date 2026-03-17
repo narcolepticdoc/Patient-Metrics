@@ -278,7 +278,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.3.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.3.1</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -762,35 +762,31 @@ updateInertiaDisplay();
 
 // ═══════════════════════════════════════════════════
 // USER COUNTER
-// Uses countapi.xyz — free, no auth, no backend.
+// Uses Abacus (abacus.jasoncameron.dev) — free,
+// no auth, CORS-enabled, drop-in CountAPI replacement.
 // UUID in localStorage ensures each device only
 // increments once regardless of how many times
 // the app is opened.
 // ═══════════════════════════════════════════════════
 (async function initCounter() {
-  const NAMESPACE = 'narcolepticdoc-patient-metrics';
-  const KEY       = 'opens';
-  const LS_KEY    = 'pm_uuid';
+  const BASE    = 'https://abacus.jasoncameron.dev';
+  const NS      = 'narcolepticdoc-patient-metrics';
+  const KEY     = 'opens';
   const LS_COUNTED = 'pm_counted';
 
-  // Generate or retrieve persistent device UUID
-  let uuid = localStorage.getItem(LS_KEY);
-  if (!uuid) {
-    uuid = crypto.randomUUID ? crypto.randomUUID()
-           : Math.random().toString(36).slice(2) + Date.now().toString(36);
-    localStorage.setItem(LS_KEY, uuid);
-  }
-
   try {
-    // Only hit the increment endpoint once per device
     const alreadyCounted = localStorage.getItem(LS_COUNTED);
+    let data;
     if (!alreadyCounted) {
-      await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${KEY}`);
+      // Increment on first open for this device
+      const res = await fetch(`${BASE}/hit/${NS}/${KEY}`);
+      data = await res.json();
       localStorage.setItem(LS_COUNTED, '1');
+    } else {
+      // Just read the current count
+      const res = await fetch(`${BASE}/get/${NS}/${KEY}`);
+      data = await res.json();
     }
-    // Always fetch current count to display
-    const res  = await fetch(`https://api.countapi.xyz/get/${NAMESPACE}/${KEY}`);
-    const data = await res.json();
     const n = data.value ?? '?';
     $('counterVal').textContent = Number(n).toLocaleString();
   } catch {

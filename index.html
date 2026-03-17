@@ -278,7 +278,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.3.1</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.3.2</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -699,7 +699,9 @@ function mkText(placeholder, onChange, cur, min, max) {
   const inp = document.createElement('input');
   inp.type = 'number'; inp.className = 'text-input';
   inp.placeholder = placeholder; inp.min = min; inp.max = max;
+  inp.setAttribute('inputmode', 'decimal');
   if (cur !== null) inp.value = cur;
+  inp.addEventListener('focus', () => inp.select());
   inp.addEventListener('input', () => onChange(inp.value === '' ? null : Number(inp.value)));
   return inp;
 }

@@ -1,44 +1,68 @@
-// Bump this string whenever you deploy a new version.
-// The install event will fire, the new SW will wait, and the page
-// will receive 'updatefound', post SKIP_WAITING, then reload.
-const CACHE = 'patient-metrics-v1.2.0';
+const CACHE = 'patient-metrics-v1.3.0';
 
-const ASSETS = [
-  './',
-  './index.html',
+const STATIC_ASSETS = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
   './apple-touch-icon.png'
 ];
 
-// ── Install: cache all assets ──────────────────────
+// ── Install: pre-cache static assets, activate immediately ──
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE)
-      .then(c => c.addAll(ASSETS))
-      // Do NOT call skipWaiting() here — the page does it via postMessage
-      // so we have a chance to notify the user if desired in future.
+    caches.open(CACHE).then(c => c.addAll(STATIC_ASSETS))
   );
+  // Skip waiting immediately — no reason to defer for a solo-dev PWA.
+  // The page will reload via controllerchange.
+  self.skipWaiting();
 });
 
-// ── Activate: delete old caches ────────────────────
+// ── Activate: delete old caches, claim all clients ──
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 
-// ── Fetch: cache-first for our assets ──────────────
+// ── Fetch strategy ───────────────────────────────────
+// index.html  → network-first (always try to get the latest,
+//               fall back to cache only when offline)
+// everything else → cache-first (icons, manifest — rarely change)
 self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request))
-  );
+  const url = new URL(e.request.url);
+
+  // Only handle same-origin requests
+  if (url.origin !== self.location.origin) return;
+
+  const isHTML = url.pathname === '/' ||
+                 url.pathname.endsWith('/index.html') ||
+                 url.pathname.endsWith('/');
+
+  if (isHTML) {
+    // Network-first for the app shell
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          // Cache the fresh copy
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+          return res;
+        })
+        .catch(() => caches.match(e.request))
+    );
+  } else {
+    // Cache-first for static assets
+    e.respondWith(
+      caches.match(e.request).then(r => r || fetch(e.request))
+    );
+  }
 });
 
-// ── Message: page asks us to activate immediately ──
+// ── Message handler (kept for compatibility) ──
 self.addEventListener('message', e => {
   if (e.data && e.data.type === 'SKIP_WAITING') {
     self.skipWaiting();

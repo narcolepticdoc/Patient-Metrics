@@ -1,7 +1,7 @@
 // Bump this string whenever you deploy a new version.
 // The install event will fire, the new SW will wait, and the page
 // will receive 'updatefound', post SKIP_WAITING, then reload.
-const CACHE = 'patient-metrics-v1.1.1';
+const CACHE = 'patient-metrics-v1.2.0';
 
 const ASSETS = [
   './',

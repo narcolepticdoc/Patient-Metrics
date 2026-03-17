@@ -76,6 +76,15 @@
       display: flex; flex-direction: column; gap: 8px;
     }
 
+    /* ── Side-by-side card row ── */
+    .card-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .card-narrow { flex: 0 0 36%; }
+    .card-wide   { flex: 1; }
+
     /* ── Card ── */
     .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
     .card-header {
@@ -278,7 +287,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.3.2</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.4.3</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -325,19 +334,39 @@
     </div>
   </div>
 
-  <!-- Height card -->
-  <div class="card">
-    <div class="card-header">Height</div>
-    <div class="card-body">
-      <div class="field-row">
-        <div class="field"><label>Feet</label><div id="htFeetWrap"></div></div>
-        <div class="field"><label>Inches</label><div id="htInchesWrap"></div></div>
-      </div>
-      <div class="field-row">
-        <div class="field"><label>Centimetres (cm)</label><div class="metric-out metric-primary" id="outCm">—</div></div>
-        <div class="field"><label>Metres (m)</label><div class="metric-out" id="outM">—</div></div>
+  <!-- Age + Height row -->
+  <div class="card-row">
+
+    <!-- Age card -->
+    <div class="card card-narrow">
+      <div class="card-header">Age</div>
+      <div class="card-body">
+        <div class="field">
+          <label>Birth Year</label>
+          <div id="htBirthYearWrap"></div>
+        </div>
+        <div class="field">
+          <label>Age (yr)</label>
+          <div class="metric-out dim" id="outAge">—</div>
+        </div>
       </div>
     </div>
+
+    <!-- Height card -->
+    <div class="card card-wide">
+      <div class="card-header">Height</div>
+      <div class="card-body">
+        <div class="field-row">
+          <div class="field"><label>Feet</label><div id="htFeetWrap"></div></div>
+          <div class="field"><label>Inches</label><div id="htInchesWrap"></div></div>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Centimetres</label><div class="metric-out metric-primary" id="outCm">—</div></div>
+          <div class="field"><label>Metres</label><div class="metric-out" id="outM">—</div></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <!-- Weight card -->
@@ -379,11 +408,12 @@
 // ═══════════════════════════════════════════════════
 const state = {
   inputMode: 'wheel',
-  lbs:      null,
-  feet:     null,
-  inches:   null,
-  factor:   1.00,
-  wtInertia: 0.94   // decay per frame: 0.80 = snappy, 0.97 = very floaty
+  lbs:       null,
+  feet:      null,
+  inches:    null,
+  birthYear: null,
+  factor:    1.00,
+  wtInertia: 0.94
 };
 
 const $ = id => document.getElementById(id);
@@ -401,6 +431,12 @@ function recalc() {
   const kg = state.lbs !== null ? lbToKg(state.lbs) : null;
   const cm = state.feet !== null && state.inches !== null
              ? ftInToCm(state.feet, state.inches) : null;
+
+  // Age from birth year
+  const age = state.birthYear !== null
+              ? new Date().getFullYear() - state.birthYear : null;
+  $('outAge').textContent = age !== null ? age + ' yr' : '—';
+  $('outAge').className   = age !== null ? 'metric-out metric-primary' : 'metric-out dim';
 
   $('outKg').textContent = kg !== null ? kg.toFixed(1) + ' kg' : '—';
   $('outCm').textContent = cm !== null ? cm.toFixed(1) + ' cm' : '—';
@@ -634,6 +670,7 @@ function makeDrum(opts, initVal, onChange, unitSuffix = '', decay = 0.86) {
 // OPTION ARRAYS
 // ═══════════════════════════════════════════════════
 function range(a, b) { const r = []; for (let i = a; i <= b; i++) r.push(i); return r; }
+const BY_OPTS     = range(1920, new Date().getFullYear() - 1).reverse(); // newest first
 const WT_OPTS     = range(50, 500);
 const FEET_OPTS   = range(3, 7);
 const INCHES_OPTS = range(0, 11);
@@ -642,38 +679,46 @@ const INCHES_OPTS = range(0, 11);
 // RENDER INPUTS
 // ═══════════════════════════════════════════════════
 function renderInputs() {
-  const wWrap = $('wtImperialWrap');
-  const fWrap = $('htFeetWrap');
-  const iWrap = $('htInchesWrap');
-  wWrap.innerHTML = '';
-  fWrap.innerHTML = '';
-  iWrap.innerHTML = '';
+  const wWrap  = $('wtImperialWrap');
+  const byWrap = $('htBirthYearWrap');
+  const fWrap  = $('htFeetWrap');
+  const iWrap  = $('htInchesWrap');
+  wWrap.innerHTML  = '';
+  byWrap.innerHTML = '';
+  fWrap.innerHTML  = '';
+  iWrap.innerHTML  = '';
 
   const mode = state.inputMode;
+  const curYear = new Date().getFullYear();
+  const defaultBy = curYear - 45;  // seed to ~45yr old
 
   if (mode === 'wheel') {
-    // Seed defaults so outputs show immediately
-    if (state.lbs    === null) state.lbs    = 160;
-    if (state.feet   === null) state.feet   = 5;
-    if (state.inches === null) state.inches = 6;
+    if (state.lbs       === null) state.lbs       = 160;
+    if (state.feet      === null) state.feet      = 5;
+    if (state.inches    === null) state.inches    = 6;
+    if (state.birthYear === null) state.birthYear = defaultBy;
 
-    const wDrum = makeDrum(WT_OPTS,     state.lbs,    v => { state.lbs    = v; recalc(); }, 'lb', state.wtInertia);
-    const fDrum = makeDrum(FEET_OPTS,   state.feet,   v => { state.feet   = v; recalc(); }, 'ft', 0.86);
-    const iDrum = makeDrum(INCHES_OPTS, state.inches, v => { state.inches = v; recalc(); }, 'in', 0.86);
+    const byDrum = makeDrum(BY_OPTS, state.birthYear, v => { state.birthYear = v; recalc(); }, '', state.wtInertia);
+    const wDrum  = makeDrum(WT_OPTS,  state.lbs,      v => { state.lbs       = v; recalc(); }, 'lb', state.wtInertia);
+    const fDrum  = makeDrum(FEET_OPTS,  state.feet,   v => { state.feet      = v; recalc(); }, 'ft', 0.86);
+    const iDrum  = makeDrum(INCHES_OPTS, state.inches,v => { state.inches    = v; recalc(); }, 'in', 0.86);
 
+    byWrap.appendChild(byDrum);
     wWrap.appendChild(wDrum);
     fWrap.appendChild(fDrum);
     iWrap.appendChild(iDrum);
 
   } else if (mode === 'popup') {
-    wWrap.appendChild(mkSelect(WT_OPTS,     'Select lb', v => { state.lbs    = v; recalc(); }, state.lbs));
-    fWrap.appendChild(mkSelect(FEET_OPTS,   'Feet',      v => { state.feet   = v; recalc(); }, state.feet));
-    iWrap.appendChild(mkSelect(INCHES_OPTS, 'Inches',    v => { state.inches = v; recalc(); }, state.inches));
+    byWrap.appendChild(mkSelect(BY_OPTS,     'Year',      v => { state.birthYear = v; recalc(); }, state.birthYear));
+    wWrap.appendChild(mkSelect(WT_OPTS,      'Select lb', v => { state.lbs       = v; recalc(); }, state.lbs));
+    fWrap.appendChild(mkSelect(FEET_OPTS,    'Feet',      v => { state.feet      = v; recalc(); }, state.feet));
+    iWrap.appendChild(mkSelect(INCHES_OPTS,  'Inches',    v => { state.inches    = v; recalc(); }, state.inches));
 
   } else {
-    wWrap.appendChild(mkText('e.g. 160', v => { state.lbs    = v; recalc(); }, state.lbs,    10, 1000));
-    fWrap.appendChild(mkText('ft',       v => { state.feet   = v; recalc(); }, state.feet,    1, 9));
-    iWrap.appendChild(mkText('in',       v => { state.inches = v; recalc(); }, state.inches,  0, 11));
+    byWrap.appendChild(mkText('e.g. 1980', v => { state.birthYear = v; recalc(); }, state.birthYear, 1920, curYear - 1));
+    wWrap.appendChild(mkText('e.g. 160',  v => { state.lbs       = v; recalc(); }, state.lbs,    10, 1000));
+    fWrap.appendChild(mkText('ft',        v => { state.feet      = v; recalc(); }, state.feet,    1, 9));
+    iWrap.appendChild(mkText('in',        v => { state.inches    = v; recalc(); }, state.inches,  0, 11));
   }
 
   recalc();
@@ -749,12 +794,14 @@ function updateInertiaDisplay() {
 inertiaSlider.addEventListener('input', () => {
   state.wtInertia = inertiaFromSlider(Number(inertiaSlider.value));
   updateInertiaDisplay();
-  // Rebuild weight drum with new inertia
+  // Rebuild weight and birth year drums with new inertia
   if (state.inputMode === 'wheel') {
-    const wWrap = $('wtImperialWrap');
-    wWrap.innerHTML = '';
-    const wDrum = makeDrum(WT_OPTS, state.lbs, v => { state.lbs = v; recalc(); }, 'lb', state.wtInertia);
-    wWrap.appendChild(wDrum);
+    const wWrap  = $('wtImperialWrap');
+    const byWrap = $('htBirthYearWrap');
+    wWrap.innerHTML  = '';
+    byWrap.innerHTML = '';
+    wWrap.appendChild(makeDrum(WT_OPTS, state.lbs, v => { state.lbs = v; recalc(); }, 'lb', state.wtInertia));
+    byWrap.appendChild(makeDrum(BY_OPTS, state.birthYear, v => { state.birthYear = v; recalc(); }, '', state.wtInertia));
   }
 });
 

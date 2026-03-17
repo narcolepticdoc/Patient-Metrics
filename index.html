@@ -28,7 +28,7 @@
       --radius:  6px;
       --mono:    'IBM Plex Mono', monospace;
       --sans:    'IBM Plex Sans', sans-serif;
-      --item-h:  44px;
+      --item-h:  36px;
     }
 
     html, body {
@@ -60,6 +60,7 @@
     }
     .brand { font-family: var(--mono); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 500; }
     .brand span { color: var(--muted); font-weight: 400; }
+    .ver { font-size: 10px; color: var(--dim); letter-spacing: 0.06em; margin-left: 4px; vertical-align: middle; }
     .settings-btn {
       background: none; border: 1px solid var(--border); color: var(--muted);
       padding: 5px 10px; border-radius: var(--radius);
@@ -70,9 +71,9 @@
 
     /* ── Main ── */
     main {
-      flex: 1; padding: 20px 16px 40px;
+      flex: 1; padding: 12px 12px 20px;
       max-width: 520px; width: 100%; margin: 0 auto;
-      display: flex; flex-direction: column; gap: 16px;
+      display: flex; flex-direction: column; gap: 10px;
     }
 
     /* ── Card ── */
@@ -82,11 +83,11 @@
       font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
       text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);
     }
-    .card-body { padding: 16px 14px; display: flex; flex-direction: column; gap: 14px; }
+    .card-body { padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
 
     /* ── Field helpers ── */
-    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: end; }
-    .field { display: flex; flex-direction: column; gap: 5px; }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: end; }
+    .field { display: flex; flex-direction: column; gap: 4px; }
     label { font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
 
     /* ── Text input ── */
@@ -114,15 +115,16 @@
     /* ── Metric output ── */
     .metric-out {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-      padding: 8px 10px; font-family: var(--mono); font-size: 18px; font-weight: 500;
-      color: var(--accent2); min-height: 40px; display: flex; align-items: center;
+      padding: 6px 10px; font-family: var(--mono); font-size: 17px; font-weight: 500;
+      color: var(--accent2); min-height: 36px; display: flex; align-items: center;
     }
     .metric-out.dim { color: var(--dim); font-size: 13px; font-weight: 400; }
+    .metric-out.metric-primary { color: var(--warn); border-color: rgba(244,162,97,.35); }
 
     /* ── Factor ── */
-    .factor-row { display: flex; flex-direction: column; gap: 8px; }
+    .factor-row { display: flex; flex-direction: column; gap: 6px; }
     .factor-header { display: flex; justify-content: space-between; align-items: baseline; }
-    .factor-val { font-family: var(--mono); font-size: 18px; font-weight: 600; color: var(--warn); }
+    .factor-val { font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--warn); }
     .factor-result { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; }
 
     /* ── Range slider ── */
@@ -143,21 +145,21 @@
     .slider-ticks { display: flex; justify-content: space-between; margin-top: 4px; }
     .slider-ticks span { font-family: var(--mono); font-size: 9px; color: var(--dim); }
 
-    .adj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 4px; }
-    .adj-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; }
-    .adj-item label { display: block; margin-bottom: 4px; }
-    .adj-item .val { font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--warn); }
+    .adj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 2px; }
+    .adj-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 10px; }
+    .adj-item label { display: block; margin-bottom: 2px; }
+    .adj-item .val { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--warn); }
 
     .divider { border: none; border-top: 1px solid var(--border); }
 
     /* ── Settings panel ── */
     .settings-panel { display: none; background: var(--card); border: 1px solid var(--accent); border-radius: var(--radius); overflow: hidden; }
     .settings-panel.open { display: block; }
-    .settings-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .settings-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
 
     .mode-opt {
       display: flex; align-items: center; gap: 10px;
-      padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius);
       cursor: pointer; transition: border-color .15s, background .15s;
     }
     .mode-opt:hover { border-color: var(--accent); }
@@ -203,14 +205,14 @@
       height: var(--item-h);
       display: flex; align-items: center; justify-content: center;
       font-family: var(--mono);
-      font-size: 18px;
+      font-size: 15px;
       font-weight: 400;
       color: var(--dim);
       pointer-events: none;
       transition: color .08s;
     }
-    .drum-item.near { color: var(--muted); font-size: 19px; }
-    .drum-item.selected { color: var(--text); font-size: 22px; font-weight: 600; }
+    .drum-item.near { color: var(--muted); font-size: 16px; }
+    .drum-item.selected { color: var(--text); font-size: 19px; font-weight: 600; }
 
     .drum-fade-top, .drum-fade-bot {
       position: absolute; left: 0; right: 0;
@@ -234,7 +236,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.1.0</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -271,7 +273,7 @@
         <div class="field"><label>Inches</label><div id="htInchesWrap"></div></div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Centimetres (cm)</label><div class="metric-out" id="outCm">—</div></div>
+        <div class="field"><label>Centimetres (cm)</label><div class="metric-out metric-primary" id="outCm">—</div></div>
         <div class="field"><label>Metres (m)</label><div class="metric-out" id="outM">—</div></div>
       </div>
     </div>
@@ -283,7 +285,7 @@
     <div class="card-body">
       <div class="field"><label>Pounds (lb)</label><div id="wtImperialWrap"></div></div>
       <div class="field-row">
-        <div class="field"><label>Kilograms (kg)</label><div class="metric-out" id="outKg">—</div></div>
+        <div class="field"><label>Kilograms (kg)</label><div class="metric-out metric-primary" id="outKg">—</div></div>
         <div class="field"><label>BMI</label><div class="metric-out" id="outBmi">—</div></div>
       </div>
       <hr class="divider">
@@ -301,8 +303,8 @@
           </div>
         </div>
         <div class="adj-grid">
-          <div class="adj-item"><label>Adj. lb</label><div class="val" id="adjLb">—</div></div>
           <div class="adj-item"><label>Adj. kg</label><div class="val" id="adjKg">—</div></div>
+          <div class="adj-item"><label>Adj. lb</label><div class="val" id="adjLb">—</div></div>
         </div>
       </div>
     </div>
@@ -372,7 +374,7 @@ function recalc() {
 // unitSuffix: string appended to each label
 // ═══════════════════════════════════════════════════
 function makeDrum(opts, initVal, onChange, unitSuffix = '') {
-  const ITEM_H   = 44;   // px — must match CSS --item-h
+  const ITEM_H   = 36;   // px — must match CSS --item-h
   const VISIBLE  = 5;
   const CENTER   = 2;    // which slot (0-based) is the selection
 
@@ -438,13 +440,15 @@ function makeDrum(opts, initVal, onChange, unitSuffix = '') {
   }
 
   function highlightFromY(y) {
-    const live = Math.round(-(y - CENTER * ITEM_H) / ITEM_H - PAD);
+    // live = opts index currently at centre slot (may be fractional during drag)
+    const live = -(y - CENTER * ITEM_H) / ITEM_H - PAD;
+    const liveRound = Math.round(live);
     const items = list.children;
     for (let i = 0; i < items.length; i++) {
-      const di = i - PAD;         // opts index
-      const dist = Math.abs(di - live);
-      items[i].classList.toggle('selected', di === live);
-      items[i].classList.toggle('near', dist === 1);
+      const optsI = i - PAD;           // opts index (-PAD … opts.length+PAD-1)
+      const dist  = Math.abs(optsI - liveRound);
+      items[i].classList.toggle('selected', dist === 0 && optsI >= 0 && optsI < opts.length);
+      items[i].classList.toggle('near',     dist === 1 && optsI >= 0 && optsI < opts.length);
     }
   }
 
@@ -676,7 +680,24 @@ updateSliderBg();
 renderInputs();
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    // When a new SW is waiting, activate it immediately then reload
+    reg.addEventListener('updatefound', () => {
+      const newWorker = reg.installing;
+      newWorker.addEventListener('statechange', () => {
+        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+          // New version ready — tell it to skip waiting, then reload
+          newWorker.postMessage({ type: 'SKIP_WAITING' });
+        }
+      });
+    });
+  }).catch(() => {});
+
+  // When the SW controlling the page changes, reload to pick up new assets
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) { refreshing = true; window.location.reload(); }
+  });
 }
 </script>
 </body>

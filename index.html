@@ -188,6 +188,26 @@
     .mode-text { font-size: 13px; color: var(--text); }
     .mode-text small { display: block; font-size: 11px; color: var(--muted); margin-top: 1px; }
 
+    /* ── Toggle option (on/off) ── */
+    .toggle-opt {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius);
+      cursor: pointer; transition: border-color .15s, background .15s;
+    }
+    .toggle-opt:hover { border-color: var(--accent); }
+    .toggle-opt.active { border-color: var(--accent); background: rgba(0,180,216,.08); }
+    .toggle-opt input[type=checkbox] { display: none; }
+    .toggle-switch {
+      width: 32px; height: 18px; border-radius: 10px; background: var(--dim);
+      position: relative; flex-shrink: 0; transition: background .15s;
+    }
+    .toggle-knob {
+      position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+      border-radius: 50%; background: var(--text); transition: left .15s;
+    }
+    .toggle-opt.active .toggle-switch { background: var(--accent); }
+    .toggle-opt.active .toggle-knob { left: 16px; }
+
     /* ── Settings footer ── */
     .settings-footer {
       padding: 10px 10px 12px;
@@ -287,7 +307,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.4.3</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.4.4</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -311,6 +331,15 @@
         <input type="radio" name="inputMode" value="text">
         <div class="mode-radio-dot"></div>
         <div class="mode-text">Text entry <small>Type the number directly</small></div>
+      </label>
+    </div>
+    <!-- Data persistence -->
+    <div class="card-header" style="border-top: 1px solid var(--border);">Data</div>
+    <div class="settings-body">
+      <label class="toggle-opt" id="persistToggle">
+        <input type="checkbox" id="persistCheckbox">
+        <div class="toggle-switch"><div class="toggle-knob"></div></div>
+        <div class="mode-text">Remember values <small>Save inputs on this device between sessions</small></div>
       </label>
     </div>
     <!-- Inertia control — only shown in wheel mode -->
@@ -417,6 +446,43 @@ const state = {
 };
 
 const $ = id => document.getElementById(id);
+
+// ═══════════════════════════════════════════════════
+// PERSISTENCE
+// Stores state in localStorage when the user has
+// enabled "Remember values" in settings.
+// ═══════════════════════════════════════════════════
+const LS_PERSIST_ENABLED = 'pm_persist_enabled';
+const LS_SAVED_STATE     = 'pm_saved_state';
+const PERSIST_KEYS = ['lbs','feet','inches','birthYear','factor','inputMode','wtInertia'];
+let persistEnabled = false;
+
+function savePersistedState() {
+  if (!persistEnabled) return;
+  try {
+    const snap = {};
+    PERSIST_KEYS.forEach(k => { snap[k] = state[k]; });
+    localStorage.setItem(LS_SAVED_STATE, JSON.stringify(snap));
+  } catch {}
+}
+
+function loadPersistedState() {
+  try {
+    persistEnabled = localStorage.getItem(LS_PERSIST_ENABLED) === '1';
+    if (!persistEnabled) return;
+    const raw = localStorage.getItem(LS_SAVED_STATE);
+    if (!raw) return;
+    const snap = JSON.parse(raw);
+    PERSIST_KEYS.forEach(k => {
+      if (k in snap) state[k] = snap[k];
+    });
+  } catch {}
+}
+
+function clearPersistedState() {
+  try { localStorage.removeItem(LS_SAVED_STATE); } catch {}
+}
+
 const lbToKg    = lb  => lb * 0.45359237;
 const ftInToCm  = (ft, inch) => (ft * 12 + inch) * 2.54;
 const calcBmi   = (kg, cm)   => kg / Math.pow(cm / 100, 2);
@@ -462,6 +528,8 @@ function recalc() {
     $('adjLb').textContent = '—';
     $('factorResultLabel').textContent = '';
   }
+
+  savePersistedState();
 }
 
 // ═══════════════════════════════════════════════════
@@ -803,11 +871,8 @@ inertiaSlider.addEventListener('input', () => {
     wWrap.appendChild(makeDrum(WT_OPTS, state.lbs, v => { state.lbs = v; recalc(); }, 'lb', state.wtInertia));
     byWrap.appendChild(makeDrum(BY_OPTS, state.birthYear, v => { state.birthYear = v; recalc(); }, '', state.wtInertia));
   }
+  savePersistedState();
 });
-
-// Seed slider to match default state.wtInertia
-inertiaSlider.value = Math.round((state.wtInertia - 0.80) / (0.97 - 0.80) * 100);
-updateInertiaDisplay();
 
 // ═══════════════════════════════════════════════════
 // USER COUNTER
@@ -864,11 +929,59 @@ document.querySelectorAll('.mode-opt').forEach(opt => {
   });
 });
 
-updateInertiaRowVisibility();
+// Persist toggle — remember values between sessions
+function updatePersistUi() {
+  $('persistToggle').classList.toggle('active', persistEnabled);
+  $('persistCheckbox').checked = persistEnabled;
+}
+
+$('persistToggle').addEventListener('click', e => {
+  e.preventDefault();
+  persistEnabled = !persistEnabled;
+  updatePersistUi();
+  try {
+    if (persistEnabled) {
+      localStorage.setItem(LS_PERSIST_ENABLED, '1');
+      savePersistedState();
+    } else {
+      localStorage.removeItem(LS_PERSIST_ENABLED);
+      clearPersistedState();
+    }
+  } catch {}
+});
+
+// Sync mode-opt active state to state.inputMode (used after loading persisted state)
+function syncModeUi() {
+  document.querySelectorAll('.mode-opt').forEach(o => {
+    const isActive = o.dataset.mode === state.inputMode;
+    o.classList.toggle('active', isActive);
+    const radio = o.querySelector('input[type=radio]');
+    if (radio) radio.checked = isActive;
+  });
+}
+
+// Sync factor slider position to state.factor (used after loading persisted state)
+function syncFactorSlider() {
+  const v = Math.round((state.factor - 0.60) / 0.80 * 80);
+  fSlider.value = Math.max(0, Math.min(80, v));
+  $('factorDisplay').textContent = state.factor.toFixed(2);
+}
+
+// Sync inertia slider position to state.wtInertia
+function syncInertiaSlider() {
+  inertiaSlider.value = Math.round((state.wtInertia - 0.80) / (0.97 - 0.80) * 100);
+  updateInertiaDisplay();
+}
 
 // ═══════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════
+loadPersistedState();
+updatePersistUi();
+syncModeUi();
+syncFactorSlider();
+syncInertiaSlider();
+updateInertiaRowVisibility();
 updateSliderBg();
 renderInputs();
 

@@ -1,74 +1,76 @@
-# Anesthesia App Extraction Handoff
+# Anesthesia App Extraction Handoff — v1.2
 
 ## Package contents
-- `deliverable.json`: consolidated structured extraction.
-- `references.json`: lookup table for `file:*` and `web:*` source IDs used in the deliverable.
-- `handoff.md`: implementation and QA notes.
+- `deliverable.json` — full structured extraction, 14 sections, 75 items.
+- `references.json` — lookup table mapping all `file:*` and `web:*` source IDs.
+- `handoff.md` — this file; implementation notes, QA issues, weight-type table.
 
-## Scope
-This package consolidates the visible screenshot set that was processed in the thread and preserves screen behavior even when external validation was only partial.
+## What changed in v1.2
+v1.1 was missing the first four sections visible in IMG_2108–IMG_2111:
+- **Airway** (cuffed ET tube, LMA, tidal volume)
+- **Induction agents** (propofol, ketamine, thiopental, etomidate, midazolam)
+- **Neuromuscular blockers** (vecuronium, rocuronium, pancuronium, cisatracurium, atracurium, succinylcholine)
+- **Antagonists** (neostigmine, sugammadex, naloxone, flumazenil)
+
+These are now at the top of `sections[]` in the correct order.
+
+## Weight type reference
+This app uses at least four distinct weight bases. They are **not interchangeable**.
+
+| Weight type | Abbreviation | Formula (this patient) | Resolved value |
+|---|---|---|---|
+| Total body weight | TBW | input | 70 kg |
+| Ideal body weight (Devine) | IBW | 50 + 2.3 × (height_in − 60) | 65.9 kg |
+| Lean body weight (James, male) | LBW | 1.1 × TBW − 128 × (TBW/height_cm)² | 55.3 kg |
+| Body surface area (Mosteller) | BSA | sqrt((height_cm × TBW) / 3600) | 1.82 m² |
+
+### Which sections use which weight
+| Section | Weight used |
+|---|---|
+| Tidal volume, all NMBs except succinylcholine | IBW |
+| All induction agents | LBW (James) |
+| Succinylcholine, neostigmine, sugammadex, naloxone, flumazenil | TBW |
+| Anticholinergics, analgesics, vasopressors, electrolytes, crisis drugs | TBW |
+| BSA, cardiac output, creatinine clearance | BSA (Mosteller) |
+| CPB heparin, EBV, ABL | TBW |
 
 ## Status policy
-- `validated`: screen logic and external support align closely.
-- `partially_verified`: screen logic is readable, but the exact external match is incomplete, broader, or indication-dependent.
-- `screen_confirmed`: visible on screen but not externally validated in this batch.
-- `issue`: visible but internally inconsistent or likely wrong.
-- `unresolved`: interactive or cropped field without enough visible logic.
+- `validated` — screen arithmetic and external sources align closely.
+- `partially_verified` — readable from screen; exact external match is incomplete.
+- `screen_confirmed` — visible on screen; not externally validated in this batch.
+- `issue` — visible but internally inconsistent or likely wrong.
+- `unresolved` — interactive/cropped field without enough visible logic.
 
-## Highest-priority issues
-1. **Nitroprusside arithmetic mismatch**  
-   - Screen: `0.2 mcg/kg/min`, concentration `200 mcg/ml`, rate `2.1 ml/h`.  
-   - For the visible 70 kg patient, expected rate is `4.2 ml/h`.  
-   - Source IDs: `file:171`, `web:184`.
+## Highest-priority corrections
+1. **Nitroprusside arithmetic mismatch** (`vaso.nitroprusside200`)  
+   Screen: 0.2 mcg/kg/min at 200 mcg/ml → 2.1 ml/h.  
+   Expected: 70 × 0.2 × 60 / 200 = 4.2 ml/h. Off by factor of 2.  
+   Source: `file:171`, `web:184`.
 
-2. **Electrical therapy fixed joules vs weight rules**  
-   - Cardioversion and defibrillation rows show standard weight-based text rules, but the fixed joule values shown on screen do not exactly match the visible 70 kg patient.  
-   - Treat the text algorithm as primary and the fixed joule display as a QA target.  
-   - Source IDs: `file:284`, `web:286`, `web:298`.
+2. **Cardioversion and defibrillation fixed joule display** (`crisis.cardioversion`, `crisis.defibrillation`)  
+   Text rule is weight-based and standard. Displayed fixed joule values do not match 70 kg.  
+   Treat text algorithm as primary; fixed display as QA target.  
+   Source: `file:284`, `web:286`, `web:298`.
 
-3. **Cockcroft-Gault display is BSA-normalized**  
-   - The app labels the method as Cockcroft-Gault but displays the result in `ml/min/1.73 m2`, implying a post-formula normalization step using BSA.  
-   - Source IDs: `file:331`, `file:316`, `web:332`.
+3. **Cockcroft-Gault display is BSA-normalized** (`derived.crcl`)  
+   Base formula returns ml/min. App then multiplies by 1.73/BSA.  
+   The label "Cockcroft Gault" is directionally correct but the output unit is non-standard for CG.  
+   Source: `file:331`, `file:316`, `web:332`.
 
 ## Unresolved fields
-- `cpb.delta_hct`: screen says `Tap to calculate`; no formula exposed.  
-- `cpb.target_hct`: screen says `Tap to calculate`; no formula exposed.  
-- Source IDs: `file:316`.
-
-## Entries that should stay app-specific unless internally confirmed
-- Intralipid bolus amount on the LAST row.
-- Vasopressin target of `0.1 IU/min`.
-- Hydrocortisone `2-3 mg/kg IV` row.
-- Some analgesic rows where exact route/indication context was not exposed.
-- Mannitol 20%, HS 7.5%, PRBC effect note, and platelet expected increment note.
+- `vitals.section` — Vital signs content was above scroll position in all screenshots.
+- `cpb.delta_hct` — shows "Tap to calculate"; no formula exposed.
+- `cpb.target_hct` — shows "Tap to calculate"; no formula exposed.
+- `airway.lma` — cuff volume (40 ml) is manufacturer-specified, not formula-derived.
 
 ## Implementation guidance
-- Preserve `algorithm_type`; do not flatten all rows into a single dose model.
-- Keep screen behavior separate from validation status.
-- Where both a weight rule and a fixed display value appear, store both if they conflict.
-- For checklist rows like malignant hyperthermia actions, model them as procedural entries rather than numeric doses.
-- For unresolved rows, keep placeholders instead of guessing formulas.
+- Preserve `algorithm_type` per item. Sections mix concentration-to-rate, weight-based, procedural, and interactive types.
+- Store IBW, LBW, TBW, and BSA as derived patient-level fields, not per-drug inputs.
+- For items with both a text rule and a fixed display (cardioversion, defibrillation), store both in separate fields.
+- For unresolved interactive fields, keep placeholder entries rather than guessing formulas.
+- Vital signs section is entirely unresolved.
 
-## Notes by section
-### Local anesthetics
-- Lidocaine and bupivacaine arithmetic is clear from the screen.
-- Intralipid rescue infusion math is strong; bolus amount is the weaker part.
-
-### Vasopressors / antiarrhythmics
-- Concentration-to-rate rows are generally straightforward and reusable.
-- Nitroprusside is the only clear concentration-rate mismatch found.
-
-### Electrolytes and MH
-- Hyperkalemia mixes weight-based calcium rows, fixed-dose temporizing therapies, and action items.
-- Malignant hyperthermia mixes crisis actions, weight-based dantrolene, complication management, and contraindication rules.
-
-### Fluids / blood / CPB
-- Maintenance fluids use the 4/2/1 rule.
-- Allowable blood loss uses the simple `EBV * (Hi - Hf) / Hi` form.
-- Creatinine clearance uses Cockcroft-Gault followed by BSA normalization.
-
-## Suggested QA checklist
-- Recompute every concentration-to-rate entry against the visible patient values.
-- Compare every fixed displayed value against the formula-generated value for 70 kg.
-- Review unresolved interactive fields in-app.
-- Confirm whether the app intends adult, pediatric, or mixed-context defaults on the partially verified rows.
+## Entries that need internal confirmation before promotion to `validated`
+Intralipid bolus amount, vasopressin target dose, hydrocortisone 2-3 mg/kg IV,
+some analgesic route/indication context, mannitol 20%, HS 7.5%, PRBC effect note,
+platelet expected increment note, digoxin implementation, MH maintenance interval.

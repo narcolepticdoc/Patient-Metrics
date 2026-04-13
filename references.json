@@ -1,13 +1,28 @@
 {
+  "file:28": {
+    "type": "file",
+    "filename": "IMG_2108.jpeg",
+    "description": "Vital signs (truncated), Airway section, early Induction agents."
+  },
+  "file:29": {
+    "type": "file",
+    "filename": "IMG_2109.jpeg",
+    "description": "Induction agents continuation (Midazolam), Neuromuscular blockers start."
+  },
+  "file:31": {
+    "type": "file",
+    "filename": "IMG_2110.jpeg",
+    "description": "Neuromuscular blockers full list, Antagonists start (Neostigmine)."
+  },
   "file:108": {
     "type": "file",
     "filename": "IMG_2111.jpeg",
-    "description": "Earlier screenshot referenced for repeated anticholinergic rows."
+    "description": "Antagonists (Sugammadex, Naloxone, Flumazenil), Anticholinergics start."
   },
   "file:124": {
     "type": "file",
     "filename": "IMG_2112.jpeg",
-    "description": "Local anesthetics, intralipid, fentanyl."
+    "description": "Local anesthetics, Intralipid, Fentanyl."
   },
   "file:140": {
     "type": "file",
@@ -22,7 +37,7 @@
   "file:171": {
     "type": "file",
     "filename": "IMG_2115.jpeg",
-    "description": "Nitroprusside, labetalol, antiarrhythmics."
+    "description": "Nitroprusside, Labetalol, Antiarrhythmics."
   },
   "file:187": {
     "type": "file",
@@ -32,17 +47,17 @@
   "file:215": {
     "type": "file",
     "filename": "IMG_2117.jpeg",
-    "description": "Severe hypokalemia and malignant hyperthermia."
+    "description": "Severe hypokalemia and Malignant hyperthermia start."
   },
   "file:231": {
     "type": "file",
     "filename": "IMG_2118.jpeg",
-    "description": "Malignant hyperthermia associated conditions and contraindications."
+    "description": "MH associated conditions and contraindications."
   },
   "file:244": {
     "type": "file",
     "filename": "IMG_2119.jpeg",
-    "description": "MH dantrolene continuation and anesthetic crisis entries."
+    "description": "MH dantrolene continuation and Anesthetic crisis entries."
   },
   "file:268": {
     "type": "file",
@@ -71,28 +86,28 @@
   },
   "web:24": {
     "type": "web",
-    "title": "Body Surface Area (BSA) Calculator | Mosteller, Du Bois ... - Pearson",
+    "title": "Body Surface Area (BSA) Calculator | Mosteller - Pearson",
     "url": "https://www.pearson.com/channels/calculators/body-surface-area-bsa-calculator"
   },
   "web:125": {
     "type": "web",
-    "title": "[Table], Table 1. Anesthetic agents and maximum ... - NCBI",
+    "title": "Anesthetic agents and maximum doses - NCBI",
     "url": "https://www.ncbi.nlm.nih.gov/books/NBK574554/table/article-135278.table0/"
   },
   "web:133": {
     "type": "web",
     "title": "Local Anesthetic Systemic Toxicity (LAST) - ASRA Pain Medicine",
-    "url": "https://asra.com/news-publications/asra-updates/blog-landing/legacy-b-blog-posts/2021/02/01/local-anesthetic-systemic-toxicity-(...)"
+    "url": "https://asra.com/news-publications/asra-updates/local-anesthetic-systemic-toxicity/"
   },
   "web:134": {
     "type": "web",
-    "title": "Fentanyl - StatPearls - NCBI Bookshelf - NIH",
+    "title": "Fentanyl - StatPearls - NCBI Bookshelf",
     "url": "https://www.ncbi.nlm.nih.gov/books/NBK459275/"
   },
   "web:144": {
     "type": "web",
-    "title": "ANALGESICS / SEDATIVES PEDIATRIC DOSING GUIDELINES",
-    "url": "https://www.med.unc.edu/pediatrics/cccp/wp-content/uploads/sites/1156/gravity_forms/1-188e5632d99d8f770a150fd48b72fb22/2021/02/P..."
+    "title": "Analgesics/Sedatives Pediatric Dosing Guidelines - UNC",
+    "url": "https://www.med.unc.edu/pediatrics/cccp/wp-content/uploads/sites/1156/gravity_forms/analgesic-dosing.pdf"
   },
   "web:146": {
     "type": "web",
@@ -101,17 +116,17 @@
   },
   "web:147": {
     "type": "web",
-    "title": "Pain Management in Children: NSAID Use in the Perioperative and ...",
+    "title": "Pain Management in Children: NSAID Use - PMC",
     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8275553/"
   },
   "web:157": {
     "type": "web",
-    "title": "Guidelines for treatment of acute pain in children \u2013 the consensus ...",
+    "title": "Guidelines for treatment of acute pain in children - PMC",
     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10156497/"
   },
   "web:161": {
     "type": "web",
-    "title": "Dosing and Dilution of Perioperative Vasoactives",
+    "title": "Dosing and Dilution of Perioperative Vasoactives - Stanford",
     "url": "https://cvanes.stanford.edu/perioperative-vasoactives/"
   },
   "web:164": {
@@ -121,17 +136,17 @@
   },
   "web:170": {
     "type": "web",
-    "title": "Milrinone - StatPearls - NCBI Bookshelf - NIH",
+    "title": "Milrinone - StatPearls - NCBI Bookshelf",
     "url": "https://www.ncbi.nlm.nih.gov/books/NBK532943/"
   },
   "web:173": {
     "type": "web",
-    "title": "Intravenous labetalol versus sodium nitroprusside for treatment of ...",
+    "title": "Intravenous labetalol vs sodium nitroprusside - PubMed",
     "url": "https://pubmed.ncbi.nlm.nih.gov/2686494/"
   },
   "web:180": {
     "type": "web",
-    "title": "Advanced Cardiac Life Support (ACLS) - StatPearls - NCBI Bookshelf",
+    "title": "Advanced Cardiac Life Support (ACLS) - StatPearls - NCBI",
     "url": "https://www.ncbi.nlm.nih.gov/books/NBK613285/"
   },
   "web:184": {
@@ -141,22 +156,22 @@
   },
   "web:188": {
     "type": "web",
-    "title": "Management Algorithm for Adults with Hyperkalemia (K> 5.5 mEq/L)",
+    "title": "Management Algorithm for Adults with Hyperkalemia - ACEP",
     "url": "https://www.acep.org/siteassets/sites/acep/media/hyperk/documents/management-algorithm-for-adult-with-hyperkalemia.pdf"
   },
   "web:194": {
     "type": "web",
-    "title": "Kayexalate - Drug Summary",
+    "title": "Kayexalate Drug Summary - PDR",
     "url": "https://www.pdr.net/drug-summary/Kayexalate-sodium-polystyrene-sulfonate-2925"
   },
   "web:208": {
     "type": "web",
-    "title": "Acute management of hyperkalemia",
-    "url": "https://www.gloshospitals.nhs.uk/documents/2045/Inpatient_Hyperkalemia_Management_March_2023_W4sAT5O.pdf"
+    "title": "Acute management of hyperkalemia - Glos Hospitals NHS",
+    "url": "https://www.gloshospitals.nhs.uk/documents/2045/Inpatient_Hyperkalemia_Management_March_2023.pdf"
   },
   "web:216": {
     "type": "web",
-    "title": "How Much Dantrolene Should Be Kept On Hand? - MHAUS",
+    "title": "How Much Dantrolene Should Be Kept On Hand - MHAUS",
     "url": "https://www.mhaus.org/faqs/how-much-dantrolene-should-be-kept-on-hand/"
   },
   "web:218": {
@@ -166,13 +181,13 @@
   },
   "web:224": {
     "type": "web",
-    "title": "Potassium Replacement",
+    "title": "Potassium Replacement Protocol - VUMC",
     "url": "https://www.vumc.org/trauma-and-scc/sites/vumc.org.trauma-and-scc/files/public_files/Protocols/Electrolyte%20Repletion%20Guidelines.pdf"
   },
   "web:232": {
     "type": "web",
-    "title": "Calcium Channel Blockers - Malignant Hyperthermia ... - MHAUS",
-    "url": "https://www.mhaus.org/cfw/index.cfm?controller=kb&action=view-article&key=1256150E-5056-A852-6BC5-AF18F460CB98&seoTitle=calcium-..."
+    "title": "Calcium Channel Blockers - MHAUS",
+    "url": "https://www.mhaus.org/cfw/index.cfm?controller=kb&action=view-article"
   },
   "web:245": {
     "type": "web",
@@ -186,13 +201,13 @@
   },
   "web:254": {
     "type": "web",
-    "title": "Epinephrine - StatPearls - NCBI Bookshelf - NIH",
+    "title": "Epinephrine - StatPearls - NCBI Bookshelf",
     "url": "https://www.ncbi.nlm.nih.gov/books/NBK482160/"
   },
   "web:260": {
     "type": "web",
     "title": "Understanding push dose pressors - EMS1",
-    "url": "https://www.ems1.com/drugs/articles/understanding-push-dose-pressors-hTtV3qvgjn0W3rFt/"
+    "url": "https://www.ems1.com/drugs/articles/understanding-push-dose-pressors/"
   },
   "web:262": {
     "type": "web",
@@ -201,22 +216,22 @@
   },
   "web:271": {
     "type": "web",
-    "title": "D50W, DGlucose (dextrose) dosing, indications, interactions ...",
+    "title": "D50W Dextrose dosing - Medscape",
     "url": "https://reference.medscape.com/drug/d50w-dglucose-dextrose-342705"
   },
   "web:278": {
     "type": "web",
-    "title": "Perioperative Hyperglycemia Management: An Update - PMC",
+    "title": "Perioperative Hyperglycemia Management - PMC",
     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5309204/"
   },
   "web:286": {
     "type": "web",
-    "title": "Pediatric Tachycardia With a Pulse Algorithm",
+    "title": "Pediatric Tachycardia With a Pulse Algorithm - AHA",
     "url": "https://cpr.heart.org/-/media/CPR-Files/CPR-Guidelines-Files/Algorithms/AlgorithmPALS_Tachycardia_200618.pdf"
   },
   "web:290": {
     "type": "web",
-    "title": "Maintenance Fluid Calculator - Based on 4-2-1 Rule - BackTable",
+    "title": "Maintenance Fluid Calculator - 4-2-1 Rule - BackTable",
     "url": "https://www.backtable.com/shows/vi/tools/maintenance-fluid-calculator"
   },
   "web:291": {
@@ -226,27 +241,27 @@
   },
   "web:298": {
     "type": "web",
-    "title": "Defibrillation - StatPearls - NCBI Bookshelf - NIH",
+    "title": "Defibrillation - StatPearls - NCBI Bookshelf",
     "url": "https://www.ncbi.nlm.nih.gov/books/NBK499899/"
   },
   "web:301": {
     "type": "web",
-    "title": "Consensus Transfusion Guidelines for a Large Neonatal Intensive ...",
+    "title": "Consensus Transfusion Guidelines - PMC",
     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11624464/"
   },
   "web:303": {
     "type": "web",
-    "title": "A Compendium of Transfusion Practice Guidelines",
-    "url": "https://www.redcross.org/content/dam/redcrossblood/hospital-page-documents/334401_compendium_v04jan2021_bookmarkedworking_rwv01..."
+    "title": "A Compendium of Transfusion Practice Guidelines - Red Cross",
+    "url": "https://www.redcross.org/content/dam/redcrossblood/hospital-page-documents/compendium.pdf"
   },
   "web:304": {
     "type": "web",
-    "title": "Guidelines for Transfusion of Pediatric Patients - Wadsworth Center",
+    "title": "Guidelines for Transfusion of Pediatric Patients - Wadsworth",
     "url": "https://www.wadsworth.org/sites/default/files/WebDoc/ped_tx_guidelines_2.pdf"
   },
   "web:315": {
     "type": "web",
-    "title": "Pediatric Fibrinogen PART II\u2014Overview of Indications for ... - PMC",
+    "title": "Pediatric Fibrinogen - PMC",
     "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8097134/"
   },
   "web:319": {
@@ -256,12 +271,82 @@
   },
   "web:322": {
     "type": "web",
-    "title": "Maximum Allowable Blood Loss | Iowa Head and Neck Protocols",
+    "title": "Maximum Allowable Blood Loss - Iowa Head and Neck Protocols",
     "url": "https://iowaprotocols.medicine.uiowa.edu/protocols/maximum-allowable-blood-loss"
   },
   "web:332": {
     "type": "web",
-    "title": "Cockcroft-Gault Formula | National Kidney Foundation",
+    "title": "Cockcroft-Gault Formula - National Kidney Foundation",
     "url": "https://www.kidney.org/professionals/gfr_calculatorCoc"
+  },
+  "web:nmb1": {
+    "type": "web",
+    "title": "Neuromuscular Blocking Drugs - StatPearls - NCBI",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK539829/"
+  },
+  "web:nmb2": {
+    "type": "web",
+    "title": "Succinylcholine - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK499984/"
+  },
+  "web:sug1": {
+    "type": "web",
+    "title": "Sugammadex - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK470351/"
+  },
+  "web:neo1": {
+    "type": "web",
+    "title": "Neostigmine - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK537017/"
+  },
+  "web:nal1": {
+    "type": "web",
+    "title": "Naloxone - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK470193/"
+  },
+  "web:flu1": {
+    "type": "web",
+    "title": "Flumazenil - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK499790/"
+  },
+  "web:ibw1": {
+    "type": "web",
+    "title": "Ideal Body Weight - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK535456/"
+  },
+  "web:lbw1": {
+    "type": "web",
+    "title": "Lean Body Weight Estimation - James Formula - Anaesthesia",
+    "url": "https://associationofanaesthetists-publications.onlinelibrary.wiley.com/doi/10.1111/j.1365-2044.2009.06063.x"
+  },
+  "web:tv1": {
+    "type": "web",
+    "title": "Lung Protective Ventilation - NEJM",
+    "url": "https://www.nejm.org/doi/full/10.1056/NEJM2000052434220503"
+  },
+  "web:lma1": {
+    "type": "web",
+    "title": "Laryngeal Mask Airway - StatPearls - NCBI",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK539739/"
+  },
+  "web:ind1": {
+    "type": "web",
+    "title": "Propofol - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK430884/"
+  },
+  "web:ind2": {
+    "type": "web",
+    "title": "Ketamine - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK470357/"
+  },
+  "web:ind3": {
+    "type": "web",
+    "title": "Etomidate - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK482379/"
+  },
+  "web:ind4": {
+    "type": "web",
+    "title": "Midazolam - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK537321/"
   }
 }

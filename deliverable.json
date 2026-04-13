@@ -1,25 +1,338 @@
 {
-  "deliverable_version": "1.1",
+  "deliverable_version": "1.2",
   "package_contents": [
     "deliverable.json",
     "references.json",
     "handoff.md"
   ],
-  "scope": "Consolidated from the visible screenshot set and prior extraction notes in this thread.",
+  "scope": "Full screenshot set IMG_2108\u2013IMG_2124. v1.2 adds the missing early sections: Vital signs, Airway, Induction agents, Neuromuscular blockers, and Antagonists.",
   "example_patient": {
     "age_years": 35,
     "sex": "M",
     "weight_kg": 70,
-    "height_cm": 170
+    "height_cm": 170,
+    "IBW_kg": 65.9,
+    "IBW_note": "Devine formula: 50 + 2.3*(height_in - 60)",
+    "LBW_kg": 55.3,
+    "LBW_note": "James formula (males): 1.1*TBW - 128*(TBW/height_cm)^2",
+    "TBW_kg": 70
   },
   "status_legend": {
     "validated": "Screen logic and external support align closely.",
-    "partially_verified": "Screen logic is clear, but exact external match is incomplete or context-dependent.",
-    "screen_confirmed": "Readable from screenshots, but not externally validated in this batch.",
-    "issue": "Readable, but internally inconsistent or likely requires correction.",
+    "partially_verified": "Screen logic is readable; exact external match is incomplete or context-dependent.",
+    "screen_confirmed": "Readable from screenshots but not externally validated in this batch.",
+    "issue": "Readable but internally inconsistent or likely requires correction.",
     "unresolved": "Interactive or cropped field without enough visible logic."
   },
   "sections": [
+    {
+      "section": "Vital signs",
+      "items": [
+        {
+          "id": "vitals.section",
+          "label": "Vital signs section",
+          "display": "Visible section header; content cropped at top of IMG_2108",
+          "algorithm_type": "interactive_unresolved",
+          "formula": null,
+          "status": "unresolved",
+          "source_ids": [
+            "file:28"
+          ],
+          "notes": "Section header is visible but all row content was above the scroll position in the screenshot."
+        }
+      ]
+    },
+    {
+      "section": "Airway",
+      "items": [
+        {
+          "id": "airway.ett",
+          "label": "Cuffed ET tube",
+          "display": "8.0 mm; insertion distance 20-22 cm",
+          "algorithm_type": "height_based_lookup",
+          "formula": {
+            "tube_size_mm": "height_cm / 10 - 9",
+            "insertion_cm": "fixed range 20-22 for males"
+          },
+          "example": {
+            "tube_size_mm": "170/10 - 9 = 8.0",
+            "insertion_cm": "20-22"
+          },
+          "status": "partially_verified",
+          "source_ids": [
+            "file:28"
+          ],
+          "notes": "Height-based formula gives 8.0 mm for 170 cm. Insertion distance may be a fixed male default rather than a derived value."
+        },
+        {
+          "id": "airway.lma",
+          "label": "LMA size",
+          "display": "Size 5; cuff volume 40 ml",
+          "algorithm_type": "weight_based_lookup",
+          "formula": "Size 5 for patients >= 70 kg; cuff volume is manufacturer-specified per size.",
+          "example": {
+            "size": 5,
+            "cuff_volume_ml": 40
+          },
+          "status": "partially_verified",
+          "source_ids": [
+            "file:28",
+            "web:lma1"
+          ],
+          "notes": "LMA size selection is a weight-range lookup, not a continuous formula. Size 5 is appropriate for >= 70 kg."
+        },
+        {
+          "id": "airway.tv",
+          "label": "Tidal volume",
+          "display": "395-527 ml (6-8 ml/kg IBW)",
+          "algorithm_type": "weight_based_range",
+          "formula": "TV_ml = IBW_kg * 6 to 8",
+          "example": "65.9 * 6 = 395 ml; 65.9 * 8 = 527 ml",
+          "status": "validated",
+          "source_ids": [
+            "file:28",
+            "web:tv1"
+          ],
+          "notes": "Uses IBW (Devine). Lung-protective ventilation targets 6 ml/kg IBW; range 6-8 matches standard ARDSNet guidance."
+        }
+      ]
+    },
+    {
+      "section": "Induction agents",
+      "items": [
+        {
+          "id": "induction.propofol",
+          "label": "Propofol",
+          "display": "111-166 mg (2-3 mg/kg LBW)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mg = LBW_kg * 2 to 3",
+          "example": "55.3 * 2 = 110.6 \u2248 111 mg; 55.3 * 3 = 165.9 \u2248 166 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:28",
+            "file:29",
+            "web:ind1"
+          ],
+          "notes": "Uses James lean body weight. Screen label is Lean weight."
+        },
+        {
+          "id": "induction.ketamine",
+          "label": "Ketamine",
+          "display": "55-111 mg (1-2 mg/kg LBW)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mg = LBW_kg * 1 to 2",
+          "example": "55.3 * 1 = 55.3 \u2248 55 mg; 55.3 * 2 = 110.6 \u2248 111 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:28",
+            "file:29",
+            "web:ind2"
+          ]
+        },
+        {
+          "id": "induction.thiopental",
+          "label": "Thiopental",
+          "display": "276-387 mg (5-7 mg/kg LBW)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mg = LBW_kg * 5 to 7",
+          "example": "55.3 * 5 = 276.5 \u2248 276 mg; 55.3 * 7 = 387.1 \u2248 387 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:28",
+            "file:29"
+          ]
+        },
+        {
+          "id": "induction.etomidate",
+          "label": "Etomidate",
+          "display": "11.1-16.6 mg (0.2-0.3 mg/kg LBW)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mg = LBW_kg * 0.2 to 0.3",
+          "example": "55.3 * 0.2 = 11.06 \u2248 11.1 mg; 55.3 * 0.3 = 16.59 \u2248 16.6 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:28",
+            "file:29",
+            "web:ind3"
+          ]
+        },
+        {
+          "id": "induction.midazolam",
+          "label": "Midazolam",
+          "display": "8.3-19.4 mg (0.15-0.35 mg/kg LBW)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mg = LBW_kg * 0.15 to 0.35",
+          "example": "55.3 * 0.15 = 8.295 \u2248 8.3 mg; 55.3 * 0.35 = 19.355 \u2248 19.4 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:29",
+            "web:ind4"
+          ],
+          "notes": "Dose range is wide; higher end is for sedation/induction, lower end for premedication."
+        }
+      ]
+    },
+    {
+      "section": "Neuromuscular blockers",
+      "items": [
+        {
+          "id": "nmb.vecuronium",
+          "label": "Vecuronium",
+          "display": "6.6 mg (2 ED95 = 0.1 mg/kg IBW)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = IBW_kg * 0.1",
+          "example": "65.9 * 0.1 = 6.59 \u2248 6.6 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:29",
+            "file:31",
+            "web:nmb1"
+          ]
+        },
+        {
+          "id": "nmb.rocuronium",
+          "label": "Rocuronium",
+          "display": "39.5 mg (2 ED95 = 0.6 mg/kg IBW)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = IBW_kg * 0.6",
+          "example": "65.9 * 0.6 = 39.54 \u2248 39.5 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:29",
+            "file:31",
+            "web:nmb1"
+          ]
+        },
+        {
+          "id": "nmb.pancuronium",
+          "label": "Pancuronium",
+          "display": "9.2 mg (2 ED95 = 0.14 mg/kg IBW)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = IBW_kg * 0.14",
+          "example": "65.9 * 0.14 = 9.226 \u2248 9.2 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:31",
+            "web:nmb1"
+          ]
+        },
+        {
+          "id": "nmb.cisatracurium",
+          "label": "Cisatracurium",
+          "display": "6.6 mg (2 ED95 = 0.1 mg/kg IBW)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = IBW_kg * 0.1",
+          "example": "65.9 * 0.1 = 6.59 \u2248 6.6 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:31",
+            "web:nmb1"
+          ]
+        },
+        {
+          "id": "nmb.atracurium",
+          "label": "Atracurium",
+          "display": "30.3 mg (2 ED95 = 0.46 mg/kg IBW)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = IBW_kg * 0.46",
+          "example": "65.9 * 0.46 = 30.31 \u2248 30.3 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:31",
+            "web:nmb1"
+          ]
+        },
+        {
+          "id": "nmb.succinylcholine",
+          "label": "Succinylcholine",
+          "display": "70 mg (2 ED95 = 1 mg/kg TBW)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = TBW_kg * 1",
+          "example": "70 * 1 = 70 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:31",
+            "web:nmb2"
+          ],
+          "notes": "Uses total body weight (TBW), not IBW. Succinylcholine is the only NMB in this section dosed on TBW."
+        }
+      ]
+    },
+    {
+      "section": "Antagonists",
+      "items": [
+        {
+          "id": "antag.neostigmine",
+          "label": "Neostigmine",
+          "display": "2.8-4.9 mg (0.04-0.07 mg/kg)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mg = TBW_kg * 0.04 to 0.07",
+          "example": "70 * 0.04 = 2.8 mg; 70 * 0.07 = 4.9 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:31",
+            "file:108",
+            "web:neo1"
+          ],
+          "notes": "Screen label is Neuromuscular Reversal. Uses TBW (70 kg), not IBW."
+        },
+        {
+          "id": "antag.sugammadex",
+          "label": "Sugammadex",
+          "display": "140 mg (2 mg/kg TBW); TOF 1-3",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = TBW_kg * 2",
+          "example": "70 * 2 = 140 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:108",
+            "web:sug1"
+          ],
+          "notes": "Screen specifies TOF 1-3 indication. Standard 4 mg/kg dose for deep block is not shown on this screen."
+        },
+        {
+          "id": "antag.naloxone",
+          "label": "Naloxone",
+          "display": "0.1-2.0 mg; titrate 10-100 mcg/kg; max 10 mg",
+          "algorithm_type": "titration_weight_based_capped",
+          "formula": {
+            "per_titration_mcg": "TBW_kg * 10 to 100",
+            "max_mg": 10
+          },
+          "example": {
+            "per_dose_mcg": "70 * 10 to 100 = 700 mcg - 7 mg per bolus",
+            "max_mg": 10
+          },
+          "status": "validated",
+          "source_ids": [
+            "file:108",
+            "web:nal1"
+          ],
+          "notes": "Displayed range 0.1-2.0 mg reflects typical titration band; the weight formula anchors per-bolus dosing."
+        },
+        {
+          "id": "antag.flumazenil",
+          "label": "Flumazenil",
+          "display": "0.2 mg; titrate 10 mcg/kg; max 1 mg",
+          "algorithm_type": "titration_weight_based_capped",
+          "formula": {
+            "per_titration_mcg": "TBW_kg * 10",
+            "max_mg": 1,
+            "initial_mg": 0.2
+          },
+          "example": {
+            "per_titration_mcg": "70 * 10 = 700 mcg = 0.7 mg per bolus",
+            "max_mg": 1
+          },
+          "status": "validated",
+          "source_ids": [
+            "file:108",
+            "web:flu1"
+          ],
+          "notes": "App shows 0.2 mg as the primary displayed value, which is the standard initial reversal dose regardless of weight."
+        }
+      ]
+    },
     {
       "section": "Anticholinergics",
       "items": [
@@ -28,8 +341,8 @@
           "label": "Atropine",
           "display": "1.4 mg (0.02 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 0.02",
-          "example": "1.4 mg",
+          "formula": "dose_mg = TBW_kg * 0.02",
+          "example": "70 * 0.02 = 1.4 mg",
           "status": "screen_confirmed",
           "source_ids": [
             "file:108"
@@ -40,8 +353,8 @@
           "label": "Glycopyrrolate",
           "display": "700 mcg (10 mcg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mcg = weight_kg * 10",
-          "example": "700 mcg",
+          "formula": "dose_mcg = TBW_kg * 10",
+          "example": "70 * 10 = 700 mcg",
           "status": "screen_confirmed",
           "source_ids": [
             "file:108"
@@ -57,7 +370,7 @@
           "label": "Lidocaine",
           "display": "105-420 mg (1.5-6 mg/kg)",
           "algorithm_type": "weight_based_range",
-          "formula": "dose_mg = weight_kg * 1.5 to 6",
+          "formula": "dose_mg = TBW_kg * 1.5 to 6",
           "example": "105-420 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -70,7 +383,7 @@
           "label": "Bupivacaine",
           "display": "105-210 mg (1.5-3 mg/kg)",
           "algorithm_type": "weight_based_range",
-          "formula": "dose_mg = weight_kg * 1.5 to 3",
+          "formula": "dose_mg = TBW_kg * 1.5 to 3",
           "example": "105-210 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -85,7 +398,7 @@
           "algorithm_type": "mixed_bolus_infusion",
           "formula": {
             "bolus": "screen displays ~140 ml for 70 kg",
-            "infusion": "rate_ml_per_h = weight_kg * 0.25 to 0.5 * 60"
+            "infusion": "rate_ml_per_h = TBW_kg * 0.25 to 0.5 * 60"
           },
           "example": {
             "screen_bolus": "140 ml",
@@ -108,7 +421,7 @@
           "label": "Fentanyl",
           "display": "70 mcg (1 mcg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mcg = weight_kg * 1",
+          "formula": "dose_mcg = TBW_kg * 1",
           "example": "70 mcg",
           "status": "validated",
           "source_ids": [
@@ -121,7 +434,7 @@
           "label": "Hydromorphone",
           "display": "0.7 mg (0.01 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 0.01",
+          "formula": "dose_mg = TBW_kg * 0.01",
           "example": "0.7 mg",
           "status": "validated",
           "source_ids": [
@@ -134,7 +447,7 @@
           "label": "Morphine",
           "display": "7 mg (0.1 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 0.1",
+          "formula": "dose_mg = TBW_kg * 0.1",
           "example": "7 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -146,7 +459,7 @@
           "label": "Oxycodone",
           "display": "7 mg (0.1 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 0.1",
+          "formula": "dose_mg = TBW_kg * 0.1",
           "example": "7 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -159,7 +472,7 @@
           "label": "Meperidine",
           "display": "35 mg (0.5 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 0.5",
+          "formula": "dose_mg = TBW_kg * 0.5",
           "example": "35 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -171,7 +484,7 @@
           "label": "Ketorolac",
           "display": "35 mg (0.5 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 0.5",
+          "formula": "dose_mg = TBW_kg * 0.5",
           "example": "35 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -184,7 +497,7 @@
           "label": "Diclofenac",
           "display": "70 mg (1 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 1",
+          "formula": "dose_mg = TBW_kg * 1",
           "example": "70 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -197,7 +510,7 @@
           "label": "Ibuprofen",
           "display": "350 mg (5 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 5",
+          "formula": "dose_mg = TBW_kg * 5",
           "example": "350 mg",
           "status": "validated",
           "source_ids": [
@@ -210,7 +523,7 @@
           "label": "Paracetamol",
           "display": "1050 mg (15 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 15",
+          "formula": "dose_mg = TBW_kg * 15",
           "example": "1050 mg",
           "status": "validated",
           "source_ids": [
@@ -223,7 +536,7 @@
           "label": "Dipyrone",
           "display": "1400 mg (20 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 20",
+          "formula": "dose_mg = TBW_kg * 20",
           "example": "1400 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -235,7 +548,7 @@
           "label": "Tramadol",
           "display": "70 mg (1 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 1",
+          "formula": "dose_mg = TBW_kg * 1",
           "example": "70 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -245,14 +558,14 @@
       ]
     },
     {
-      "section": "Inotropies & vasopressors",
+      "section": "Inotropes & vasopressors",
       "items": [
         {
           "id": "vaso.norepinephrine16",
           "label": "Norepinephrine 16 mcg/ml",
           "display": "13.1 ml/h at 0.05 mcg/kg/min",
           "algorithm_type": "concentration_to_rate",
-          "formula": "rate_ml_per_h = weight_kg * dose_mcg_per_kg_per_min * 60 / concentration_mcg_per_ml",
+          "formula": "rate_ml_per_h = TBW_kg * dose_mcg_per_kg_per_min * 60 / concentration_mcg_per_ml",
           "example": "13.1 ml/h",
           "status": "validated",
           "source_ids": [
@@ -279,7 +592,7 @@
           "label": "Dobutamine 2 mg/ml",
           "display": "4.2 ml/h at 2 mcg/kg/min",
           "algorithm_type": "concentration_to_rate",
-          "formula": "rate_ml_per_h = weight_kg * dose_mcg_per_kg_per_min * 60 / 2000",
+          "formula": "rate_ml_per_h = TBW_kg * dose_mcg_per_kg_per_min * 60 / 2000",
           "example": "4.2 ml/h",
           "status": "validated",
           "source_ids": [
@@ -292,7 +605,7 @@
           "label": "Milrinone 200 mcg/ml",
           "display": "7.9 ml/h at 0.375 mcg/kg/min",
           "algorithm_type": "concentration_to_rate",
-          "formula": "rate_ml_per_h = weight_kg * dose_mcg_per_kg_per_min * 60 / 200",
+          "formula": "rate_ml_per_h = TBW_kg * dose_mcg_per_kg_per_min * 60 / 200",
           "example": "7.9 ml/h",
           "status": "validated",
           "source_ids": [
@@ -306,7 +619,7 @@
           "label": "Nitroprusside 200 mcg/ml",
           "display": "2.1 ml/h at 0.2 mcg/kg/min",
           "algorithm_type": "concentration_to_rate",
-          "formula": "expected_rate_ml_per_h = weight_kg * dose_mcg_per_kg_per_min * 60 / concentration_mcg_per_ml",
+          "formula": "expected_rate_ml_per_h = TBW_kg * dose_mcg_per_kg_per_min * 60 / concentration_mcg_per_ml",
           "example": {
             "screen": "2.1 ml/h",
             "expected_from_displayed_inputs": "4.2 ml/h"
@@ -338,9 +651,9 @@
         {
           "id": "antiarrhythmics.amiodarone_vf",
           "label": "Amiodarone - cardiac arrest with VF",
-          "display": "300 mg fast bolus (5 mg/kg IV, max 300 mg)",
+          "display": "300 mg fast bolus (5 mg/kg, max 300 mg)",
           "algorithm_type": "capped_weight_based_single",
-          "formula": "dose_mg = min(weight_kg * 5, 300)",
+          "formula": "dose_mg = min(TBW_kg * 5, 300)",
           "example": "300 mg",
           "status": "validated",
           "source_ids": [
@@ -393,7 +706,7 @@
           "label": "Ca chloride 10%",
           "display": "3.5-7 ml (0.05-0.1 ml/kg)",
           "algorithm_type": "weight_based_range",
-          "formula": "volume_ml = weight_kg * 0.05 to 0.1",
+          "formula": "volume_ml = TBW_kg * 0.05 to 0.1",
           "example": "3.5-7 ml",
           "status": "partially_verified",
           "source_ids": [
@@ -406,7 +719,7 @@
           "label": "Ca gluconate 10%",
           "display": "10.5-21 ml (0.15-0.3 ml/kg)",
           "algorithm_type": "weight_based_range",
-          "formula": "volume_ml = weight_kg * 0.15 to 0.3",
+          "formula": "volume_ml = TBW_kg * 0.15 to 0.3",
           "example": "10.5-21 ml",
           "status": "partially_verified",
           "source_ids": [
@@ -467,7 +780,7 @@
           "label": "Kayexalate",
           "display": "40 g (1 g/kg up to 40 g) q4h",
           "algorithm_type": "capped_weight_based_repeat",
-          "formula": "dose_g = min(weight_kg * 1, 40), repeat q4h",
+          "formula": "dose_g = min(TBW_kg * 1, 40), repeat q4h",
           "example": "40 g",
           "status": "partially_verified",
           "source_ids": [
@@ -512,7 +825,7 @@
         {
           "id": "mh.stop_trigger",
           "label": "Stop causing agent",
-          "display": "Halogenated, Succinylcholine",
+          "display": "Halogenated agents, Succinylcholine",
           "algorithm_type": "procedural_action",
           "formula": null,
           "status": "validated",
@@ -538,7 +851,7 @@
           "label": "Administer dantrolene",
           "display": "140-210 mg IV bolus (2-3 mg/kg)",
           "algorithm_type": "weight_based_range",
-          "formula": "dose_mg = weight_kg * 2 to 3",
+          "formula": "dose_mg = TBW_kg * 2 to 3",
           "example": "140-210 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -551,7 +864,7 @@
         {
           "id": "mh.active_cooling",
           "label": "Active cooling",
-          "display": "Ice packs, cold forced air, gastric lavage, etc.",
+          "display": "Ice packs, cold forced air, gastric lavage",
           "algorithm_type": "procedural_action",
           "formula": null,
           "status": "validated",
@@ -594,7 +907,7 @@
           "label": "New dantrolene bolus",
           "display": "175 mg (2.5 mg/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "dose_mg = weight_kg * 2.5",
+          "formula": "dose_mg = TBW_kg * 2.5",
           "example": "175 mg",
           "status": "validated",
           "source_ids": [
@@ -607,7 +920,7 @@
           "label": "ICU dantrolene maintenance",
           "display": "1 mg/kg every 4-8 hours; 20% may recur in first 48 h; max 10 mg/kg",
           "algorithm_type": "weight_based_repeat",
-          "formula": "dose_mg = weight_kg * 1, repeat q4-8h",
+          "formula": "dose_mg = TBW_kg * 1, repeat q4-8h",
           "example": "70 mg per dose",
           "status": "partially_verified",
           "source_ids": [
@@ -641,8 +954,8 @@
           "display": "6 mg / 12 mg; 100 mcg/kg (max 6 mg), 200 mcg/kg (max 12 mg)",
           "algorithm_type": "capped_weight_based_escalation",
           "formula": {
-            "dose1_mg": "min(weight_kg * 0.1, 6)",
-            "dose2_mg": "min(weight_kg * 0.2, 12)"
+            "dose1_mg": "min(TBW_kg * 0.1, 6)",
+            "dose2_mg": "min(TBW_kg * 0.2, 12)"
           },
           "example": "6 mg then 12 mg",
           "status": "validated",
@@ -656,7 +969,7 @@
           "label": "Bicarbonate",
           "display": "70-140 mEq (1-2 mEq/kg IV)",
           "algorithm_type": "weight_based_range",
-          "formula": "dose_mEq = weight_kg * 1 to 2",
+          "formula": "dose_mEq = TBW_kg * 1 to 2",
           "example": "70-140 mEq",
           "status": "validated",
           "source_ids": [
@@ -668,9 +981,9 @@
         {
           "id": "crisis.hydrocortisone",
           "label": "Hydrocortisone",
-          "display": "140-210 mg; Anaphylaxis; 2-3 mg/kg IV",
+          "display": "140-210 mg (2-3 mg/kg IV); Anaphylaxis",
           "algorithm_type": "weight_based_range",
-          "formula": "dose_mg = weight_kg * 2 to 3",
+          "formula": "dose_mg = TBW_kg * 2 to 3",
           "example": "140-210 mg",
           "status": "partially_verified",
           "source_ids": [
@@ -680,11 +993,11 @@
         {
           "id": "crisis.dextrose",
           "label": "Dextrose",
-          "display": "35 ml / 175 ml; D50W 0.5 ml/kg; D10W 2.5 ml/kg",
+          "display": "35 ml D50W / 175 ml D10W; 0.5 ml/kg D50W or 2.5 ml/kg D10W",
           "algorithm_type": "equivalent_concentration_weight_based",
           "formula": {
-            "D50_ml": "weight_kg * 0.5",
-            "D10_ml": "weight_kg * 2.5"
+            "D50_ml": "TBW_kg * 0.5",
+            "D10_ml": "TBW_kg * 2.5"
           },
           "example": "35 ml D50 or 175 ml D10",
           "status": "partially_verified",
@@ -696,7 +1009,7 @@
         {
           "id": "crisis.insulin",
           "label": "Insulin",
-          "display": "2-4 IU; Hyperglycemia => 141-180",
+          "display": "2-4 IU; Hyperglycemia glucose 141-180",
           "algorithm_type": "glucose_band_lookup",
           "formula": "if glucose in 141-180 band, dose = 2-4 IU",
           "status": "partially_verified",
@@ -710,7 +1023,7 @@
           "label": "Cardioversion",
           "display": "50-100 joules; 0.5 J/kg SYNC up to 2 J/kg",
           "algorithm_type": "weight_based_escalation",
-          "formula": "initial_J = weight_kg * 0.5; escalate up to weight_kg * 2",
+          "formula": "initial_J = TBW_kg * 0.5; escalate up to TBW_kg * 2",
           "example": {
             "screen": "50-100 J",
             "weight_rule": "35-140 J"
@@ -727,7 +1040,7 @@
           "label": "Defibrillation",
           "display": "200 joules; 2 J/kg ASYNC up to 4 J/kg",
           "algorithm_type": "weight_based_escalation",
-          "formula": "initial_J = weight_kg * 2; subsequent_J = weight_kg * 4",
+          "formula": "initial_J = TBW_kg * 2; subsequent_J = TBW_kg * 4",
           "example": {
             "screen": "200 J",
             "weight_rule": "140-280 J"
@@ -737,7 +1050,7 @@
             "file:284",
             "web:298"
           ],
-          "notes": "Text rule is standard; fixed displayed joules appear simplified rather than patient-specific."
+          "notes": "Text rule is standard; fixed displayed joules appear simplified."
         },
         {
           "id": "crisis.sono_gastric_vol",
@@ -747,7 +1060,7 @@
           "formula": {
             "CSA_cm2": "pi * AP * CC / 4",
             "volume_ml_adult_clear_fluid": "27 + 14.6 * RLD_CSA - 1.28 * age_years",
-            "volume_ml_per_kg": "volume_ml / weight_kg"
+            "volume_ml_per_kg": "volume_ml / TBW_kg"
           },
           "status": "partially_verified",
           "source_ids": [
@@ -792,7 +1105,7 @@
           "label": "Mannitol 20%",
           "display": "88-175 ml (0.25-0.5 g/kg IV)",
           "algorithm_type": "weight_based_range_with_concentration_conversion",
-          "formula": "dose_g = weight_kg * 0.25 to 0.5; volume_ml = dose_g / 0.2",
+          "formula": "dose_g = TBW_kg * 0.25 to 0.5; volume_ml = dose_g / 0.2",
           "example": "88-175 ml",
           "status": "partially_verified",
           "source_ids": [
@@ -804,7 +1117,7 @@
           "label": "HS 7.5%",
           "display": "140 ml (2 ml/kg IV)",
           "algorithm_type": "weight_based_single",
-          "formula": "volume_ml = weight_kg * 2",
+          "formula": "volume_ml = TBW_kg * 2",
           "example": "140 ml",
           "status": "partially_verified",
           "source_ids": [
@@ -816,7 +1129,7 @@
           "label": "PRBC",
           "display": "280 ml (4 ml/kg); increase Hb 1 g/dL",
           "algorithm_type": "weight_based_single",
-          "formula": "volume_ml = weight_kg * 4",
+          "formula": "volume_ml = TBW_kg * 4",
           "example": "280 ml",
           "status": "partially_verified",
           "source_ids": [
@@ -827,9 +1140,9 @@
         {
           "id": "fluids.plateletpheresis",
           "label": "Plateletpheresis",
-          "display": "350-700 ml (5-10 ml/kg); increase count by 50-100,000",
+          "display": "350-700 ml (5-10 ml/kg); increase count 50-100,000",
           "algorithm_type": "weight_based_range",
-          "formula": "volume_ml = weight_kg * 5 to 10",
+          "formula": "volume_ml = TBW_kg * 5 to 10",
           "example": "350-700 ml",
           "status": "partially_verified",
           "source_ids": [
@@ -842,7 +1155,7 @@
           "label": "Fresh frozen plasma",
           "display": "700-1050 ml (10-15 ml/kg)",
           "algorithm_type": "weight_based_range",
-          "formula": "volume_ml = weight_kg * 10 to 15",
+          "formula": "volume_ml = TBW_kg * 10 to 15",
           "example": "700-1050 ml",
           "status": "validated",
           "source_ids": [
@@ -853,9 +1166,9 @@
         {
           "id": "fluids.cryo",
           "label": "Cryoprecipitate",
-          "display": "7-14 units (1-2 units/10 kg); increase Fib by 60-100 mg/dL",
+          "display": "7-14 units (1-2 units/10 kg); increase Fib 60-100 mg/dL",
           "algorithm_type": "weight_based_units_range",
-          "formula": "units = weight_kg * 1 to 2 / 10",
+          "formula": "units = TBW_kg * 1 to 2 / 10",
           "example": "7-14 units",
           "status": "validated",
           "source_ids": [
@@ -869,7 +1182,7 @@
           "label": "Estimated blood volume",
           "display": "5250 ml (75 ml/kg)",
           "algorithm_type": "weight_based_single",
-          "formula": "EBV_ml = weight_kg * 75",
+          "formula": "EBV_ml = TBW_kg * 75",
           "example": "5250 ml",
           "status": "validated",
           "source_ids": [
@@ -883,7 +1196,7 @@
           "display": "1312 ml; I.HCT 40% - F.HCT 30%",
           "algorithm_type": "derived_blood_loss_formula",
           "formula": "ABL_ml = EBV_ml * (initial_hct - final_hct) / initial_hct",
-          "example": "1312.5 ml from 5250 * (40-30) / 40",
+          "example": "5250 * (40-30) / 40 = 1312.5 ml",
           "status": "validated",
           "source_ids": [
             "file:316",
@@ -900,7 +1213,7 @@
           "label": "Heparin dose",
           "display": "21000 / 28000 U (300-400 U/kg)",
           "algorithm_type": "weight_based_range",
-          "formula": "dose_units = weight_kg * 300 to 400",
+          "formula": "dose_units = TBW_kg * 300 to 400",
           "example": "21000-28000 U",
           "status": "validated",
           "source_ids": [
@@ -935,7 +1248,7 @@
           "label": "Body surface area",
           "display": "1.82 m2 (Mosteller)",
           "algorithm_type": "anthropometric_formula",
-          "formula": "BSA_m2 = sqrt((height_cm * weight_kg) / 3600)",
+          "formula": "BSA_m2 = sqrt((height_cm * TBW_kg) / 3600)",
           "example": "1.82 m2",
           "status": "validated",
           "source_ids": [
@@ -948,8 +1261,8 @@
           "label": "Cardiac index 2.5",
           "display": "4.55 L/min cardiac output",
           "algorithm_type": "derived_hemodynamic_output",
-          "formula": "cardiac_output_L_per_min = cardiac_index * BSA",
-          "example": "4.55 L/min",
+          "formula": "cardiac_output_L_per_min = cardiac_index_L_per_min_per_m2 * BSA_m2",
+          "example": "2.5 * 1.82 = 4.55 L/min",
           "status": "validated",
           "source_ids": [
             "file:316"
@@ -961,8 +1274,8 @@
           "display": "161.7 ml/min/1.73m2; Cockcroft Gault; Cr 0.6 mg/dL",
           "algorithm_type": "cockcroft_gault_plus_bsa_normalization",
           "formula": {
-            "raw_CG_male_ml_per_min": "((140 - age_years) * weight_kg) / (72 * serum_creatinine_mg_per_dL)",
-            "normalized_ml_per_min_per_1_73m2": "raw_CG * 1.73 / BSA"
+            "raw_CG_male_ml_per_min": "((140 - age_years) * TBW_kg) / (72 * serum_creatinine_mg_per_dL)",
+            "normalized_ml_per_min_per_1_73m2": "raw_CG * 1.73 / BSA_m2"
           },
           "example": {
             "raw": "170.1 ml/min",
@@ -974,7 +1287,7 @@
             "file:316",
             "web:332"
           ],
-          "notes": "App is using Cockcroft-Gault first, then BSA-normalizing the result."
+          "notes": "App uses Cockcroft-Gault then BSA-normalizes the result."
         }
       ]
     }
@@ -982,13 +1295,13 @@
   "global_issues": [
     {
       "issue": "Nitroprusside arithmetic mismatch",
-      "detail": "0.2 mcg/kg/min at 200 mcg/ml should yield 4.2 ml/h for a 70 kg patient, but the screen shows 2.1 ml/h.",
+      "detail": "0.2 mcg/kg/min at 200 mcg/ml should yield 4.2 ml/h for 70 kg but screen shows 2.1 ml/h.",
       "source_ids": [
         "file:171"
       ]
     },
     {
-      "issue": "Cardioversion and defibrillation fixed joule displays do not exactly match the visible 70 kg patient when compared against the on-screen weight-based rules.",
+      "issue": "Cardioversion and defibrillation fixed joule displays do not exactly match the 70 kg patient against the on-screen weight-based rules.",
       "source_ids": [
         "file:284",
         "web:286",
@@ -996,16 +1309,22 @@
       ]
     },
     {
-      "issue": "Cockcroft-Gault result is displayed in normalized units (ml/min/1.73 m2), implying a BSA adjustment beyond the base formula.",
+      "issue": "Cockcroft-Gault result is displayed in ml/min/1.73m2, implying BSA normalization beyond the base formula.",
       "source_ids": [
         "file:331",
         "web:332"
       ]
     },
     {
-      "issue": "Delta Hct and Target Hct are unresolved interactive fields with no exposed formula on the screenshots.",
+      "issue": "Delta Hct and Target Hct are unresolved interactive fields with no exposed formula.",
       "source_ids": [
         "file:316"
+      ]
+    },
+    {
+      "issue": "Vital signs section content was above the scroll position in all screenshots; no row data captured.",
+      "source_ids": [
+        "file:28"
       ]
     }
   ]

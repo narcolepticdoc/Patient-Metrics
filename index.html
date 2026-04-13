@@ -534,7 +534,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.5.1.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.5.2.0</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -1238,6 +1238,8 @@ function getDemographics() {
   const age = state.birthYear !== null
               ? new Date().getFullYear() - state.birthYear : null;
   const bmi = kg !== null && cm !== null ? calcBmi(kg, cm) : null;
+  const ibw = cm !== null ? calcIBW(cm) : null;
+  const lbw = kg !== null && cm !== null ? calcLBW(kg, cm) : null;
   return {
     age,
     kg:  kg !== null ? +kg.toFixed(2) : null,
@@ -1247,7 +1249,9 @@ function getDemographics() {
     feet: state.feet,
     inches: state.inches,
     bmi: bmi !== null ? +bmi.toFixed(1) : null,
-    bmiCategory: bmi !== null ? bmiCat(bmi) : null
+    bmiCategory: bmi !== null ? bmiCat(bmi) : null,
+    ibw: ibw !== null ? +ibw.toFixed(1) : null,
+    lbw: lbw !== null ? +lbw.toFixed(1) : null
   };
 }
 
@@ -1285,6 +1289,19 @@ function buildRefPages(d) {
         status: 'validated', references: [
           'WHO Technical Report Series No. 894, 2000',
           'CDC, "About Adult BMI"' ] });
+    }
+    if (d.ibw !== null || d.lbw !== null) {
+      sec('Derived Weights');
+      if (d.ibw !== null)
+        renderRefItem(container, { label: 'IBW (Devine)', value: d.ibw + ' kg',
+          formula: '50 + 2.3 \u00d7 (' + refRound(d.cm / 2.54, 1) + ' in - 60) [male]',
+          notes: 'Ideal Body Weight. Used for tidal volume and NMB dosing.',
+          status: 'validated', references: ['Ideal Body Weight \u2014 StatPearls (NBK535456)'] });
+      if (d.lbw !== null)
+        renderRefItem(container, { label: 'LBW (James)', value: d.lbw + ' kg',
+          formula: '1.1 \u00d7 ' + refRound(d.kg, 1) + ' - 128 \u00d7 (' + refRound(d.kg, 1) + '/' + d.cm + ')\u00b2 [male]',
+          notes: 'Lean Body Weight. Used for induction agent dosing.',
+          status: 'validated', references: ['Lean Body Weight Estimation (James) \u2014 Anaesthesia journal'] });
     }
     if (d.age === null && d.kg === null && d.cm === null) {
       var empty = document.createElement('div');

@@ -10,6 +10,17 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.5.2.0] - 2026-04-13
+
+### Added
+- 5 new clinical sections from deliverable v1.2: Vital Signs, Airway (ETT, LMA, tidal volume), Induction Agents (propofol, ketamine, thiopental, etomidate, midazolam), Neuromuscular Blockers (vecuronium, rocuronium, pancuronium, cisatracurium, atracurium, succinylcholine), Antagonists (neostigmine, sugammadex, naloxone, flumazenil).
+- IBW (Devine formula) and LBW (James formula) derived weight calculations.
+- IBW/LBW-specific dosing: NMBs use IBW, induction agents use LBW, succinylcholine uses TBW.
+- IBW and LBW displayed on Patient Summary page under "Derived Weights" section.
+- 14 new web reference sources for the added sections.
+
+---
+
 ## [1.5.1.0] - 2026-04-13
 
 ### Added

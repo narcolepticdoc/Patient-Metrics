@@ -53,8 +53,35 @@ const WEB_REFS = {
   'web:315': 'Pediatric Fibrinogen Overview — PMC',
   'web:319': 'UI Health Care — Perfusion Calculator',
   'web:322': 'Iowa Protocols — Maximum Allowable Blood Loss',
-  'web:332': 'Cockcroft-Gault Formula — National Kidney Foundation'
+  'web:332': 'Cockcroft-Gault Formula — National Kidney Foundation',
+  'web:nmb1': 'Neuromuscular Blocking Drugs — StatPearls (NBK539829)',
+  'web:nmb2': 'Succinylcholine — StatPearls (NBK499984)',
+  'web:sug1': 'Sugammadex — StatPearls (NBK470351)',
+  'web:neo1': 'Neostigmine — StatPearls (NBK537017)',
+  'web:nal1': 'Naloxone — StatPearls (NBK470193)',
+  'web:flu1': 'Flumazenil — StatPearls (NBK499790)',
+  'web:ibw1': 'Ideal Body Weight — StatPearls (NBK535456)',
+  'web:lbw1': 'Lean Body Weight Estimation (James) — Anaesthesia journal',
+  'web:tv1':  'Lung Protective Ventilation — NEJM (ARDSNet)',
+  'web:lma1': 'Laryngeal Mask Airway — StatPearls (NBK539739)',
+  'web:ind1': 'Propofol — StatPearls (NBK430884)',
+  'web:ind2': 'Ketamine — StatPearls (NBK470357)',
+  'web:ind3': 'Etomidate — StatPearls (NBK482379)',
+  'web:ind4': 'Midazolam — StatPearls (NBK537321)'
 };
+
+// ── Weight type helpers ──
+// IBW: Devine formula — 50 + 2.3 × (height_in - 60) [male]
+// Source: StatPearls NBK535456
+function calcIBW(heightCm) {
+  var heightIn = heightCm / 2.54;
+  return 50 + 2.3 * (heightIn - 60);
+}
+// LBW: James formula (male) — 1.1 × TBW - 128 × (TBW/height_cm)²
+// Source: Anaesthesia journal, doi:10.1111/j.1365-2044.2009.06063.x
+function calcLBW(kg, heightCm) {
+  return 1.1 * kg - 128 * Math.pow(kg / heightCm, 2);
+}
 
 // ── Rounding helper ──
 function refRound(v, decimals) {
@@ -167,6 +194,50 @@ function computeRef(item, d) {
     case 'sono': {
       return { value: 'Requires US input', formula: 'Vol = 27 + 14.6 \u00d7 RLD_CSA - 1.28 \u00d7 age' };
     }
+    case 'ws_ibw': { // weight single using IBW
+      if (d.cm === null) return { value: '\u2014', formula: 'Enter height for IBW' };
+      var ibw = calcIBW(d.cm);
+      var v = refRound(ibw * p.f);
+      return { value: v + ' ' + p.u,
+        formula: 'IBW ' + refRound(ibw, 1) + ' kg \u00d7 ' + p.f + ' ' + p.ru + ' [Devine]' };
+    }
+    case 'wr_ibw': { // weight range using IBW
+      if (d.cm === null) return { value: '\u2014', formula: 'Enter height for IBW' };
+      var ibw = calcIBW(d.cm);
+      var lo = refRound(ibw * p.lo), hi = refRound(ibw * p.hi);
+      return { value: lo + '-' + hi + ' ' + p.u,
+        formula: 'IBW ' + refRound(ibw, 1) + ' kg \u00d7 (' + p.lo + ' to ' + p.hi + ') ' + p.ru + ' [Devine]' };
+    }
+    case 'wr_lbw': { // weight range using LBW
+      if (d.cm === null) return { value: '\u2014', formula: 'Enter height for LBW' };
+      var lbw = calcLBW(kg, d.cm);
+      var lo = refRound(lbw * p.lo), hi = refRound(lbw * p.hi);
+      return { value: lo + '-' + hi + ' ' + p.u,
+        formula: 'LBW ' + refRound(lbw, 1) + ' kg \u00d7 (' + p.lo + ' to ' + p.hi + ') ' + p.ru + ' [James]' };
+    }
+    case 'ett': { // ETT tube size from height
+      if (d.cm === null) return { value: '\u2014', formula: 'Enter height' };
+      var size = refRound(d.cm / 10 - 9, 1);
+      return { value: size + ' mm; insertion ' + p.ins,
+        formula: d.cm + ' cm / 10 - 9 = ' + size + ' mm' };
+    }
+    case 'lma': { // LMA size lookup
+      var size, cuff;
+      if (kg < 5) { size = 1; cuff = 4; }
+      else if (kg < 10) { size = 1.5; cuff = 7; }
+      else if (kg < 20) { size = 2; cuff = 10; }
+      else if (kg < 30) { size = 2.5; cuff = 14; }
+      else if (kg < 50) { size = 3; cuff = 20; }
+      else if (kg < 70) { size = 4; cuff = 30; }
+      else { size = 5; cuff = 40; }
+      return { value: 'Size ' + size + '; cuff ' + cuff + ' ml',
+        formula: 'Weight-based lookup: ' + kg + ' kg \u2192 size ' + size };
+    }
+    case 'titration': { // titration with cap
+      var lo = refRound(kg * p.lo / 1000, 2), hi = refRound(kg * p.hi / 1000, 1);
+      return { value: lo + '-' + hi + ' mg per bolus; max ' + p.cap + ' mg',
+        formula: kg + ' kg \u00d7 (' + p.lo + '-' + p.hi + ') mcg/kg = ' + refRound(kg * p.lo) + '-' + refRound(kg * p.hi) + ' mcg' };
+    }
     default:
       return { value: '\u2014', formula: null };
   }
@@ -177,6 +248,77 @@ function computeRef(item, d) {
 // Each item: { label, calc, params, status, src[], notes? }
 // ═══════════════════════════════════════════════════
 const REF_SECTIONS = [
+  {
+    title: 'Vital Signs',
+    items: [
+      { label: 'Vital signs', calc: 'pa', params: { v: 'Content not visible in screenshots' },
+        status: 'unresolved', src: [], notes: 'Section header visible but all row content was above the scroll position.' }
+    ]
+  },
+  {
+    title: 'Airway',
+    items: [
+      { label: 'Cuffed ET tube', calc: 'ett', params: { ins: '20-22 cm' },
+        status: 'partially_verified', src: [],
+        notes: 'Height-based formula. Insertion distance may be a fixed male default.' },
+      { label: 'LMA size', calc: 'lma', params: {},
+        status: 'partially_verified', src: ['web:lma1'],
+        notes: 'Weight-range lookup. Cuff volume is manufacturer-specified per size.' },
+      { label: 'Tidal volume', calc: 'wr_ibw', params: { lo: 6, hi: 8, u: 'ml', ru: 'ml/kg IBW' },
+        status: 'validated', src: ['web:tv1'],
+        notes: 'Lung-protective ventilation targets 6 ml/kg IBW; range 6-8 matches ARDSNet guidance.' }
+    ]
+  },
+  {
+    title: 'Induction Agents',
+    items: [
+      { label: 'Propofol', calc: 'wr_lbw', params: { lo: 2, hi: 3, u: 'mg', ru: 'mg/kg LBW' },
+        status: 'validated', src: ['web:ind1'], notes: 'Uses James lean body weight.' },
+      { label: 'Ketamine', calc: 'wr_lbw', params: { lo: 1, hi: 2, u: 'mg', ru: 'mg/kg LBW' },
+        status: 'validated', src: ['web:ind2'], notes: null },
+      { label: 'Thiopental', calc: 'wr_lbw', params: { lo: 5, hi: 7, u: 'mg', ru: 'mg/kg LBW' },
+        status: 'validated', src: [], notes: null },
+      { label: 'Etomidate', calc: 'wr_lbw', params: { lo: 0.2, hi: 0.3, u: 'mg', ru: 'mg/kg LBW' },
+        status: 'validated', src: ['web:ind3'], notes: null },
+      { label: 'Midazolam', calc: 'wr_lbw', params: { lo: 0.15, hi: 0.35, u: 'mg', ru: 'mg/kg LBW' },
+        status: 'validated', src: ['web:ind4'],
+        notes: 'Wide range: higher end for sedation/induction, lower for premedication.' }
+    ]
+  },
+  {
+    title: 'Neuromuscular Blockers',
+    items: [
+      { label: 'Vecuronium', calc: 'ws_ibw', params: { f: 0.1, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
+        status: 'validated', src: ['web:nmb1'], notes: null },
+      { label: 'Rocuronium', calc: 'ws_ibw', params: { f: 0.6, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
+        status: 'validated', src: ['web:nmb1'], notes: null },
+      { label: 'Pancuronium', calc: 'ws_ibw', params: { f: 0.14, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
+        status: 'validated', src: ['web:nmb1'], notes: null },
+      { label: 'Cisatracurium', calc: 'ws_ibw', params: { f: 0.1, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
+        status: 'validated', src: ['web:nmb1'], notes: null },
+      { label: 'Atracurium', calc: 'ws_ibw', params: { f: 0.46, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
+        status: 'validated', src: ['web:nmb1'], notes: null },
+      { label: 'Succinylcholine', calc: 'ws', params: { f: 1, u: 'mg', ru: 'mg/kg TBW (2 ED95)' },
+        status: 'validated', src: ['web:nmb2'],
+        notes: 'Uses total body weight (TBW), not IBW. Only NMB in this section dosed on TBW.' }
+    ]
+  },
+  {
+    title: 'Antagonists',
+    items: [
+      { label: 'Neostigmine', calc: 'wr', params: { lo: 0.04, hi: 0.07, u: 'mg', ru: 'mg/kg TBW' },
+        status: 'validated', src: ['web:neo1'], notes: 'Neuromuscular reversal. Uses TBW.' },
+      { label: 'Sugammadex', calc: 'ws', params: { f: 2, u: 'mg', ru: 'mg/kg TBW; TOF 1-3' },
+        status: 'validated', src: ['web:sug1'],
+        notes: 'TOF 1-3 indication. Standard 4 mg/kg dose for deep block not shown on this screen.' },
+      { label: 'Naloxone', calc: 'titration', params: { lo: 10, hi: 100, cap: 10 },
+        status: 'validated', src: ['web:nal1'],
+        notes: 'Typical titration band 0.1-2.0 mg; weight formula anchors per-bolus dosing.' },
+      { label: 'Flumazenil', calc: 'fd', params: { v: '0.2 mg initial; titrate 0.7 mg/bolus; max 1 mg', f: 'Initial 0.2 mg then 10 mcg/kg per titration' },
+        status: 'validated', src: ['web:flu1'],
+        notes: '0.2 mg is standard initial reversal dose regardless of weight.' }
+    ]
+  },
   {
     title: 'Anticholinergics',
     items: [

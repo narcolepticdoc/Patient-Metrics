@@ -10,6 +10,32 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.5.3.0] - 2026-04-13
+
+### Added
+- Sex (M/F) toggle in the Age card for sex-specific derived weight formulas.
+- Sex persisted with other settings when "Remember values" is enabled.
+
+### Changed
+- IBW (Devine): now uses 45.5 base for female, 50 for male.
+- LBW (James): now uses female coefficients (1.07, 148) vs male (1.1, 128).
+- Cockcroft-Gault CrCl: applies 0.85 multiplier for female patients.
+- Patient Summary shows sex-specific formula text for IBW and LBW.
+- All IBW/LBW-dependent drug doses (NMBs, induction agents, tidal volume) update when sex is toggled.
+
+---
+
+## [1.5.2.0] - 2026-04-13
+
+### Added
+- 5 new clinical sections from deliverable v1.2: Vital Signs, Airway (ETT, LMA, tidal volume), Induction Agents (propofol, ketamine, thiopental, etomidate, midazolam), Neuromuscular Blockers (vecuronium, rocuronium, pancuronium, cisatracurium, atracurium, succinylcholine), Antagonists (neostigmine, sugammadex, naloxone, flumazenil).
+- IBW (Devine formula) and LBW (James formula) derived weight calculations.
+- IBW/LBW-specific dosing: NMBs use IBW, induction agents use LBW, succinylcholine uses TBW.
+- IBW and LBW displayed on Patient Summary page under "Derived Weights" section.
+- 14 new web reference sources for the added sections.
+
+---
+
 ## [1.5.1.0] - 2026-04-13
 
 ### Added

@@ -121,3 +121,29 @@ The following sources were used to verify the clinical data in `ref-data.js`. Ea
 - **UI Health Care — Perfusion Calculator**: healthcare.uiowa.edu.
 - **Iowa Protocols — Maximum Allowable Blood Loss**: iowaprotocols.medicine.uiowa.edu.
 - **Cockcroft-Gault Formula — National Kidney Foundation**: kidney.org.
+
+### Airway
+- **Laryngeal Mask Airway — StatPearls**: NBK539739. NCBI Bookshelf.
+
+### Ventilation
+- **Lung Protective Ventilation (ARDSNet) — NEJM**: N Engl J Med 2000;342:1301-1308.
+
+### Induction Agents
+- **Propofol — StatPearls**: NBK430884. NCBI Bookshelf.
+- **Ketamine — StatPearls**: NBK470357. NCBI Bookshelf.
+- **Etomidate — StatPearls**: NBK482379. NCBI Bookshelf.
+- **Midazolam — StatPearls**: NBK537321. NCBI Bookshelf.
+
+### Neuromuscular Blockers
+- **Neuromuscular Blocking Drugs — StatPearls**: NBK539829. NCBI Bookshelf.
+- **Succinylcholine — StatPearls**: NBK499984. NCBI Bookshelf.
+
+### Antagonists
+- **Neostigmine — StatPearls**: NBK537017. NCBI Bookshelf.
+- **Sugammadex — StatPearls**: NBK470351. NCBI Bookshelf.
+- **Naloxone — StatPearls**: NBK470193. NCBI Bookshelf.
+- **Flumazenil — StatPearls**: NBK499790. NCBI Bookshelf.
+
+### Weight Formulas
+- **Ideal Body Weight (Devine) — StatPearls**: NBK535456. NCBI Bookshelf.
+- **Lean Body Weight (James formula) — Anaesthesia**: doi:10.1111/j.1365-2044.2009.06063.x.

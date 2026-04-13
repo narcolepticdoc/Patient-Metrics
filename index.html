@@ -505,6 +505,18 @@
       padding: 3px 0; line-height: 1.4;
     }
 
+    /* ── Sex toggle ── */
+    .sex-toggle {
+      display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+    }
+    .sex-btn {
+      flex: 1; padding: 6px 0; border: none; background: var(--surface);
+      font-family: var(--mono); font-size: 14px; font-weight: 500;
+      color: var(--dim); cursor: pointer; transition: background .15s, color .15s;
+      text-align: center;
+    }
+    .sex-btn.active { background: var(--accent); color: var(--bg); }
+
     /* ── Status indicators ── */
     .ref-status-dot {
       display: inline-block; width: 6px; height: 6px; border-radius: 50%;
@@ -534,7 +546,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.5.1.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.5.3.0</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -597,6 +609,13 @@
     <div class="card card-narrow">
       <div class="card-header">Age</div>
       <div class="card-body">
+        <div class="field">
+          <label>Sex</label>
+          <div class="sex-toggle" id="sexToggle">
+            <button class="sex-btn active" data-sex="M">M</button>
+            <button class="sex-btn" data-sex="F">F</button>
+          </div>
+        </div>
         <div class="field">
           <label>Birth Year</label>
           <div id="htBirthYearWrap"></div>
@@ -689,6 +708,7 @@
 // ═══════════════════════════════════════════════════
 const state = {
   inputMode: 'wheel',
+  sex:       'M',
   lbs:       null,
   feet:      null,
   inches:    null,
@@ -706,7 +726,7 @@ const $ = id => document.getElementById(id);
 // ═══════════════════════════════════════════════════
 const LS_PERSIST_ENABLED = 'pm_persist_enabled';
 const LS_SAVED_STATE     = 'pm_saved_state';
-const PERSIST_KEYS = ['lbs','feet','inches','birthYear','factor','inputMode','wtInertia'];
+const PERSIST_KEYS = ['lbs','feet','inches','birthYear','sex','factor','inputMode','wtInertia'];
 let persistEnabled = false;
 
 function savePersistedState() {
@@ -1202,6 +1222,20 @@ $('persistToggle').addEventListener('click', e => {
   } catch {}
 });
 
+// Sex toggle
+document.querySelectorAll('#sexToggle .sex-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.sex = btn.dataset.sex;
+    syncSexUi();
+    recalc();
+  });
+});
+function syncSexUi() {
+  document.querySelectorAll('#sexToggle .sex-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.sex === state.sex);
+  });
+}
+
 // Sync mode-opt active state to state.inputMode (used after loading persisted state)
 function syncModeUi() {
   document.querySelectorAll('.mode-opt').forEach(o => {
@@ -1238,8 +1272,11 @@ function getDemographics() {
   const age = state.birthYear !== null
               ? new Date().getFullYear() - state.birthYear : null;
   const bmi = kg !== null && cm !== null ? calcBmi(kg, cm) : null;
+  const sex = state.sex || 'M';
+  const ibw = cm !== null ? calcIBW(cm, sex) : null;
+  const lbw = kg !== null && cm !== null ? calcLBW(kg, cm, sex) : null;
   return {
-    age,
+    age, sex,
     kg:  kg !== null ? +kg.toFixed(2) : null,
     lbs: state.lbs,
     cm:  cm !== null ? +cm.toFixed(1) : null,
@@ -1247,7 +1284,9 @@ function getDemographics() {
     feet: state.feet,
     inches: state.inches,
     bmi: bmi !== null ? +bmi.toFixed(1) : null,
-    bmiCategory: bmi !== null ? bmiCat(bmi) : null
+    bmiCategory: bmi !== null ? bmiCat(bmi) : null,
+    ibw: ibw !== null ? +ibw.toFixed(1) : null,
+    lbw: lbw !== null ? +lbw.toFixed(1) : null
   };
 }
 
@@ -1285,6 +1324,24 @@ function buildRefPages(d) {
         status: 'validated', references: [
           'WHO Technical Report Series No. 894, 2000',
           'CDC, "About Adult BMI"' ] });
+    }
+    if (d.ibw !== null || d.lbw !== null) {
+      sec('Derived Weights');
+      if (d.ibw !== null) {
+        var ibwBase = d.sex === 'F' ? '45.5' : '50';
+        renderRefItem(container, { label: 'IBW (Devine)', value: d.ibw + ' kg',
+          formula: ibwBase + ' + 2.3 \u00d7 (' + refRound(d.cm / 2.54, 1) + ' in - 60) [' + d.sex + ']',
+          notes: 'Ideal Body Weight. Used for tidal volume and NMB dosing.',
+          status: 'validated', references: ['Ideal Body Weight \u2014 StatPearls (NBK535456)'] });
+      }
+      if (d.lbw !== null) {
+        var lbwA = d.sex === 'F' ? '1.07' : '1.1';
+        var lbwB = d.sex === 'F' ? '148' : '128';
+        renderRefItem(container, { label: 'LBW (James)', value: d.lbw + ' kg',
+          formula: lbwA + ' \u00d7 ' + refRound(d.kg, 1) + ' - ' + lbwB + ' \u00d7 (' + refRound(d.kg, 1) + '/' + d.cm + ')\u00b2 [' + d.sex + ']',
+          notes: 'Lean Body Weight. Used for induction agent dosing.',
+          status: 'validated', references: ['Lean Body Weight Estimation (James) \u2014 Anaesthesia journal'] });
+      }
     }
     if (d.age === null && d.kg === null && d.cm === null) {
       var empty = document.createElement('div');
@@ -1519,6 +1576,7 @@ $('refCloseBtn').addEventListener('click', closeRefPanel);
 // ═══════════════════════════════════════════════════
 loadPersistedState();
 updatePersistUi();
+syncSexUi();
 syncModeUi();
 syncFactorSlider();
 syncInertiaSlider();

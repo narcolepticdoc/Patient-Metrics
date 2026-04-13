@@ -504,6 +504,31 @@
       font-family: var(--sans); font-size: 12px; color: var(--muted);
       padding: 3px 0; line-height: 1.4;
     }
+
+    /* ── Status indicators ── */
+    .ref-status-dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      margin-right: 6px; flex-shrink: 0; vertical-align: middle;
+    }
+    .ref-status-dot.validated { background: #2ecc71; }
+    .ref-status-dot.partially_verified { background: var(--warn); }
+    .ref-status-dot.screen_confirmed { background: #e67e22; }
+    .ref-status-dot.issue { background: #e74c3c; }
+    .ref-status-dot.unresolved { background: var(--dim); }
+
+    .ref-list-item.status-issue { opacity: .6; }
+    .ref-list-item.status-unresolved .ref-item-value { color: var(--dim); }
+
+    .ref-detail-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 4px; margin-bottom: 12px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .04em;
+    }
+    .ref-detail-status.validated { background: rgba(46,204,113,.12); color: #2ecc71; }
+    .ref-detail-status.partially_verified { background: rgba(244,162,97,.12); color: var(--warn); }
+    .ref-detail-status.screen_confirmed { background: rgba(230,126,34,.12); color: #e67e22; }
+    .ref-detail-status.issue { background: rgba(231,76,60,.15); color: #e74c3c; }
+    .ref-detail-status.unresolved { background: rgba(58,86,110,.2); color: var(--dim); }
   </style>
 </head>
 <body>
@@ -1214,10 +1239,10 @@ function getDemographics() {
   const bmi = kg !== null && cm !== null ? calcBmi(kg, cm) : null;
   return {
     age,
-    kg:  kg !== null ? +kg.toFixed(1) : null,
+    kg:  kg !== null ? +kg.toFixed(2) : null,
     lbs: state.lbs,
     cm:  cm !== null ? +cm.toFixed(1) : null,
-    m:   m  !== null ? +m.toFixed(2)  : null,
+    m:   m  !== null ? +m.toFixed(4)  : null,
     feet: state.feet,
     inches: state.inches,
     bmi: bmi !== null ? +bmi.toFixed(1) : null,

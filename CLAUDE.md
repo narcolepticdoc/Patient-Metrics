@@ -53,6 +53,7 @@ Version must be updated in **three** places before any push:
 | File                 | Purpose                                |
 |----------------------|----------------------------------------|
 | `index.html`         | Entire app (HTML + CSS + JS inline)    |
+| `ref-data.js`        | Clinical reference data & computation  |
 | `sw.js`              | Service worker for offline/caching     |
 | `manifest.json`      | PWA manifest                           |
 | `vercel.json`        | Vercel deployment config               |

@@ -1,10 +1,11 @@
-const CACHE = 'patient-metrics-v1.5.0.0';
+const CACHE = 'patient-metrics-v1.5.1.0';
 
 const STATIC_ASSETS = [
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
-  './apple-touch-icon.png'
+  './apple-touch-icon.png',
+  './ref-data.js'
 ];
 
 // ── Install: pre-cache static assets, activate immediately ──

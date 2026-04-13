@@ -504,12 +504,37 @@
       font-family: var(--sans); font-size: 12px; color: var(--muted);
       padding: 3px 0; line-height: 1.4;
     }
+
+    /* ── Status indicators ── */
+    .ref-status-dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      margin-right: 6px; flex-shrink: 0; vertical-align: middle;
+    }
+    .ref-status-dot.validated { background: #2ecc71; }
+    .ref-status-dot.partially_verified { background: var(--warn); }
+    .ref-status-dot.screen_confirmed { background: #e67e22; }
+    .ref-status-dot.issue { background: #e74c3c; }
+    .ref-status-dot.unresolved { background: var(--dim); }
+
+    .ref-list-item.status-issue { opacity: .6; }
+    .ref-list-item.status-unresolved .ref-item-value { color: var(--dim); }
+
+    .ref-detail-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 4px; margin-bottom: 12px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .04em;
+    }
+    .ref-detail-status.validated { background: rgba(46,204,113,.12); color: #2ecc71; }
+    .ref-detail-status.partially_verified { background: rgba(244,162,97,.12); color: var(--warn); }
+    .ref-detail-status.screen_confirmed { background: rgba(230,126,34,.12); color: #e67e22; }
+    .ref-detail-status.issue { background: rgba(231,76,60,.15); color: #e74c3c; }
+    .ref-detail-status.unresolved { background: rgba(58,86,110,.2); color: var(--dim); }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.5.0.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.5.1.0</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -657,6 +682,7 @@
   <div class="ref-detail-card" id="refDetailCard"></div>
 </div>
 
+<script src="ref-data.js"></script>
 <script>
 // ═══════════════════════════════════════════════════
 // STATE
@@ -1214,10 +1240,10 @@ function getDemographics() {
   const bmi = kg !== null && cm !== null ? calcBmi(kg, cm) : null;
   return {
     age,
-    kg:  kg !== null ? +kg.toFixed(1) : null,
+    kg:  kg !== null ? +kg.toFixed(2) : null,
     lbs: state.lbs,
     cm:  cm !== null ? +cm.toFixed(1) : null,
-    m:   m  !== null ? +m.toFixed(2)  : null,
+    m:   m  !== null ? +m.toFixed(4)  : null,
     feet: state.feet,
     inches: state.inches,
     bmi: bmi !== null ? +bmi.toFixed(1) : null,
@@ -1225,97 +1251,95 @@ function getDemographics() {
   };
 }
 
-// ── Page registry ──
-// Each page: { id, title, render(container, demographics) }
-// render() should build list items using renderRefItem()
-const REF_PAGES = [
-  {
-    id: 'demographics',
-    title: 'Patient Summary',
-    render(container, d) {
-      const sec = (label) => {
-        const h = document.createElement('div');
-        h.className = 'ref-section-hdr';
-        h.textContent = label;
-        container.appendChild(h);
-      };
-      sec('Measurements');
-      if (d.age !== null)
-        renderRefItem(container, {
-          label: 'Age', value: d.age + ' yr',
-          formula: 'Current year \u2212 birth year',
-          notes: 'Estimated from birth year. Actual birthday not captured.',
-          references: []
-        });
-      if (d.kg !== null)
-        renderRefItem(container, {
-          label: 'Weight', value: d.kg + ' kg',
-          formula: d.lbs + ' lb \u00d7 0.45359237',
-          notes: 'Exact conversion per International Yard and Pound Agreement (1959).',
-          references: ['NIST SP 811, 2008 Edition, Table 7']
-        });
-      if (d.cm !== null)
-        renderRefItem(container, {
-          label: 'Height', value: d.cm + ' cm (' + d.m + ' m)',
-          formula: '(' + d.feet + ' ft \u00d7 12 + ' + d.inches + ' in) \u00d7 2.54',
-          notes: 'Exact conversion per International Yard and Pound Agreement (1959).',
-          references: ['NIST SP 811, 2008 Edition, Table 6']
-        });
-      if (d.bmi !== null) {
-        sec('Body Composition');
-        renderRefItem(container, {
-          label: 'BMI', value: d.bmi + ' (' + d.bmiCategory + ')',
-          formula: d.kg + ' kg \u00f7 (' + d.m + ' m)\u00b2',
-          notes: 'Body Mass Index. Screening tool only \u2014 does not account for muscle mass, bone density, age, sex, or ethnicity.',
-          references: [
-            'WHO Technical Report Series No. 894, "Obesity: preventing and managing the global epidemic," 2000',
-            'CDC, "About Adult BMI"'
-          ]
-        });
-      }
-      if (d.age === null && d.kg === null && d.cm === null) {
-        const empty = document.createElement('div');
-        empty.className = 'ref-empty';
-        empty.innerHTML = '<div class="ref-empty-icon">\u2195</div>Enter patient data above<br>to see calculated values';
-        container.appendChild(empty);
-      }
+// ── Page registry (generated from REF_SECTIONS in ref-data.js) ──
+function buildRefPages(d) {
+  var pages = [];
+  // Patient Summary page
+  pages.push({ id: 'demographics', title: 'Patient Summary', render: function(container) {
+    var sec = function(label) {
+      var h = document.createElement('div');
+      h.className = 'ref-section-hdr'; h.textContent = label;
+      container.appendChild(h);
+    };
+    sec('Measurements');
+    if (d.age !== null)
+      renderRefItem(container, { label: 'Age', value: d.age + ' yr',
+        formula: 'Current year \u2212 birth year',
+        notes: 'Estimated from birth year. Actual birthday not captured.',
+        status: 'validated', references: [] });
+    if (d.kg !== null)
+      renderRefItem(container, { label: 'Weight', value: refRound(d.kg, 1) + ' kg',
+        formula: d.lbs + ' lb \u00d7 0.45359237',
+        notes: 'Exact conversion per International Yard and Pound Agreement (1959).',
+        status: 'validated', references: ['NIST SP 811, 2008 Edition, Table 7'] });
+    if (d.cm !== null)
+      renderRefItem(container, { label: 'Height', value: d.cm + ' cm (' + d.m + ' m)',
+        formula: '(' + d.feet + ' ft \u00d7 12 + ' + d.inches + ' in) \u00d7 2.54',
+        notes: 'Exact conversion per International Yard and Pound Agreement (1959).',
+        status: 'validated', references: ['NIST SP 811, 2008 Edition, Table 6'] });
+    if (d.bmi !== null) {
+      sec('Body Composition');
+      renderRefItem(container, { label: 'BMI', value: d.bmi + ' (' + d.bmiCategory + ')',
+        formula: refRound(d.kg, 1) + ' kg \u00f7 (' + d.m + ' m)\u00b2',
+        notes: 'Screening tool only \u2014 does not account for muscle mass, bone density, age, sex, or ethnicity.',
+        status: 'validated', references: [
+          'WHO Technical Report Series No. 894, 2000',
+          'CDC, "About Adult BMI"' ] });
     }
-  },
-  {
-    id: 'placeholder-clinical',
-    title: 'Clinical References',
-    render(container) {
-      const empty = document.createElement('div');
+    if (d.age === null && d.kg === null && d.cm === null) {
+      var empty = document.createElement('div');
       empty.className = 'ref-empty';
-      empty.innerHTML = '<div class="ref-empty-icon">\u2692</div>Clinical reference data<br>will be added here<br><br><span style="font-size:11px;color:var(--muted)">Awaiting verified source data</span>';
+      empty.innerHTML = '<div class="ref-empty-icon">\u2195</div>Enter patient data above<br>to see calculated values';
       container.appendChild(empty);
     }
-  }
-];
+  }});
+  // Clinical sections from ref-data.js
+  REF_SECTIONS.forEach(function(section) {
+    pages.push({ id: section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      title: section.title,
+      render: function(container) {
+        section.items.forEach(function(item) {
+          var result = computeRef(item, d);
+          var refs = (item.src || []).map(function(k) { return WEB_REFS[k] || k; });
+          renderRefItem(container, {
+            label: item.label, value: result.value, formula: result.formula,
+            notes: item.notes, status: item.status, references: refs
+          });
+        });
+      }
+    });
+  });
+  return pages;
+}
+var REF_PAGES = [];
 
 // ── Render a single tappable list item ──
 function renderRefItem(container, item) {
-  const row = document.createElement('div');
-  row.className = 'ref-list-item';
+  var row = document.createElement('div');
+  var st = item.status || 'validated';
+  row.className = 'ref-list-item' + (st === 'issue' ? ' status-issue' : '') + (st === 'unresolved' ? ' status-unresolved' : '');
+  var dot = st !== 'validated' ? '<span class="ref-status-dot ' + st + '"></span>' : '';
   row.innerHTML =
-    '<span class="ref-item-label">' + item.label + '</span>' +
+    '<span class="ref-item-label">' + dot + item.label + '</span>' +
     '<span style="display:flex;align-items:center">' +
       '<span class="ref-item-value">' + item.value + '</span>' +
       '<span class="ref-item-chevron">\u203a</span>' +
     '</span>';
-  row.addEventListener('click', () => showItemDetail(item));
+  row.addEventListener('click', function() { showItemDetail(item); });
   container.appendChild(row);
 }
 
 // ── Detail popup ──
 function showItemDetail(item) {
-  const card = $('refDetailCard');
-  let html = '<div class="ref-detail-header">' +
+  var card = $('refDetailCard');
+  var st = item.status || 'validated';
+  var stLabel = (typeof STATUS_LABELS !== 'undefined' && STATUS_LABELS[st]) || st;
+  var html = '<div class="ref-detail-header">' +
     '<span class="ref-detail-title">' + item.label + '</span>' +
     '<button class="ref-detail-close" id="refDetailCloseBtn">\u00d7</button>' +
     '</div><div class="ref-detail-body">' +
+    '<div class="ref-detail-status ' + st + '"><span class="ref-status-dot ' + st + '"></span>' + stLabel + '</div>' +
     '<div class="ref-detail-val">' + item.value + '</div>';
-
   if (item.formula) {
     html += '<div class="ref-detail-section">' +
       '<div class="ref-detail-section-label">Calculation</div>' +
@@ -1329,7 +1353,7 @@ function showItemDetail(item) {
   if (item.references && item.references.length) {
     html += '<div class="ref-detail-section">' +
       '<div class="ref-detail-section-label">References</div>';
-    item.references.forEach(r => {
+    item.references.forEach(function(r) {
       html += '<div class="ref-detail-ref-item">' + r + '</div>';
     });
     html += '</div>';
@@ -1350,7 +1374,7 @@ $('refDetailBackdrop').addEventListener('click', e => {
 // ── Reference panel init ──
 let refCurrentPage = 0;
 
-function buildRefPages() {
+function renderRefPagesDOM() {
   const track = $('refTrack');
   const dots  = $('refDots');
   const nav   = $('refNavDropdown');
@@ -1358,14 +1382,12 @@ function buildRefPages() {
   dots.innerHTML  = '';
   nav.innerHTML   = '';
 
-  const d = getDemographics();
-
   REF_PAGES.forEach((pg, i) => {
     // Page container
     const page = document.createElement('div');
     page.className = 'ref-page';
     page.dataset.pageIdx = i;
-    pg.render(page, d);
+    pg.render(page);
     track.appendChild(page);
 
     // Dot
@@ -1421,7 +1443,8 @@ $('refTitleBtn').addEventListener('click', () => toggleNavDropdown());
 
 // ── Open / close overlay ──
 function openRefPanel() {
-  buildRefPages();
+  REF_PAGES = buildRefPages(getDemographics());
+  renderRefPagesDOM();
   navigateToPage(refCurrentPage);
   $('refPanel').classList.add('open');
 }

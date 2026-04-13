@@ -50,7 +50,7 @@
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 8px 16px;
+      padding: 6px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -71,7 +71,7 @@
 
     /* ── Main ── */
     main {
-      flex: 1; padding: 10px 12px 16px;
+      flex: 1; padding: 8px 12px 12px;
       max-width: 520px; width: 100%; margin: 0 auto;
       display: flex; flex-direction: column; gap: 8px;
     }
@@ -88,11 +88,11 @@
     /* ── Card ── */
     .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
     .card-header {
-      background: var(--surface); padding: 8px 14px;
+      background: var(--surface); padding: 6px 14px;
       font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
       text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);
     }
-    .card-body { padding: 8px 12px; display: flex; flex-direction: column; gap: 8px; }
+    .card-body { padding: 6px 12px; display: flex; flex-direction: column; gap: 6px; }
 
     /* ── Field helpers ── */
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: end; }
@@ -507,13 +507,13 @@
 
     /* ── Sex toggle ── */
     .sex-toggle {
-      display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+      display: flex; gap: 0; border: 1px solid var(--border); border-radius: 3px; overflow: hidden;
     }
     .sex-btn {
-      flex: 1; padding: 6px 0; border: none; background: var(--surface);
-      font-family: var(--mono); font-size: 14px; font-weight: 500;
+      padding: 2px 8px; border: none; background: transparent;
+      font-family: var(--mono); font-size: 10px; font-weight: 500;
       color: var(--dim); cursor: pointer; transition: background .15s, color .15s;
-      text-align: center;
+      line-height: 1.4;
     }
     .sex-btn.active { background: var(--accent); color: var(--bg); }
 
@@ -546,7 +546,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.5.3.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.5.3.1</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -607,15 +607,14 @@
 
     <!-- Age card -->
     <div class="card card-narrow">
-      <div class="card-header">Age</div>
-      <div class="card-body">
-        <div class="field">
-          <label>Sex</label>
-          <div class="sex-toggle" id="sexToggle">
-            <button class="sex-btn active" data-sex="M">M</button>
-            <button class="sex-btn" data-sex="F">F</button>
-          </div>
+      <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        Age
+        <div class="sex-toggle" id="sexToggle">
+          <button class="sex-btn active" data-sex="M">M</button>
+          <button class="sex-btn" data-sex="F">F</button>
         </div>
+      </div>
+      <div class="card-body">
         <div class="field">
           <label>Birth Year</label>
           <div id="htBirthYearWrap"></div>

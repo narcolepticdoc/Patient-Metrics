@@ -1,0 +1,267 @@
+{
+  "file:108": {
+    "type": "file",
+    "filename": "IMG_2111.jpeg",
+    "description": "Earlier screenshot referenced for repeated anticholinergic rows."
+  },
+  "file:124": {
+    "type": "file",
+    "filename": "IMG_2112.jpeg",
+    "description": "Local anesthetics, intralipid, fentanyl."
+  },
+  "file:140": {
+    "type": "file",
+    "filename": "IMG_2113.jpeg",
+    "description": "Analgesics continuation."
+  },
+  "file:156": {
+    "type": "file",
+    "filename": "IMG_2114.jpeg",
+    "description": "Analgesics completion and early vasopressors."
+  },
+  "file:171": {
+    "type": "file",
+    "filename": "IMG_2115.jpeg",
+    "description": "Nitroprusside, labetalol, antiarrhythmics."
+  },
+  "file:187": {
+    "type": "file",
+    "filename": "IMG_2116.jpeg",
+    "description": "Hyperkalemia section."
+  },
+  "file:215": {
+    "type": "file",
+    "filename": "IMG_2117.jpeg",
+    "description": "Severe hypokalemia and malignant hyperthermia."
+  },
+  "file:231": {
+    "type": "file",
+    "filename": "IMG_2118.jpeg",
+    "description": "Malignant hyperthermia associated conditions and contraindications."
+  },
+  "file:244": {
+    "type": "file",
+    "filename": "IMG_2119.jpeg",
+    "description": "MH dantrolene continuation and anesthetic crisis entries."
+  },
+  "file:268": {
+    "type": "file",
+    "filename": "IMG_2120.jpeg",
+    "description": "Anesthetic crisis dextrose and insulin rows."
+  },
+  "file:284": {
+    "type": "file",
+    "filename": "IMG_2121.jpeg",
+    "description": "Cardioversion, defibrillation, gastric ultrasound, fluids."
+  },
+  "file:300": {
+    "type": "file",
+    "filename": "IMG_2122.jpeg",
+    "description": "Blood products section."
+  },
+  "file:316": {
+    "type": "file",
+    "filename": "IMG_2123.jpeg",
+    "description": "Estimated blood volume, allowable blood loss, CPB, BSA, cardiac output."
+  },
+  "file:331": {
+    "type": "file",
+    "filename": "IMG_2124.jpeg",
+    "description": "Creatinine clearance row."
+  },
+  "web:24": {
+    "type": "web",
+    "title": "Body Surface Area (BSA) Calculator | Mosteller, Du Bois ... - Pearson",
+    "url": "https://www.pearson.com/channels/calculators/body-surface-area-bsa-calculator"
+  },
+  "web:125": {
+    "type": "web",
+    "title": "[Table], Table 1. Anesthetic agents and maximum ... - NCBI",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK574554/table/article-135278.table0/"
+  },
+  "web:133": {
+    "type": "web",
+    "title": "Local Anesthetic Systemic Toxicity (LAST) - ASRA Pain Medicine",
+    "url": "https://asra.com/news-publications/asra-updates/blog-landing/legacy-b-blog-posts/2021/02/01/local-anesthetic-systemic-toxicity-(...)"
+  },
+  "web:134": {
+    "type": "web",
+    "title": "Fentanyl - StatPearls - NCBI Bookshelf - NIH",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK459275/"
+  },
+  "web:144": {
+    "type": "web",
+    "title": "ANALGESICS / SEDATIVES PEDIATRIC DOSING GUIDELINES",
+    "url": "https://www.med.unc.edu/pediatrics/cccp/wp-content/uploads/sites/1156/gravity_forms/1-188e5632d99d8f770a150fd48b72fb22/2021/02/P..."
+  },
+  "web:146": {
+    "type": "web",
+    "title": "Ketorolac - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK545172/"
+  },
+  "web:147": {
+    "type": "web",
+    "title": "Pain Management in Children: NSAID Use in the Perioperative and ...",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8275553/"
+  },
+  "web:157": {
+    "type": "web",
+    "title": "Guidelines for treatment of acute pain in children \u2013 the consensus ...",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10156497/"
+  },
+  "web:161": {
+    "type": "web",
+    "title": "Dosing and Dilution of Perioperative Vasoactives",
+    "url": "https://cvanes.stanford.edu/perioperative-vasoactives/"
+  },
+  "web:164": {
+    "type": "web",
+    "title": "Vasopressors - WikEM",
+    "url": "https://wikem.org/wiki/Vasopressors"
+  },
+  "web:170": {
+    "type": "web",
+    "title": "Milrinone - StatPearls - NCBI Bookshelf - NIH",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK532943/"
+  },
+  "web:173": {
+    "type": "web",
+    "title": "Intravenous labetalol versus sodium nitroprusside for treatment of ...",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/2686494/"
+  },
+  "web:180": {
+    "type": "web",
+    "title": "Advanced Cardiac Life Support (ACLS) - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK613285/"
+  },
+  "web:184": {
+    "type": "web",
+    "title": "Sodium Nitroprusside - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK557487/"
+  },
+  "web:188": {
+    "type": "web",
+    "title": "Management Algorithm for Adults with Hyperkalemia (K> 5.5 mEq/L)",
+    "url": "https://www.acep.org/siteassets/sites/acep/media/hyperk/documents/management-algorithm-for-adult-with-hyperkalemia.pdf"
+  },
+  "web:194": {
+    "type": "web",
+    "title": "Kayexalate - Drug Summary",
+    "url": "https://www.pdr.net/drug-summary/Kayexalate-sodium-polystyrene-sulfonate-2925"
+  },
+  "web:208": {
+    "type": "web",
+    "title": "Acute management of hyperkalemia",
+    "url": "https://www.gloshospitals.nhs.uk/documents/2045/Inpatient_Hyperkalemia_Management_March_2023_W4sAT5O.pdf"
+  },
+  "web:216": {
+    "type": "web",
+    "title": "How Much Dantrolene Should Be Kept On Hand? - MHAUS",
+    "url": "https://www.mhaus.org/faqs/how-much-dantrolene-should-be-kept-on-hand/"
+  },
+  "web:218": {
+    "type": "web",
+    "title": "Managing A Crisis - MHAUS",
+    "url": "https://www.mhaus.org/healthcare-professionals/managing-a-crisis/"
+  },
+  "web:224": {
+    "type": "web",
+    "title": "Potassium Replacement",
+    "url": "https://www.vumc.org/trauma-and-scc/sites/vumc.org.trauma-and-scc/files/public_files/Protocols/Electrolyte%20Repletion%20Guidelines.pdf"
+  },
+  "web:232": {
+    "type": "web",
+    "title": "Calcium Channel Blockers - Malignant Hyperthermia ... - MHAUS",
+    "url": "https://www.mhaus.org/cfw/index.cfm?controller=kb&action=view-article&key=1256150E-5056-A852-6BC5-AF18F460CB98&seoTitle=calcium-..."
+  },
+  "web:245": {
+    "type": "web",
+    "title": "Malignant Hyperthermia - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK430828/"
+  },
+  "web:247": {
+    "type": "web",
+    "title": "Adenosine Dose - Pediatric EM Morsels",
+    "url": "https://pedemmorsels.com/adenosine-dose/"
+  },
+  "web:254": {
+    "type": "web",
+    "title": "Epinephrine - StatPearls - NCBI Bookshelf - NIH",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK482160/"
+  },
+  "web:260": {
+    "type": "web",
+    "title": "Understanding push dose pressors - EMS1",
+    "url": "https://www.ems1.com/drugs/articles/understanding-push-dose-pressors-hTtV3qvgjn0W3rFt/"
+  },
+  "web:262": {
+    "type": "web",
+    "title": "Sodium Bicarbonate - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK559139/"
+  },
+  "web:271": {
+    "type": "web",
+    "title": "D50W, DGlucose (dextrose) dosing, indications, interactions ...",
+    "url": "https://reference.medscape.com/drug/d50w-dglucose-dextrose-342705"
+  },
+  "web:278": {
+    "type": "web",
+    "title": "Perioperative Hyperglycemia Management: An Update - PMC",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5309204/"
+  },
+  "web:286": {
+    "type": "web",
+    "title": "Pediatric Tachycardia With a Pulse Algorithm",
+    "url": "https://cpr.heart.org/-/media/CPR-Files/CPR-Guidelines-Files/Algorithms/AlgorithmPALS_Tachycardia_200618.pdf"
+  },
+  "web:290": {
+    "type": "web",
+    "title": "Maintenance Fluid Calculator - Based on 4-2-1 Rule - BackTable",
+    "url": "https://www.backtable.com/shows/vi/tools/maintenance-fluid-calculator"
+  },
+  "web:291": {
+    "type": "web",
+    "title": "Gastric Ultrasound - StatPearls - NCBI Bookshelf",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK580524/"
+  },
+  "web:298": {
+    "type": "web",
+    "title": "Defibrillation - StatPearls - NCBI Bookshelf - NIH",
+    "url": "https://www.ncbi.nlm.nih.gov/books/NBK499899/"
+  },
+  "web:301": {
+    "type": "web",
+    "title": "Consensus Transfusion Guidelines for a Large Neonatal Intensive ...",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11624464/"
+  },
+  "web:303": {
+    "type": "web",
+    "title": "A Compendium of Transfusion Practice Guidelines",
+    "url": "https://www.redcross.org/content/dam/redcrossblood/hospital-page-documents/334401_compendium_v04jan2021_bookmarkedworking_rwv01..."
+  },
+  "web:304": {
+    "type": "web",
+    "title": "Guidelines for Transfusion of Pediatric Patients - Wadsworth Center",
+    "url": "https://www.wadsworth.org/sites/default/files/WebDoc/ped_tx_guidelines_2.pdf"
+  },
+  "web:315": {
+    "type": "web",
+    "title": "Pediatric Fibrinogen PART II\u2014Overview of Indications for ... - PMC",
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8097134/"
+  },
+  "web:319": {
+    "type": "web",
+    "title": "Perfusion Calculator - UI Health Care",
+    "url": "https://www.healthcare.uiowa.edu/programs/perfusion/perfcalc.htm"
+  },
+  "web:322": {
+    "type": "web",
+    "title": "Maximum Allowable Blood Loss | Iowa Head and Neck Protocols",
+    "url": "https://iowaprotocols.medicine.uiowa.edu/protocols/maximum-allowable-blood-loss"
+  },
+  "web:332": {
+    "type": "web",
+    "title": "Cockcroft-Gault Formula | National Kidney Foundation",
+    "url": "https://www.kidney.org/professionals/gfr_calculatorCoc"
+  }
+}

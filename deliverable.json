@@ -1,0 +1,1012 @@
+{
+  "deliverable_version": "1.1",
+  "package_contents": [
+    "deliverable.json",
+    "references.json",
+    "handoff.md"
+  ],
+  "scope": "Consolidated from the visible screenshot set and prior extraction notes in this thread.",
+  "example_patient": {
+    "age_years": 35,
+    "sex": "M",
+    "weight_kg": 70,
+    "height_cm": 170
+  },
+  "status_legend": {
+    "validated": "Screen logic and external support align closely.",
+    "partially_verified": "Screen logic is clear, but exact external match is incomplete or context-dependent.",
+    "screen_confirmed": "Readable from screenshots, but not externally validated in this batch.",
+    "issue": "Readable, but internally inconsistent or likely requires correction.",
+    "unresolved": "Interactive or cropped field without enough visible logic."
+  },
+  "sections": [
+    {
+      "section": "Anticholinergics",
+      "items": [
+        {
+          "id": "anticholinergics.atropine",
+          "label": "Atropine",
+          "display": "1.4 mg (0.02 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 0.02",
+          "example": "1.4 mg",
+          "status": "screen_confirmed",
+          "source_ids": [
+            "file:108"
+          ]
+        },
+        {
+          "id": "anticholinergics.glycopyrrolate",
+          "label": "Glycopyrrolate",
+          "display": "700 mcg (10 mcg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mcg = weight_kg * 10",
+          "example": "700 mcg",
+          "status": "screen_confirmed",
+          "source_ids": [
+            "file:108"
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Local anesthetics",
+      "items": [
+        {
+          "id": "local.lidocaine",
+          "label": "Lidocaine",
+          "display": "105-420 mg (1.5-6 mg/kg)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mg = weight_kg * 1.5 to 6",
+          "example": "105-420 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:124",
+            "web:125"
+          ]
+        },
+        {
+          "id": "local.bupivacaine",
+          "label": "Bupivacaine",
+          "display": "105-210 mg (1.5-3 mg/kg)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mg = weight_kg * 1.5 to 3",
+          "example": "105-210 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:124",
+            "web:125"
+          ]
+        },
+        {
+          "id": "local.intralipid20",
+          "label": "Intralipid 20%",
+          "display": "(140 ml bolus), 1050-2100 ml/h rescue infusion (0.25-0.5 ml/kg/min)",
+          "algorithm_type": "mixed_bolus_infusion",
+          "formula": {
+            "bolus": "screen displays ~140 ml for 70 kg",
+            "infusion": "rate_ml_per_h = weight_kg * 0.25 to 0.5 * 60"
+          },
+          "example": {
+            "screen_bolus": "140 ml",
+            "infusion": "1050-2100 ml/h"
+          },
+          "status": "partially_verified",
+          "source_ids": [
+            "file:124",
+            "web:133"
+          ],
+          "notes": "Infusion logic matches LAST guidance; bolus appears closer to 2 ml/kg than 1.5 ml/kg."
+        }
+      ]
+    },
+    {
+      "section": "Analgesics",
+      "items": [
+        {
+          "id": "analgesics.fentanyl",
+          "label": "Fentanyl",
+          "display": "70 mcg (1 mcg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mcg = weight_kg * 1",
+          "example": "70 mcg",
+          "status": "validated",
+          "source_ids": [
+            "file:124",
+            "web:134"
+          ]
+        },
+        {
+          "id": "analgesics.hydromorphone",
+          "label": "Hydromorphone",
+          "display": "0.7 mg (0.01 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 0.01",
+          "example": "0.7 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:140",
+            "web:144"
+          ]
+        },
+        {
+          "id": "analgesics.morphine",
+          "label": "Morphine",
+          "display": "7 mg (0.1 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 0.1",
+          "example": "7 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:140"
+          ]
+        },
+        {
+          "id": "analgesics.oxycodone",
+          "label": "Oxycodone",
+          "display": "7 mg (0.1 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 0.1",
+          "example": "7 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:140",
+            "web:147"
+          ]
+        },
+        {
+          "id": "analgesics.meperidine",
+          "label": "Meperidine",
+          "display": "35 mg (0.5 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 0.5",
+          "example": "35 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:140"
+          ]
+        },
+        {
+          "id": "analgesics.ketorolac",
+          "label": "Ketorolac",
+          "display": "35 mg (0.5 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 0.5",
+          "example": "35 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:140",
+            "web:146"
+          ]
+        },
+        {
+          "id": "analgesics.diclofenac",
+          "label": "Diclofenac",
+          "display": "70 mg (1 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 1",
+          "example": "70 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:140",
+            "web:147"
+          ]
+        },
+        {
+          "id": "analgesics.ibuprofen",
+          "label": "Ibuprofen",
+          "display": "350 mg (5 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 5",
+          "example": "350 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:156",
+            "web:144"
+          ]
+        },
+        {
+          "id": "analgesics.paracetamol",
+          "label": "Paracetamol",
+          "display": "1050 mg (15 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 15",
+          "example": "1050 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:156",
+            "web:157"
+          ]
+        },
+        {
+          "id": "analgesics.dipyrone",
+          "label": "Dipyrone",
+          "display": "1400 mg (20 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 20",
+          "example": "1400 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:156"
+          ]
+        },
+        {
+          "id": "analgesics.tramadol",
+          "label": "Tramadol",
+          "display": "70 mg (1 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 1",
+          "example": "70 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:156"
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Inotropies & vasopressors",
+      "items": [
+        {
+          "id": "vaso.norepinephrine16",
+          "label": "Norepinephrine 16 mcg/ml",
+          "display": "13.1 ml/h at 0.05 mcg/kg/min",
+          "algorithm_type": "concentration_to_rate",
+          "formula": "rate_ml_per_h = weight_kg * dose_mcg_per_kg_per_min * 60 / concentration_mcg_per_ml",
+          "example": "13.1 ml/h",
+          "status": "validated",
+          "source_ids": [
+            "file:156",
+            "web:161"
+          ]
+        },
+        {
+          "id": "vaso.vasopressin1",
+          "label": "Vasopressin 1 IU/ml",
+          "display": "6 ml/h at 0.1 IU/min",
+          "algorithm_type": "concentration_to_rate",
+          "formula": "rate_ml_per_h = dose_IU_per_min * 60 / concentration_IU_per_ml",
+          "example": "6 ml/h",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:156",
+            "web:164"
+          ],
+          "notes": "Rate math is exact; target dose is higher than many common shock references."
+        },
+        {
+          "id": "vaso.dobutamine2mgml",
+          "label": "Dobutamine 2 mg/ml",
+          "display": "4.2 ml/h at 2 mcg/kg/min",
+          "algorithm_type": "concentration_to_rate",
+          "formula": "rate_ml_per_h = weight_kg * dose_mcg_per_kg_per_min * 60 / 2000",
+          "example": "4.2 ml/h",
+          "status": "validated",
+          "source_ids": [
+            "file:156",
+            "web:161"
+          ]
+        },
+        {
+          "id": "vaso.milrinone200",
+          "label": "Milrinone 200 mcg/ml",
+          "display": "7.9 ml/h at 0.375 mcg/kg/min",
+          "algorithm_type": "concentration_to_rate",
+          "formula": "rate_ml_per_h = weight_kg * dose_mcg_per_kg_per_min * 60 / 200",
+          "example": "7.9 ml/h",
+          "status": "validated",
+          "source_ids": [
+            "file:156",
+            "web:161",
+            "web:170"
+          ]
+        },
+        {
+          "id": "vaso.nitroprusside200",
+          "label": "Nitroprusside 200 mcg/ml",
+          "display": "2.1 ml/h at 0.2 mcg/kg/min",
+          "algorithm_type": "concentration_to_rate",
+          "formula": "expected_rate_ml_per_h = weight_kg * dose_mcg_per_kg_per_min * 60 / concentration_mcg_per_ml",
+          "example": {
+            "screen": "2.1 ml/h",
+            "expected_from_displayed_inputs": "4.2 ml/h"
+          },
+          "status": "issue",
+          "source_ids": [
+            "file:171",
+            "web:184"
+          ],
+          "notes": "Visible arithmetic mismatch for the displayed patient."
+        },
+        {
+          "id": "vaso.labetalol",
+          "label": "Labetalol",
+          "display": "10-20 mg; double dose until 80 mg; total max dose 300 mg",
+          "algorithm_type": "stepwise_bolus_escalation",
+          "formula": "give 10-20 mg IV, then double sequential bolus doses up to 80 mg, cumulative max 300 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:171",
+            "web:173"
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Antiarrhythmics",
+      "items": [
+        {
+          "id": "antiarrhythmics.amiodarone_vf",
+          "label": "Amiodarone - cardiac arrest with VF",
+          "display": "300 mg fast bolus (5 mg/kg IV, max 300 mg)",
+          "algorithm_type": "capped_weight_based_single",
+          "formula": "dose_mg = min(weight_kg * 5, 300)",
+          "example": "300 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:171",
+            "web:180"
+          ]
+        },
+        {
+          "id": "antiarrhythmics.amiodarone_af",
+          "label": "Amiodarone - rate control in AF",
+          "display": "150 mg over 10-30 min",
+          "algorithm_type": "fixed_dose_infusion",
+          "formula": "150 mg IV over 10-30 min",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:171"
+          ]
+        },
+        {
+          "id": "antiarrhythmics.metoprolol",
+          "label": "Metoprolol - rate control in AF",
+          "display": "2.5-5 mg / 5 min; total max dose 15 mg",
+          "algorithm_type": "repeat_bolus",
+          "formula": "2.5-5 mg IV every 5 min until effect or cumulative max 15 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:171",
+            "web:180"
+          ]
+        },
+        {
+          "id": "antiarrhythmics.digoxin50",
+          "label": "Digoxin (50 mcg/ml)",
+          "display": "30 ml/h for 10 min",
+          "algorithm_type": "concentration_rate_duration",
+          "formula": "dose_mcg = concentration_mcg_per_ml * rate_ml_per_h * duration_h",
+          "example": "250 mcg total delivered",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:171"
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Hyperkalemia",
+      "items": [
+        {
+          "id": "hyperkalemia.cacl2_10",
+          "label": "Ca chloride 10%",
+          "display": "3.5-7 ml (0.05-0.1 ml/kg)",
+          "algorithm_type": "weight_based_range",
+          "formula": "volume_ml = weight_kg * 0.05 to 0.1",
+          "example": "3.5-7 ml",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:187",
+            "web:188"
+          ]
+        },
+        {
+          "id": "hyperkalemia.cagluconate_10",
+          "label": "Ca gluconate 10%",
+          "display": "10.5-21 ml (0.15-0.3 ml/kg)",
+          "algorithm_type": "weight_based_range",
+          "formula": "volume_ml = weight_kg * 0.15 to 0.3",
+          "example": "10.5-21 ml",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:187",
+            "web:188"
+          ]
+        },
+        {
+          "id": "hyperkalemia.salbutamol",
+          "label": "Salbutamol",
+          "display": "10-20 mg / 4 ml inhaled",
+          "algorithm_type": "fixed_dose",
+          "formula": "10-20 mg inhaled",
+          "status": "validated",
+          "source_ids": [
+            "file:187",
+            "web:208"
+          ]
+        },
+        {
+          "id": "hyperkalemia.furosemide",
+          "label": "Furosemide",
+          "display": "20-40 mg IV",
+          "algorithm_type": "fixed_range",
+          "formula": "20-40 mg IV",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:187",
+            "web:188"
+          ]
+        },
+        {
+          "id": "hyperkalemia.hyperventilation",
+          "label": "Hyperventilation",
+          "display": "action item only",
+          "algorithm_type": "procedural_action",
+          "formula": null,
+          "status": "partially_verified",
+          "source_ids": [
+            "file:187"
+          ]
+        },
+        {
+          "id": "hyperkalemia.dextrose_insulin",
+          "label": "Dextrose + insulin",
+          "display": "D10W 500 ml or D50W 50 ml + insulin 10 U IV over 30-60 min",
+          "algorithm_type": "fixed_combo_regimen",
+          "formula": "10 U insulin + either D10W 500 ml or D50W 50 ml over 30-60 min",
+          "status": "validated",
+          "source_ids": [
+            "file:187",
+            "web:188",
+            "web:208"
+          ]
+        },
+        {
+          "id": "hyperkalemia.kayexalate",
+          "label": "Kayexalate",
+          "display": "40 g (1 g/kg up to 40 g) q4h",
+          "algorithm_type": "capped_weight_based_repeat",
+          "formula": "dose_g = min(weight_kg * 1, 40), repeat q4h",
+          "example": "40 g",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:187",
+            "web:194"
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Severe hypokalemia",
+      "items": [
+        {
+          "id": "hypokalemia.kcl200",
+          "label": "KCl 200 mEq/L",
+          "display": "50-100 ml/h = 10-20 mEq/h; central access",
+          "algorithm_type": "concentration_to_rate",
+          "formula": "mEq_per_h = concentration_mEq_per_L * rate_ml_per_h / 1000",
+          "status": "validated",
+          "source_ids": [
+            "file:215",
+            "web:224"
+          ]
+        },
+        {
+          "id": "hypokalemia.kcl100",
+          "label": "KCl 100 mEq/L",
+          "display": "100 ml/h = 10 mEq/h; central access",
+          "algorithm_type": "concentration_to_rate",
+          "formula": "mEq_per_h = concentration_mEq_per_L * rate_ml_per_h / 1000",
+          "status": "validated",
+          "source_ids": [
+            "file:215",
+            "web:224"
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Malignant hyperthermia",
+      "items": [
+        {
+          "id": "mh.stop_trigger",
+          "label": "Stop causing agent",
+          "display": "Halogenated, Succinylcholine",
+          "algorithm_type": "procedural_action",
+          "formula": null,
+          "status": "validated",
+          "source_ids": [
+            "file:215",
+            "web:218"
+          ]
+        },
+        {
+          "id": "mh.call_for_help",
+          "label": "Call for help",
+          "display": "FiO2 100% high flow >10 L/min; double minute ventilation; switch to TIVA",
+          "algorithm_type": "procedural_action",
+          "formula": null,
+          "status": "validated",
+          "source_ids": [
+            "file:215",
+            "web:218"
+          ]
+        },
+        {
+          "id": "mh.dantrolene_initial_band",
+          "label": "Administer dantrolene",
+          "display": "140-210 mg IV bolus (2-3 mg/kg)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mg = weight_kg * 2 to 3",
+          "example": "140-210 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:215",
+            "web:216",
+            "web:218"
+          ],
+          "notes": "Compatible with standard 2.5 mg/kg initial dosing band."
+        },
+        {
+          "id": "mh.active_cooling",
+          "label": "Active cooling",
+          "display": "Ice packs, cold forced air, gastric lavage, etc.",
+          "algorithm_type": "procedural_action",
+          "formula": null,
+          "status": "validated",
+          "source_ids": [
+            "file:215",
+            "web:218"
+          ]
+        },
+        {
+          "id": "mh.associated_conditions",
+          "label": "Associated conditions",
+          "display": {
+            "hyperkalemia": "CaCl2, NaHCO3, glucose-insulin",
+            "acidosis": "NaHCO3",
+            "arrhythmias": "Esmolol, Lidocaine"
+          },
+          "algorithm_type": "complication_checklist",
+          "formula": null,
+          "status": "partially_verified",
+          "source_ids": [
+            "file:231",
+            "web:218"
+          ]
+        },
+        {
+          "id": "mh.contraindicated_drugs",
+          "label": "Contraindicated drugs",
+          "display": "Calcium blockers (Verapamil, Nifedipine)",
+          "algorithm_type": "hard_stop_rule",
+          "formula": null,
+          "status": "partially_verified",
+          "source_ids": [
+            "file:231",
+            "web:232"
+          ],
+          "notes": "App wording appears broader and more conservative than the strongest external support."
+        },
+        {
+          "id": "mh.dantrolene_repeat_bolus",
+          "label": "New dantrolene bolus",
+          "display": "175 mg (2.5 mg/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "dose_mg = weight_kg * 2.5",
+          "example": "175 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:244",
+            "web:245"
+          ]
+        },
+        {
+          "id": "mh.dantrolene_icu",
+          "label": "ICU dantrolene maintenance",
+          "display": "1 mg/kg every 4-8 hours; 20% may recur in first 48 h; max 10 mg/kg",
+          "algorithm_type": "weight_based_repeat",
+          "formula": "dose_mg = weight_kg * 1, repeat q4-8h",
+          "example": "70 mg per dose",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:244",
+            "web:245"
+          ],
+          "notes": "Standard guidance more commonly states q4-6h."
+        }
+      ]
+    },
+    {
+      "section": "Anesthetic crisis",
+      "items": [
+        {
+          "id": "crisis.adrenaline",
+          "label": "Adrenaline",
+          "display": "10 mcg bradycardia/hypotension; 50 mcg refractory hypotension; 1 mg arrest",
+          "algorithm_type": "scenario_based_fixed_dose",
+          "formula": null,
+          "status": "partially_verified",
+          "source_ids": [
+            "file:244",
+            "web:254",
+            "web:260"
+          ],
+          "notes": "1 mg arrest dose is standard; smaller boluses appear to be app-style push-dose guidance."
+        },
+        {
+          "id": "crisis.adenosine",
+          "label": "Adenosine",
+          "display": "6 mg / 12 mg; 100 mcg/kg (max 6 mg), 200 mcg/kg (max 12 mg)",
+          "algorithm_type": "capped_weight_based_escalation",
+          "formula": {
+            "dose1_mg": "min(weight_kg * 0.1, 6)",
+            "dose2_mg": "min(weight_kg * 0.2, 12)"
+          },
+          "example": "6 mg then 12 mg",
+          "status": "validated",
+          "source_ids": [
+            "file:244",
+            "web:247"
+          ]
+        },
+        {
+          "id": "crisis.bicarbonate",
+          "label": "Bicarbonate",
+          "display": "70-140 mEq (1-2 mEq/kg IV)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mEq = weight_kg * 1 to 2",
+          "example": "70-140 mEq",
+          "status": "validated",
+          "source_ids": [
+            "file:244",
+            "web:218",
+            "web:262"
+          ]
+        },
+        {
+          "id": "crisis.hydrocortisone",
+          "label": "Hydrocortisone",
+          "display": "140-210 mg; Anaphylaxis; 2-3 mg/kg IV",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_mg = weight_kg * 2 to 3",
+          "example": "140-210 mg",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:268"
+          ]
+        },
+        {
+          "id": "crisis.dextrose",
+          "label": "Dextrose",
+          "display": "35 ml / 175 ml; D50W 0.5 ml/kg; D10W 2.5 ml/kg",
+          "algorithm_type": "equivalent_concentration_weight_based",
+          "formula": {
+            "D50_ml": "weight_kg * 0.5",
+            "D10_ml": "weight_kg * 2.5"
+          },
+          "example": "35 ml D50 or 175 ml D10",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:268",
+            "web:271"
+          ]
+        },
+        {
+          "id": "crisis.insulin",
+          "label": "Insulin",
+          "display": "2-4 IU; Hyperglycemia => 141-180",
+          "algorithm_type": "glucose_band_lookup",
+          "formula": "if glucose in 141-180 band, dose = 2-4 IU",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:268",
+            "web:278"
+          ]
+        },
+        {
+          "id": "crisis.cardioversion",
+          "label": "Cardioversion",
+          "display": "50-100 joules; 0.5 J/kg SYNC up to 2 J/kg",
+          "algorithm_type": "weight_based_escalation",
+          "formula": "initial_J = weight_kg * 0.5; escalate up to weight_kg * 2",
+          "example": {
+            "screen": "50-100 J",
+            "weight_rule": "35-140 J"
+          },
+          "status": "partially_verified",
+          "source_ids": [
+            "file:284",
+            "web:286"
+          ],
+          "notes": "Text rule is standard; fixed displayed joules do not exactly match 70 kg."
+        },
+        {
+          "id": "crisis.defibrillation",
+          "label": "Defibrillation",
+          "display": "200 joules; 2 J/kg ASYNC up to 4 J/kg",
+          "algorithm_type": "weight_based_escalation",
+          "formula": "initial_J = weight_kg * 2; subsequent_J = weight_kg * 4",
+          "example": {
+            "screen": "200 J",
+            "weight_rule": "140-280 J"
+          },
+          "status": "partially_verified",
+          "source_ids": [
+            "file:284",
+            "web:298"
+          ],
+          "notes": "Text rule is standard; fixed displayed joules appear simplified rather than patient-specific."
+        },
+        {
+          "id": "crisis.sono_gastric_vol",
+          "label": "Sono gastric vol",
+          "display": "0 ml (0 ml/kg); Right lateral CSA 0 cm2",
+          "algorithm_type": "derived_ultrasound_output",
+          "formula": {
+            "CSA_cm2": "pi * AP * CC / 4",
+            "volume_ml_adult_clear_fluid": "27 + 14.6 * RLD_CSA - 1.28 * age_years",
+            "volume_ml_per_kg": "volume_ml / weight_kg"
+          },
+          "status": "partially_verified",
+          "source_ids": [
+            "file:284",
+            "web:291"
+          ],
+          "notes": "App likely floors negative or trivial calculated values to zero."
+        }
+      ]
+    },
+    {
+      "section": "Resuscitation: blood & fluids",
+      "items": [
+        {
+          "id": "fluids.iv_maintenance",
+          "label": "IV fluids",
+          "display": "110 ml/h (4/2/1 rule)",
+          "algorithm_type": "maintenance_fluid_formula",
+          "formula": "4 ml/kg/h for first 10 kg + 2 ml/kg/h for next 10 kg + 1 ml/kg/h for each kg above 20",
+          "example": "110 ml/h",
+          "status": "validated",
+          "source_ids": [
+            "file:284",
+            "web:290"
+          ]
+        },
+        {
+          "id": "fluids.fasting_6h",
+          "label": "6 hours fasting",
+          "display": "660 ml",
+          "algorithm_type": "derived_from_maintenance",
+          "formula": "fasting_deficit_ml = maintenance_rate_ml_per_h * fasting_hours",
+          "example": "660 ml",
+          "status": "validated",
+          "source_ids": [
+            "file:284",
+            "web:290"
+          ]
+        },
+        {
+          "id": "fluids.mannitol20",
+          "label": "Mannitol 20%",
+          "display": "88-175 ml (0.25-0.5 g/kg IV)",
+          "algorithm_type": "weight_based_range_with_concentration_conversion",
+          "formula": "dose_g = weight_kg * 0.25 to 0.5; volume_ml = dose_g / 0.2",
+          "example": "88-175 ml",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:284"
+          ]
+        },
+        {
+          "id": "fluids.hs75",
+          "label": "HS 7.5%",
+          "display": "140 ml (2 ml/kg IV)",
+          "algorithm_type": "weight_based_single",
+          "formula": "volume_ml = weight_kg * 2",
+          "example": "140 ml",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:284"
+          ]
+        },
+        {
+          "id": "fluids.prbc",
+          "label": "PRBC",
+          "display": "280 ml (4 ml/kg); increase Hb 1 g/dL",
+          "algorithm_type": "weight_based_single",
+          "formula": "volume_ml = weight_kg * 4",
+          "example": "280 ml",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:300",
+            "web:303"
+          ]
+        },
+        {
+          "id": "fluids.plateletpheresis",
+          "label": "Plateletpheresis",
+          "display": "350-700 ml (5-10 ml/kg); increase count by 50-100,000",
+          "algorithm_type": "weight_based_range",
+          "formula": "volume_ml = weight_kg * 5 to 10",
+          "example": "350-700 ml",
+          "status": "partially_verified",
+          "source_ids": [
+            "file:300",
+            "web:304"
+          ]
+        },
+        {
+          "id": "fluids.ffp",
+          "label": "Fresh frozen plasma",
+          "display": "700-1050 ml (10-15 ml/kg)",
+          "algorithm_type": "weight_based_range",
+          "formula": "volume_ml = weight_kg * 10 to 15",
+          "example": "700-1050 ml",
+          "status": "validated",
+          "source_ids": [
+            "file:300",
+            "web:304"
+          ]
+        },
+        {
+          "id": "fluids.cryo",
+          "label": "Cryoprecipitate",
+          "display": "7-14 units (1-2 units/10 kg); increase Fib by 60-100 mg/dL",
+          "algorithm_type": "weight_based_units_range",
+          "formula": "units = weight_kg * 1 to 2 / 10",
+          "example": "7-14 units",
+          "status": "validated",
+          "source_ids": [
+            "file:300",
+            "web:301",
+            "web:315"
+          ]
+        },
+        {
+          "id": "fluids.ebv",
+          "label": "Estimated blood volume",
+          "display": "5250 ml (75 ml/kg)",
+          "algorithm_type": "weight_based_single",
+          "formula": "EBV_ml = weight_kg * 75",
+          "example": "5250 ml",
+          "status": "validated",
+          "source_ids": [
+            "file:316",
+            "web:322"
+          ]
+        },
+        {
+          "id": "fluids.abl",
+          "label": "Allowable blood loss",
+          "display": "1312 ml; I.HCT 40% - F.HCT 30%",
+          "algorithm_type": "derived_blood_loss_formula",
+          "formula": "ABL_ml = EBV_ml * (initial_hct - final_hct) / initial_hct",
+          "example": "1312.5 ml from 5250 * (40-30) / 40",
+          "status": "validated",
+          "source_ids": [
+            "file:316",
+            "web:322"
+          ]
+        }
+      ]
+    },
+    {
+      "section": "Cardiopulmonary bypass / derived physiology",
+      "items": [
+        {
+          "id": "cpb.heparin",
+          "label": "Heparin dose",
+          "display": "21000 / 28000 U (300-400 U/kg)",
+          "algorithm_type": "weight_based_range",
+          "formula": "dose_units = weight_kg * 300 to 400",
+          "example": "21000-28000 U",
+          "status": "validated",
+          "source_ids": [
+            "file:316",
+            "web:319"
+          ]
+        },
+        {
+          "id": "cpb.delta_hct",
+          "label": "Delta Hct",
+          "display": "Tap to calculate",
+          "algorithm_type": "interactive_unresolved",
+          "formula": null,
+          "status": "unresolved",
+          "source_ids": [
+            "file:316"
+          ]
+        },
+        {
+          "id": "cpb.target_hct",
+          "label": "Target Hct",
+          "display": "Tap to calculate",
+          "algorithm_type": "interactive_unresolved",
+          "formula": null,
+          "status": "unresolved",
+          "source_ids": [
+            "file:316"
+          ]
+        },
+        {
+          "id": "derived.bsa",
+          "label": "Body surface area",
+          "display": "1.82 m2 (Mosteller)",
+          "algorithm_type": "anthropometric_formula",
+          "formula": "BSA_m2 = sqrt((height_cm * weight_kg) / 3600)",
+          "example": "1.82 m2",
+          "status": "validated",
+          "source_ids": [
+            "file:316",
+            "web:24"
+          ]
+        },
+        {
+          "id": "derived.cardiac_output_from_ci",
+          "label": "Cardiac index 2.5",
+          "display": "4.55 L/min cardiac output",
+          "algorithm_type": "derived_hemodynamic_output",
+          "formula": "cardiac_output_L_per_min = cardiac_index * BSA",
+          "example": "4.55 L/min",
+          "status": "validated",
+          "source_ids": [
+            "file:316"
+          ]
+        },
+        {
+          "id": "derived.crcl",
+          "label": "Cr clearance",
+          "display": "161.7 ml/min/1.73m2; Cockcroft Gault; Cr 0.6 mg/dL",
+          "algorithm_type": "cockcroft_gault_plus_bsa_normalization",
+          "formula": {
+            "raw_CG_male_ml_per_min": "((140 - age_years) * weight_kg) / (72 * serum_creatinine_mg_per_dL)",
+            "normalized_ml_per_min_per_1_73m2": "raw_CG * 1.73 / BSA"
+          },
+          "example": {
+            "raw": "170.1 ml/min",
+            "normalized": "161.7 ml/min/1.73m2"
+          },
+          "status": "validated",
+          "source_ids": [
+            "file:331",
+            "file:316",
+            "web:332"
+          ],
+          "notes": "App is using Cockcroft-Gault first, then BSA-normalizing the result."
+        }
+      ]
+    }
+  ],
+  "global_issues": [
+    {
+      "issue": "Nitroprusside arithmetic mismatch",
+      "detail": "0.2 mcg/kg/min at 200 mcg/ml should yield 4.2 ml/h for a 70 kg patient, but the screen shows 2.1 ml/h.",
+      "source_ids": [
+        "file:171"
+      ]
+    },
+    {
+      "issue": "Cardioversion and defibrillation fixed joule displays do not exactly match the visible 70 kg patient when compared against the on-screen weight-based rules.",
+      "source_ids": [
+        "file:284",
+        "web:286",
+        "web:298"
+      ]
+    },
+    {
+      "issue": "Cockcroft-Gault result is displayed in normalized units (ml/min/1.73 m2), implying a BSA adjustment beyond the base formula.",
+      "source_ids": [
+        "file:331",
+        "web:332"
+      ]
+    },
+    {
+      "issue": "Delta Hct and Target Hct are unresolved interactive fields with no exposed formula on the screenshots.",
+      "source_ids": [
+        "file:316"
+      ]
+    }
+  ]
+}

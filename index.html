@@ -419,9 +419,13 @@
       color: var(--text); font-weight: 400;
       display: flex; align-items: center;
     }
+    .ref-item-val-wrap {
+      display: flex; align-items: baseline;
+      margin-left: auto; text-align: right;
+    }
     .ref-item-value {
       font-family: var(--mono); font-size: 13px; font-weight: 600;
-      color: var(--warn); text-align: right;
+      color: var(--warn);
     }
     .ref-item-chevron {
       font-size: 10px; color: var(--dim); margin-left: 6px; flex-shrink: 0;
@@ -548,7 +552,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.5.3.2</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.5.3.3</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -1379,7 +1383,7 @@ function renderRefItem(container, item) {
   var dot = st !== 'validated' ? '<span class="ref-status-dot ' + st + '"></span>' : '';
   row.innerHTML =
     '<span class="ref-item-label">' + dot + item.label + '</span>' +
-    '<span style="display:flex;align-items:center">' +
+    '<span class="ref-item-val-wrap">' +
       '<span class="ref-item-value">' + item.value + '</span>' +
       '<span class="ref-item-chevron">\u203a</span>' +
     '</span>';

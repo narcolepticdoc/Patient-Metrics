@@ -10,6 +10,13 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.5.3.3] - 2026-04-13
+
+### Fixed
+- Reference values always right-justified via `margin-left: auto` wrapper, even when wrapping to second line.
+
+---
+
 ## [1.5.3.2] - 2026-04-13
 
 ### Fixed

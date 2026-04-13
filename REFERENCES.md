@@ -147,3 +147,6 @@ The following sources were used to verify the clinical data in `ref-data.js`. Ea
 ### Weight Formulas
 - **Ideal Body Weight (Devine) — StatPearls**: NBK535456. NCBI Bookshelf.
 - **Lean Body Weight (James formula) — Anaesthesia**: doi:10.1111/j.1365-2044.2009.06063.x.
+
+### OpenCriticalCare Pocket Card
+- **OpenCriticalCare Pocket Anesthesia Reference Card v4.212**: Collaborative reference by providers from UCSF and multiple academic medical centers. Covers general knowledge, medications, neuraxial anesthesia, obstetric emergencies, emergencies (hyperkalemia, anaphylaxis, high spinal), antibiotics, local anesthetic toxic doses, and inhalational anesthetic MAC values. Used as primary validation source for existing clinical data and as the basis for the OCC compendium pages. Card included in repository as `Anesthesia-Pocket-Card-v4.212-dslrfp.pdf`.

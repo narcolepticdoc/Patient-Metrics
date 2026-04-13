@@ -10,6 +10,28 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.0.0] - 2026-04-13
+
+### Added
+- **OpenCriticalCare Pocket Anesthesia Reference Card v4.212** as validated primary source.
+- 9 new compendium pages mirroring the OCC card content:
+  - OCC: Quick Reference (NPO guidelines, EBV by age, ABL, 4/2/1, drug concentration calcs)
+  - OCC: Emergencies (high spinal, hyperkalemia treatment, anaphylaxis protocol)
+  - OCC: Medications A-E (adenosine through etomidate, 14 drugs)
+  - OCC: Medications F-N (fentanyl through nitroprusside, 22 drugs)
+  - OCC: Medications O-V (ondansetron through vecuronium, 15 drugs)
+  - OCC: Neuraxial (contraindications, spinal agents, epidural settings)
+  - OCC: OB Emergencies (C-section GA, pre-eclampsia/MgSO4, PPH uterotonics)
+  - OCC: Antibiotics (9 surgical prophylaxis agents with peds/adult doses and redose intervals)
+  - OCC: Local & Inhalational (6 local anesthetic toxic doses, 4 inhalational MAC by age, LAST treatment)
+
+### Changed
+- EBV updated from 75 to **70 ml/kg** for adults (per OCC card).
+- Furosemide (hyperkalemia) updated from 20-40 to **40-80 mg IV** (per OCC card).
+- Promoted to validated (confirmed by OCC card): atropine, glycopyrrolate, Ca chloride, kayexalate, furosemide, adrenaline, hydrocortisone, dantrolene initial.
+
+---
+
 ## [1.5.3.3] - 2026-04-13
 
 ### Fixed

@@ -10,6 +10,14 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.5.3.1] - 2026-04-13
+
+### Fixed
+- Sex toggle moved into Age card header to save vertical space.
+- Tightened header, card header, card body, and main padding to reduce overall vertical footprint.
+
+---
+
 ## [1.5.3.0] - 2026-04-13
 
 ### Added

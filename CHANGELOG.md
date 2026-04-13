@@ -10,6 +10,21 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.5.0.0] - 2026-04-13
+
+### Added
+- **Clinical Reference Module** — full-screen overlay accessible via REFERENCE button at the bottom of the main screen.
+  - Multi-page swipeable interface with horizontal touch/mouse drag navigation.
+  - Page navigator dropdown (tap header title to see all pages and jump directly).
+  - Dot indicators showing current page position.
+  - Tappable list items with detail popups showing calculation formula, clinical notes, and source references.
+  - "Patient Summary" page displaying computed demographics (age, weight, height, BMI) with verified source citations.
+  - Placeholder "Clinical References" page (framework ready for data population from verified sources).
+- `getDemographics()` helper function centralizing computed patient values for module consumption.
+- `renderRefItem()` shared utility for building tappable reference list items with detail popup integration.
+
+---
+
 ## [1.4.5.0] - 2026-04-13
 
 ### Added

@@ -10,6 +10,25 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.5.1.0] - 2026-04-13
+
+### Added
+- `ref-data.js` — Clinical reference data and computation engine, separated from `index.html` for auditability.
+  - 10 clinical sections: Anticholinergics, Local Anesthetics, Analgesics, Inotropes & Vasopressors, Antiarrhythmics, Hyperkalemia, Severe Hypokalemia, Malignant Hyperthermia, Anesthetic Crisis, Resuscitation (Blood & Fluids), CPB / Derived Physiology.
+  - Dynamic dose/rate computation from patient demographics.
+  - Web reference lookup table for source citations.
+  - Verification status system: validated, partially_verified, screen_confirmed, issue, unresolved.
+- Status indicator dots on reference list items (color-coded by verification level).
+- Status badge in detail popup showing verification level for each item.
+- Nitroprusside arithmetic corrected (original screen showed 2.1 ml/h; formula gives 4.2 ml/h for 70 kg — flagged as "Known Issue").
+- Unresolved items (Delta Hct, Target Hct) shown as placeholders.
+
+### Changed
+- Reference module pages now generated dynamically from `REF_SECTIONS` data in `ref-data.js`.
+- Service worker caches `ref-data.js` as a static asset.
+
+---
+
 ## [1.5.0.0] - 2026-04-13
 
 ### Added

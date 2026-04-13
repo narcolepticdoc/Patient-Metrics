@@ -10,6 +10,15 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.5.3.2] - 2026-04-13
+
+### Fixed
+- Reference list items now wrap value to second line instead of clipping off-screen.
+- Normalized font sizes: label and value both 13px (was 14/15px mismatch).
+- Long procedural text (MH actions, intralipid) no longer overflows horizontally.
+
+---
+
 ## [1.5.3.1] - 2026-04-13
 
 ### Fixed

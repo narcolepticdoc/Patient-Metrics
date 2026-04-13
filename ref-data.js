@@ -71,15 +71,21 @@ const WEB_REFS = {
 };
 
 // ── Weight type helpers ──
-// IBW: Devine formula — 50 + 2.3 × (height_in - 60) [male]
+// IBW: Devine formula
+//   Male:   50   + 2.3 × (height_in - 60)
+//   Female: 45.5 + 2.3 × (height_in - 60)
 // Source: StatPearls NBK535456
-function calcIBW(heightCm) {
+function calcIBW(heightCm, sex) {
   var heightIn = heightCm / 2.54;
-  return 50 + 2.3 * (heightIn - 60);
+  var base = (sex === 'F') ? 45.5 : 50;
+  return base + 2.3 * (heightIn - 60);
 }
-// LBW: James formula (male) — 1.1 × TBW - 128 × (TBW/height_cm)²
+// LBW: James formula
+//   Male:   1.1  × TBW - 128 × (TBW/height_cm)²
+//   Female: 1.07 × TBW - 148 × (TBW/height_cm)²
 // Source: Anaesthesia journal, doi:10.1111/j.1365-2044.2009.06063.x
-function calcLBW(kg, heightCm) {
+function calcLBW(kg, heightCm, sex) {
+  if (sex === 'F') return 1.07 * kg - 148 * Math.pow(kg / heightCm, 2);
   return 1.1 * kg - 128 * Math.pow(kg / heightCm, 2);
 }
 
@@ -171,9 +177,11 @@ function computeRef(item, d) {
       if (age === null || cm === null) return { value: '\u2014', formula: 'Enter age and height' };
       var bsa = Math.sqrt(cm * kg / 3600);
       var raw = ((140 - age) * kg) / (72 * p.cr);
+      if (d.sex === 'F') raw *= 0.85;
       var norm = refRound(raw * 1.73 / bsa, 1);
+      var sexNote = d.sex === 'F' ? ' \u00d7 0.85' : '';
       return { value: norm + ' ml/min/1.73m\u00b2',
-        formula: '((140-' + age + ') \u00d7 ' + kg + ') / (72 \u00d7 ' + p.cr + ') \u00d7 1.73 / BSA ' + refRound(bsa, 2) + ' [CG + BSA norm, male]' };
+        formula: '((140-' + age + ') \u00d7 ' + kg + ') / (72 \u00d7 ' + p.cr + ')' + sexNote + ' \u00d7 1.73 / BSA ' + refRound(bsa, 2) + ' [CG + BSA norm, ' + (d.sex || 'M') + ']' };
     }
     case 'bolus_inf': {
       var bml = refRound(kg * p.bf);
@@ -196,24 +204,24 @@ function computeRef(item, d) {
     }
     case 'ws_ibw': { // weight single using IBW
       if (d.cm === null) return { value: '\u2014', formula: 'Enter height for IBW' };
-      var ibw = calcIBW(d.cm);
+      var ibw = calcIBW(d.cm, d.sex);
       var v = refRound(ibw * p.f);
       return { value: v + ' ' + p.u,
-        formula: 'IBW ' + refRound(ibw, 1) + ' kg \u00d7 ' + p.f + ' ' + p.ru + ' [Devine]' };
+        formula: 'IBW ' + refRound(ibw, 1) + ' kg \u00d7 ' + p.f + ' ' + p.ru + ' [Devine, ' + (d.sex || 'M') + ']' };
     }
     case 'wr_ibw': { // weight range using IBW
       if (d.cm === null) return { value: '\u2014', formula: 'Enter height for IBW' };
-      var ibw = calcIBW(d.cm);
+      var ibw = calcIBW(d.cm, d.sex);
       var lo = refRound(ibw * p.lo), hi = refRound(ibw * p.hi);
       return { value: lo + '-' + hi + ' ' + p.u,
-        formula: 'IBW ' + refRound(ibw, 1) + ' kg \u00d7 (' + p.lo + ' to ' + p.hi + ') ' + p.ru + ' [Devine]' };
+        formula: 'IBW ' + refRound(ibw, 1) + ' kg \u00d7 (' + p.lo + ' to ' + p.hi + ') ' + p.ru + ' [Devine, ' + (d.sex || 'M') + ']' };
     }
     case 'wr_lbw': { // weight range using LBW
       if (d.cm === null) return { value: '\u2014', formula: 'Enter height for LBW' };
-      var lbw = calcLBW(kg, d.cm);
+      var lbw = calcLBW(kg, d.cm, d.sex);
       var lo = refRound(lbw * p.lo), hi = refRound(lbw * p.hi);
       return { value: lo + '-' + hi + ' ' + p.u,
-        formula: 'LBW ' + refRound(lbw, 1) + ' kg \u00d7 (' + p.lo + ' to ' + p.hi + ') ' + p.ru + ' [James]' };
+        formula: 'LBW ' + refRound(lbw, 1) + ' kg \u00d7 (' + p.lo + ' to ' + p.hi + ') ' + p.ru + ' [James, ' + (d.sex || 'M') + ']' };
     }
     case 'ett': { // ETT tube size from height
       if (d.cm === null) return { value: '\u2014', formula: 'Enter height' };

@@ -10,6 +10,19 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.0.1] - 2026-04-14
+
+### Changed
+- OCC compendium medications now precalculate weight-based doses from patient demographics.
+- Computed values display as "XX mg (based on YY kg)"; detail popup shows original card formula.
+- New calc types: `occ_ws` (single), `occ_wr` (range), `occ_wc` (capped), `occ_max` (toxic dose plain/epi).
+- Converted ~30 OCC medication items from fixed text to dynamic computation.
+- Local anesthetic toxic doses now show max dose for current patient weight.
+- Intralipid LAST bolus computed from weight.
+- Gentamicin and vancomycin prophylaxis doses computed from weight.
+
+---
+
 ## [1.6.0.0] - 2026-04-13
 
 ### Added

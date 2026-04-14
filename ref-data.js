@@ -64,6 +64,7 @@ const WEB_REFS = {
   'web:digoxin1': 'Digoxin — StatPearls (NBK556025)',
   'web:insulin1': 'Diabetic Perioperative Management — StatPearls (NBK540965)',
   'web:perlas1': 'Gastric volume estimation using Perlas formula — PMC9159396',
+  'web:glyco_fda': 'Glycopyrrolate FDA label (NDA 214919) — 0.2 mg per 1 mg neostigmine for NMB reversal',
   'web:nmb1': 'Neuromuscular Blocking Drugs — StatPearls (NBK539829)',
   'web:nmb2': 'Succinylcholine — StatPearls (NBK499984)',
   'web:sug1': 'Sugammadex — StatPearls (NBK470351)',
@@ -450,9 +451,11 @@ const REF_SECTIONS = [
         status: 'validated', src: ['occ:card'], notes: null },
       { label: 'Glycopyrrolate', calc: 'occ_multi', params: { rows: [
           { type: 'txt', age: 'adult', v: 'Adult: 0.2 mg IV' },
-          { type: 'wr', age: 'peds', label: 'Peds', lo: 4, hi: 10, u: 'mcg' }
-        ], card: 'Adult: 0.2 mg IV. Peds: 4-10 mcg/kg. Give with neostigmine for NMB reversal.' },
-        status: 'validated', src: ['occ:card'], notes: null }
+          { type: 'wr', age: 'peds', label: 'Peds', lo: 4, hi: 10, u: 'mcg' },
+          { type: 'txt', v: 'NMB reversal: 0.2 mg per 1 mg neostigmine' }
+        ], card: 'Adult: 0.2 mg IV. Peds: 4-10 mcg/kg. NMB reversal ratio: 0.2 mg glycopyrrolate per 1 mg neostigmine (FDA label).' },
+        status: 'validated', src: ['occ:card', 'web:glyco_fda'],
+        notes: 'For NMB reversal, co-administer with neostigmine at 0.2 mg glycopyrrolate : 1 mg neostigmine ratio.' }
     ]
   },
   {
@@ -853,8 +856,9 @@ var OCC_SECTIONS = [
         ], card: '0.2 mg IV q1 min; max 1 mg. Peds: 0.01 mg/kg (max 0.2 mg) q1 min. Benzodiazepine reversal.' }, status: OCC, src: OCS, notes: null },
       { label: 'Glycopyrrolate', calc: 'occ_multi', params: { rows: [
           { type: 'txt', age: 'adult', v: 'Adult: 0.2 mg IV' },
-          { type: 'wr', age: 'peds', label: 'Peds', lo: 4, hi: 10, u: 'mcg' }
-        ], card: 'Adult: 0.2 mg IV. Peds: 4-10 mcg/kg. Give with neostigmine for NMB reversal.' }, status: OCC, src: OCS, notes: null },
+          { type: 'wr', age: 'peds', label: 'Peds', lo: 4, hi: 10, u: 'mcg' },
+          { type: 'txt', v: 'NMB reversal: 0.2 mg per 1 mg neostigmine' }
+        ], card: 'Adult: 0.2 mg IV. Peds: 4-10 mcg/kg. NMB reversal ratio: 0.2 mg glycopyrrolate per 1 mg neostigmine (FDA label).' }, status: OCC, src: ['occ:card', 'web:glyco_fda'], notes: null },
       { label: 'Hydralazine', calc: 'fd', params: { v: '5-10 mg IV q10-20 min', f: 'Vasodilator for hypertension.' }, status: OCC, src: OCS, notes: null },
       { label: 'Hydrocortisone', calc: 'occ_multi', params: { rows: [
           { type: 'txt', age: 'adult', v: 'Adult: 100 mg IV' },

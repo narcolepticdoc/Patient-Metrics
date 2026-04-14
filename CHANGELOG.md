@@ -10,6 +10,18 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.1.0] - 2026-04-14
+
+### Changed
+- Converted ~20 remaining OCC fixed-dose items to weight-computed where they have mg/kg or mcg/kg dosing:
+  - Meds A-E: adenosine (peds), atracurium (+ infusion), cisatracurium (+ infusion), diphenhydramine (peds), ephedrine (peds), epinephrine (peds + infusion)
+  - Meds F-N: flumazenil (peds), glycopyrrolate (peds), hydrocortisone (peds), metoclopramide (peds), midazolam (adult + peds), naloxone (peds + infusion), nitroglycerin (infusion), nitroprusside (infusion)
+  - Meds O-V: phenylephrine (infusion + peds), vecuronium (+ infusion)
+  - Antibiotics: cefazolin, ampicillin-sulbactam, cefoxitin, cefuroxime, clindamycin, metronidazole (all peds doses)
+- All items now show computed values with "(based on XX kg)" label.
+
+---
+
 ## [1.6.0.5] - 2026-04-14
 
 ### Fixed

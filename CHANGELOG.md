@@ -10,6 +10,15 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.0.3] - 2026-04-14
+
+### Changed
+- New `occ_multi` calc type: items with multiple dose contexts (bolus, infusion, max toxic, IM, etc.) now compute ALL values on separate lines.
+- Converted 13 OCC medications to multi-line: lidocaine (bolus + infusion + max toxic), fentanyl (analgesia + infusion), ketamine (IV + IM + analgesia), dexmedetomidine (load + infusion), esmolol (load + infusion), amiodarone (arrest + rhythm + infusion), atropine (dose + pretreatment + arrest), rocuronium (intubation + RSI), succinylcholine (IV + IM), sugammadex (moderate + deep + immediate), propofol (induction + infusion), milrinone (load + infusion), neostigmine (max + range).
+- Detail popup shows original OCC card text for all computed items.
+
+---
+
 ## [1.6.0.2] - 2026-04-14
 
 ### Changed

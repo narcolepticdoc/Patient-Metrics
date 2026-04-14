@@ -10,6 +10,14 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.7.1.1] - 2026-04-14
+
+### Added
+- Glycopyrrolate NMB reversal ratio row: 0.2 mg glycopyrrolate per 1 mg neostigmine (per FDA label NDA 214919).
+- New reference `web:glyco_fda` for the FDA label citation.
+
+---
+
 ## [1.7.1.0] - 2026-04-14
 
 ### Added

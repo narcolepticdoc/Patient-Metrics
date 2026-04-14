@@ -161,3 +161,6 @@ The following sources were used to verify the clinical data in `ref-data.js`. Ea
 - **Digoxin — StatPearls**: NBK556025. Loading 8-12 mcg/kg IBW in divided doses.
 - **Diabetic Perioperative Management — StatPearls**: NBK540965. ADA target 140-180 mg/dL.
 - **Gastric US volume (Perlas formula validation)**: PMC9159396. Vol = 27 + 14.6 × RLD_CSA − 1.28 × age.
+
+### Anticholinergics
+- **Glycopyrrolate FDA label (NDA 214919)**: 0.2 mg per 1 mg neostigmine for NMB reversal. URL: https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/214919s002lbl.pdf

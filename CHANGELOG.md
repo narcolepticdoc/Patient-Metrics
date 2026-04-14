@@ -10,6 +10,17 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.7.0.1] - 2026-04-14
+
+### Changed
+- Reordered reference pages by clinical workflow:
+  1. Airway / Fluids → 2. Antiemetics / Prophylaxis → 3. Induction / NMB → 4. Analgesia → 5. Cardiovascular → 6. Electrolytes → 7. Obstetric Drugs → 8. CPB / Derived Physiology → 9. Anesthetic Crisis / MH.
+- OCC compendium reordered with topical references first, alphabetical drug list last:
+  - Quick Reference, Emergencies, Neuraxial, OB Emergencies, Antibiotics, Local & Inhalational, then Medications A-E, F-N, O-V.
+- Added `SECTION_ORDER` array in `ref-data.js` for maintainable ordering.
+
+---
+
 ## [1.7.0.0] - 2026-04-14
 
 ### Added

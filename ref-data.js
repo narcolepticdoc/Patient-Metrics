@@ -307,8 +307,10 @@ function computeRef(item, d) {
 // ═══════════════════════════════════════════════════
 const REF_SECTIONS = [
   {
-    title: 'Airway',
+    title: 'Airway / Induction / NMB',
     items: [
+      // ── Airway ──
+      { label: 'Airway', calc: 'hdr' },
       { label: 'Cuffed ET tube', calc: 'ett', params: { ins: '20-22 cm' },
         status: 'validated', src: ['occ:card'],
         notes: 'Height/10 - 9 mm. OCC card confirms 8.0 mm for 170 cm. Insertion distance is sex-dependent default.' },
@@ -317,12 +319,9 @@ const REF_SECTIONS = [
         notes: 'Standard weight-range lookup. Cuff volume is manufacturer-specified per size.' },
       { label: 'Tidal volume', calc: 'wr_ibw', params: { lo: 6, hi: 8, u: 'ml', ru: 'ml/kg IBW' },
         status: 'validated', src: ['web:tv1'],
-        notes: 'Lung-protective ventilation targets 6 ml/kg IBW; range 6-8 matches ARDSNet guidance.' }
-    ]
-  },
-  {
-    title: 'Induction Agents',
-    items: [
+        notes: 'Lung-protective ventilation targets 6 ml/kg IBW; range 6-8 matches ARDSNet guidance.' },
+      // ── Induction ──
+      { label: 'Induction', calc: 'hdr' },
       { label: 'Propofol', calc: 'wr_lbw', params: { lo: 2, hi: 3, u: 'mg', ru: 'mg/kg LBW' },
         status: 'validated', src: ['web:ind1'], notes: 'Uses James lean body weight.' },
       { label: 'Ketamine', calc: 'wr_lbw', params: { lo: 1, hi: 2, u: 'mg', ru: 'mg/kg LBW' },
@@ -333,12 +332,9 @@ const REF_SECTIONS = [
         status: 'validated', src: ['web:ind3'], notes: null },
       { label: 'Midazolam', calc: 'wr_lbw', params: { lo: 0.15, hi: 0.35, u: 'mg', ru: 'mg/kg LBW' },
         status: 'validated', src: ['web:ind4'],
-        notes: 'Wide range: higher end for sedation/induction, lower for premedication.' }
-    ]
-  },
-  {
-    title: 'Neuromuscular Blockers',
-    items: [
+        notes: 'Wide range: higher end for sedation/induction, lower for premedication.' },
+      // ── Neuromuscular Blockade ──
+      { label: 'Neuromuscular Blockade', calc: 'hdr' },
       { label: 'Vecuronium', calc: 'ws_ibw', params: { f: 0.1, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
         status: 'validated', src: ['web:nmb1'], notes: null },
       { label: 'Rocuronium', calc: 'ws_ibw', params: { f: 0.6, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
@@ -351,12 +347,9 @@ const REF_SECTIONS = [
         status: 'validated', src: ['web:nmb1'], notes: null },
       { label: 'Succinylcholine', calc: 'ws', params: { f: 1, u: 'mg', ru: 'mg/kg TBW (2 ED95)' },
         status: 'validated', src: ['web:nmb2'],
-        notes: 'Uses total body weight (TBW), not IBW. Only NMB in this section dosed on TBW.' }
-    ]
-  },
-  {
-    title: 'Antagonists',
-    items: [
+        notes: 'Uses total body weight (TBW), not IBW. Only NMB dosed on TBW.' },
+      // ── Reversal ──
+      { label: 'Reversal', calc: 'hdr' },
       { label: 'Neostigmine', calc: 'wr', params: { lo: 0.04, hi: 0.07, u: 'mg', ru: 'mg/kg TBW' },
         status: 'validated', src: ['web:neo1'], notes: 'Neuromuscular reversal. Uses TBW.' },
       { label: 'Sugammadex', calc: 'ws', params: { f: 2, u: 'mg', ru: 'mg/kg TBW; TOF 1-3' },
@@ -367,12 +360,9 @@ const REF_SECTIONS = [
         notes: 'Typical titration band 0.1-2.0 mg; weight formula anchors per-bolus dosing.' },
       { label: 'Flumazenil', calc: 'fd', params: { v: '0.2 mg initial; titrate 0.7 mg/bolus; max 1 mg', f: 'Initial 0.2 mg then 10 mcg/kg per titration' },
         status: 'validated', src: ['web:flu1'],
-        notes: '0.2 mg is standard initial reversal dose regardless of weight.' }
-    ]
-  },
-  {
-    title: 'Anticholinergics',
-    items: [
+        notes: '0.2 mg is standard initial reversal dose regardless of weight.' },
+      // ── Anticholinergics ──
+      { label: 'Anticholinergics', calc: 'hdr' },
       { label: 'Atropine', calc: 'ws', params: { f: 0.02, u: 'mg', ru: 'mg/kg' },
         status: 'validated', src: ['occ:card'], notes: 'Card: 0.02 mg/kg; adult arrest 1mg q3-5min.' },
       { label: 'Glycopyrrolate', calc: 'ws', params: { f: 10, u: 'mcg', ru: 'mcg/kg' },

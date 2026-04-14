@@ -555,7 +555,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.6.3.1</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.6.3.2</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -1364,6 +1364,13 @@ function buildRefPages(d) {
       title: section.title,
       render: function(container) {
         section.items.forEach(function(item) {
+          if (item.calc === 'hdr') {
+            var h = document.createElement('div');
+            h.className = 'ref-section-hdr';
+            h.textContent = item.label;
+            container.appendChild(h);
+            return;
+          }
           var result = computeRef(item, d);
           var refs = (item.src || []).map(function(k) { return WEB_REFS[k] || k; });
           renderRefItem(container, {

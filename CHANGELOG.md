@@ -10,6 +10,15 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.3.2] - 2026-04-14
+
+### Changed
+- Merged 5 sections (Airway, Induction Agents, Neuromuscular Blockers, Antagonists, Anticholinergics) into single "Airway / Induction / NMB" page with section headers.
+- Added `hdr` calc type for in-page section headers (Airway, Induction, Neuromuscular Blockade, Reversal, Anticholinergics).
+- Reduces total page count from 24 to 20.
+
+---
+
 ## [1.6.3.1] - 2026-04-14
 
 ### Fixed

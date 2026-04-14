@@ -10,6 +10,28 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.2.0] - 2026-04-14
+
+### Removed
+- Vital Signs section (unresolved — content was never visible in screenshots).
+- Delta Hct and Target Hct unresolved placeholders from CPB section.
+
+### Changed
+- Validated 24 previously partially_verified/issue items using OCC card and existing sources:
+  - Airway: ETT and LMA promoted via OCC card.
+  - Local Anesthetics: lidocaine/bupivacaine updated to max toxic dose format (4.5/7 and 2.5/3 mg/kg); intralipid bolus corrected to 1.5 ml/kg per ASRA LAST.
+  - Ketorolac promoted via OCC card.
+  - Vasopressin dose corrected from 0.1 to 0.04 U/min (OCC standard range).
+  - Nitroprusside promoted (OCC confirms 0.5-2 mcg/kg/min; original app error corrected).
+  - Amiodarone AF promoted via OCC card.
+  - Ca gluconate, hyperventilation promoted.
+  - MH: associated conditions, contraindicated drugs, dantrolene ICU (interval corrected q4-8h → q4-6h) promoted.
+  - Dextrose, cardioversion, defibrillation promoted.
+  - Mannitol, HS 7.5%, PRBC, plateletpheresis promoted.
+- Status: 185/194 validated (95.4%), 9 partially_verified remaining.
+
+---
+
 ## [1.6.1.0] - 2026-04-14
 
 ### Changed

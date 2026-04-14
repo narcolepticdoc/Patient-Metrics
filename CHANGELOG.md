@@ -10,6 +10,17 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.5.0] - 2026-04-14
+
+### Added
+- Age-based filtering of adult/peds dosing rows in `occ_multi`.
+- Patient age <18 shows only pediatric dose rows.
+- Patient age ≥18 shows only adult dose rows.
+- When age is unknown, both rows display (fallback).
+- Applied to 18 medications: Adenosine, Atropine, Diphenhydramine, Ephedrine, Epinephrine, Flumazenil, Glycopyrrolate, Hydrocortisone, Metoclopramide, Midazolam, Naloxone, Phenylephrine, and 6 antibiotics (Cefazolin, Amp-Sulbactam, Cefoxitin, Cefuroxime, Clindamycin, Metronidazole).
+
+---
+
 ## [1.6.4.2] - 2026-04-14
 
 ### Changed

@@ -203,6 +203,28 @@ function computeRef(item, d) {
     case 'sono': {
       return { value: 'Requires US input', formula: 'Vol = 27 + 14.6 \u00d7 RLD_CSA - 1.28 \u00d7 age' };
     }
+    case 'occ_ws': { // OCC weight single — shows computed + "(based on XX kg)"
+      var v = refRound(kg * p.f);
+      return { value: v + ' ' + p.u + ' (based on ' + refRound(kg, 1) + ' kg)',
+        formula: p.card };
+    }
+    case 'occ_wr': { // OCC weight range
+      var lo = refRound(kg * p.lo), hi = refRound(kg * p.hi);
+      return { value: lo + '-' + hi + ' ' + p.u + ' (based on ' + refRound(kg, 1) + ' kg)',
+        formula: p.card };
+    }
+    case 'occ_wc': { // OCC weight capped
+      var raw = kg * p.f, v = refRound(Math.min(raw, p.cap));
+      var note = raw > p.cap ? ' (capped)' : '';
+      return { value: v + note + ' ' + p.u + ' (based on ' + refRound(kg, 1) + ' kg)',
+        formula: p.card };
+    }
+    case 'occ_max': { // OCC weight-based toxic max dose
+      var v = refRound(kg * p.f);
+      var v2 = p.f2 ? ' / ' + refRound(kg * p.f2) + ' ' + p.u + ' w/epi' : '';
+      return { value: 'Max ' + v + ' ' + p.u + ' plain' + v2 + ' (based on ' + refRound(kg, 1) + ' kg)',
+        formula: p.card };
+    }
     case 'ws_ibw': { // weight single using IBW
       if (d.cm === null) return { value: '\u2014', formula: 'Enter height for IBW' };
       var ibw = calcIBW(d.cm, d.sex);
@@ -581,67 +603,67 @@ var OCC_SECTIONS = [
   {
     title: 'OCC: Medications A-E',
     items: [
-      { label: 'Adenosine', calc: 'fd', params: { v: 'Adult: 6 mg IV push, then 12 mg; Peds: 0.1 mg/kg', f: 'Rapid IV push with flush' }, status: OCC, src: OCS, notes: 'Max peds dose 6 mg first, 12 mg repeat.' },
-      { label: 'Albuterol', calc: 'fd', params: { v: '2.5 mg nebulized q20min; MDI 4-8 puffs q20min', f: 'Bronchospasm' }, status: OCC, src: OCS, notes: 'Racemic 2.25% soln 0.25-0.5 ml via neb.' },
-      { label: 'Amiodarone', calc: 'fd', params: { v: 'Arrest: 300 mg IV bolus; Rhythm: 150-300 mg IV over 30 min', f: 'Load then infusion 1 mg/min \u00d7 6h' }, status: OCC, src: OCS, notes: 'Peds arrest: 5 mg/kg IV (max 300 mg) repeat \u00d7 2.' },
-      { label: 'Atracurium', calc: 'fd', params: { v: '0.4-0.5 mg/kg IV', f: 'NMB induction dose' }, status: OCC, src: OCS, notes: 'Infusion 5-20 mcg/kg/min.' },
-      { label: 'Atropine', calc: 'fd', params: { v: 'Adult arrest: 1 mg q3-5 min; Peds: 0.02 mg/kg (max 0.5 mg)', f: 'Anticholinergic' }, status: OCC, src: OCS, notes: 'Min peds dose 0.1 mg. Pretreatment: 0.01-0.02 mg/kg.' },
-      { label: 'Carboprost (Hemabate)', calc: 'fd', params: { v: '250 mcg IM, repeat q15 min; max 2 mg (8 doses)', f: 'Uterotonic for PPH' }, status: OCC, src: OCS, notes: 'Contraindicated in asthma.' },
-      { label: 'Cisatracurium', calc: 'fd', params: { v: '0.1-0.15 mg/kg IV', f: 'NMB induction dose' }, status: OCC, src: OCS, notes: 'Infusion 0.5-10 mcg/kg/min.' },
-      { label: 'Dexamethasone', calc: 'fd', params: { v: 'Adult: 4-10 mg IV; Peds: 0.15 mg/kg (max 10 mg)', f: 'Antiemetic / anti-inflammatory' }, status: OCC, src: OCS, notes: null },
-      { label: 'Dexmedetomidine', calc: 'fd', params: { v: 'Load: 0.5-1 mcg/kg over 10 min; Infusion: 0.2-1.5 mcg/kg/hr', f: 'Sedation' }, status: OCC, src: OCS, notes: null },
-      { label: 'Diphenhydramine', calc: 'fd', params: { v: 'Adult: 25-50 mg IV/IM; Peds: 1-1.25 mg/kg', f: 'H1 blocker / antiemetic' }, status: OCC, src: OCS, notes: null },
-      { label: 'Ephedrine', calc: 'fd', params: { v: 'Adult: 5-10 mg IV; Peds: 0.1 mg/kg', f: 'Vasopressor' }, status: OCC, src: OCS, notes: null },
-      { label: 'Epinephrine', calc: 'fd', params: { v: 'Arrest: 1 mg IV q3-5 min; Hypotension: 5-20 mcg IV; Bronchospasm: 0.3-0.5 mg IM', f: 'Multiple scenarios' }, status: OCC, src: OCS, notes: 'Peds arrest: 10 mcg/kg (0.01 mg/kg). Infusion 0.05-0.5 mcg/kg/min.' },
-      { label: 'Esmolol', calc: 'fd', params: { v: 'Load: 0.5-1 mg/kg IV; Infusion: 50-300 mcg/kg/min', f: 'Short-acting beta blocker' }, status: OCC, src: OCS, notes: null },
-      { label: 'Etomidate', calc: 'fd', params: { v: '0.2-0.3 mg/kg IV', f: 'Induction agent' }, status: OCC, src: OCS, notes: 'Peds: 0.2-0.3 mg/kg.' }
+      { label: 'Adenosine', calc: 'fd', params: { v: 'Adult: 6 mg IV push, then 12 mg; Peds: 0.1 mg/kg', f: 'Rapid IV push with flush. Max peds 6 mg first, 12 mg repeat.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Albuterol', calc: 'fd', params: { v: '2.5 mg nebulized q20min; MDI 4-8 puffs q20min', f: 'Bronchospasm. Racemic 2.25% soln 0.25-0.5 ml via neb.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Amiodarone', calc: 'occ_wc', params: { f: 5, cap: 300, u: 'mg IV (arrest)', card: 'Arrest: 5 mg/kg IV (max 300 mg). Rhythm: 150-300 mg IV over 30 min, then infusion 1 mg/min \u00d7 6h. Peds: repeat \u00d7 2.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Atracurium', calc: 'occ_wr', params: { lo: 0.4, hi: 0.5, u: 'mg IV', card: '0.4-0.5 mg/kg IV. Infusion 5-20 mcg/kg/min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Atropine', calc: 'occ_ws', params: { f: 0.02, u: 'mg', card: 'Peds: 0.02 mg/kg (min 0.1 mg, max 0.5 mg). Adult arrest: 1 mg q3-5 min. Pretreatment: 0.01-0.02 mg/kg.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Carboprost (Hemabate)', calc: 'fd', params: { v: '250 mcg IM q15 min; max 2 mg (8 doses)', f: 'Uterotonic for PPH. Contraindicated in asthma.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Cisatracurium', calc: 'occ_wr', params: { lo: 0.1, hi: 0.15, u: 'mg IV', card: '0.1-0.15 mg/kg IV. Infusion 0.5-10 mcg/kg/min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Dexamethasone', calc: 'occ_wc', params: { f: 0.15, cap: 10, u: 'mg IV', card: 'Adult: 4-10 mg IV. Peds: 0.15 mg/kg (max 10 mg). Antiemetic / anti-inflammatory.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Dexmedetomidine', calc: 'occ_wr', params: { lo: 0.5, hi: 1, u: 'mcg IV load', card: 'Load: 0.5-1 mcg/kg over 10 min. Infusion: 0.2-1.5 mcg/kg/hr.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Diphenhydramine', calc: 'fd', params: { v: 'Adult: 25-50 mg IV/IM; Peds: 1-1.25 mg/kg', f: 'H1 blocker / antiemetic.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Ephedrine', calc: 'fd', params: { v: 'Adult: 5-10 mg IV; Peds: 0.1 mg/kg', f: 'Vasopressor.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Epinephrine', calc: 'fd', params: { v: 'Arrest: 1 mg q3-5 min; Hypotension: 5-20 mcg IV; Bronchospasm: 0.3-0.5 mg IM', f: 'Peds arrest: 10 mcg/kg (0.01 mg/kg). Infusion 0.05-0.5 mcg/kg/min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Esmolol', calc: 'occ_wr', params: { lo: 0.5, hi: 1, u: 'mg IV load', card: 'Load: 0.5-1 mg/kg IV. Infusion: 50-300 mcg/kg/min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Etomidate', calc: 'occ_wr', params: { lo: 0.2, hi: 0.3, u: 'mg IV', card: '0.2-0.3 mg/kg IV. Peds: same range.' }, status: OCC, src: OCS, notes: null }
     ]
   },
   {
     title: 'OCC: Medications F-N',
     items: [
-      { label: 'Fentanyl', calc: 'fd', params: { v: 'Analgesia: 0.5-2 mcg/kg IV; Infusion: 0.5-20 mcg/kg/hr', f: 'Opioid' }, status: OCC, src: OCS, notes: 'Peds analgesia: 0.5-1 mcg/kg IV.' },
-      { label: 'Flumazenil', calc: 'fd', params: { v: '0.2 mg IV q1 min; max 1 mg', f: 'Benzodiazepine reversal' }, status: OCC, src: OCS, notes: 'Peds: 0.01 mg/kg (max 0.2 mg) repeat q1 min.' },
-      { label: 'Glycopyrrolate', calc: 'fd', params: { v: 'Adult: 0.2 mg IV; Peds: 4-10 mcg/kg', f: 'Anticholinergic' }, status: OCC, src: OCS, notes: 'Add atropine 0.5-1 mg if using neostigmine.' },
-      { label: 'Hydralazine', calc: 'fd', params: { v: '5-10 mg IV q10-20 min', f: 'Vasodilator for hypertension' }, status: OCC, src: OCS, notes: null },
-      { label: 'Hydrocortisone', calc: 'fd', params: { v: '100 mg IV; Peds: 1-2 mg/kg', f: 'Steroid / anaphylaxis' }, status: OCC, src: OCS, notes: null },
-      { label: 'Insulin Regular', calc: 'fd', params: { v: '5-10 U IV with D50 25-50 g', f: 'Hyperkalemia / hyperglycemia' }, status: OCC, src: OCS, notes: null },
-      { label: 'Ketamine', calc: 'fd', params: { v: 'Induction: 1-2 mg/kg IV, 4-6 mg/kg IM; Analgesia: 0.2-0.8 mg/kg IV', f: 'Dissociative agent' }, status: OCC, src: OCS, notes: 'Peds: same ranges. Infusion 2-15 mcg/kg/min.' },
-      { label: 'Ketorolac', calc: 'fd', params: { v: 'Adult: 15-30 mg IV/IM; Peds: 0.5 mg/kg (max 15 mg)', f: 'NSAID analgesic' }, status: OCC, src: OCS, notes: 'Avoid in asthma, renal disease.' },
-      { label: 'Labetalol', calc: 'fd', params: { v: '5-10 mg IV, double dose q5-10 min; max 300 mg', f: 'Alpha/beta blocker' }, status: OCC, src: OCS, notes: 'Infusion 0.5-2 mg/min.' },
-      { label: 'Lidocaine', calc: 'fd', params: { v: '1-1.5 mg/kg IV bolus; Infusion: 1-4 mg/min', f: 'Antiarrhythmic / local anesthetic' }, status: OCC, src: OCS, notes: 'Peds: 1 mg/kg bolus. Max toxic dose 4.5 mg/kg (7 with epi).' },
-      { label: 'Magnesium', calc: 'fd', params: { v: 'Eclampsia: 4-6 g IV load, 1-2 g/hr; Bronchospasm: 2 g IV over 20 min', f: 'Multiple uses' }, status: OCC, src: OCS, notes: 'Torsades: 1-2 g IV over 5-60 min.' },
-      { label: 'Metaraminol', calc: 'fd', params: { v: '0.5-2 mg IV bolus; Infusion: 0.5-5 mg/hr', f: 'Vasopressor' }, status: OCC, src: OCS, notes: null },
-      { label: 'Methylergonovine', calc: 'fd', params: { v: '0.2 mg IM; avoid IV', f: 'Uterotonic for PPH' }, status: OCC, src: OCS, notes: 'Contraindicated in hypertension, preeclampsia.' },
-      { label: 'Methylprednisolone', calc: 'fd', params: { v: '125 mg IV', f: 'Steroid / anaphylaxis' }, status: OCC, src: OCS, notes: null },
-      { label: 'Metoclopramide', calc: 'fd', params: { v: '10-20 mg IV', f: 'Prokinetic / antiemetic' }, status: OCC, src: OCS, notes: 'Peds: 0.1-0.15 mg/kg IV.' },
-      { label: 'Midazolam', calc: 'fd', params: { v: '0.5-2 mg IV titrate; Peds: 0.05-0.1 mg/kg', f: 'Benzodiazepine' }, status: OCC, src: OCS, notes: null },
-      { label: 'Milrinone', calc: 'fd', params: { v: 'Load: 50 mcg/kg over 10 min; Infusion: 0.375-0.75 mcg/kg/min', f: 'Inodilator' }, status: OCC, src: OCS, notes: null },
-      { label: 'Misoprostol', calc: 'fd', params: { v: '600-1000 mcg PR/SL', f: 'Uterotonic for PPH' }, status: OCC, src: OCS, notes: null },
-      { label: 'Naloxone', calc: 'fd', params: { v: 'Reversal: 0.04-0.4 mg IV titrate; Peds: 1-10 mcg/kg', f: 'Opioid antagonist' }, status: OCC, src: OCS, notes: 'Max 10 mg total. Infusion 0.25-6.25 mcg/kg/hr.' },
-      { label: 'Neostigmine', calc: 'fd', params: { v: '0.04-0.07 mg/kg IV (max 5 mg); give with glycopyrrolate', f: 'NMB reversal' }, status: OCC, src: OCS, notes: 'Peds: same dose range.' },
-      { label: 'Nitroglycerin', calc: 'fd', params: { v: 'Infusion: 0.5-20 mcg/kg/min', f: 'Vasodilator' }, status: OCC, src: OCS, notes: 'Bolus: 50-100 mcg IV. Uterine relaxation: 50-250 mcg IV.' },
-      { label: 'Nitroprusside', calc: 'fd', params: { v: 'Infusion: 0.5-2 mcg/kg/min (max 10)', f: 'Vasodilator' }, status: OCC, src: OCS, notes: 'Cyanide toxicity risk with prolonged use.' }
+      { label: 'Fentanyl', calc: 'occ_wr', params: { lo: 0.5, hi: 2, u: 'mcg IV', card: 'Analgesia: 0.5-2 mcg/kg IV. Infusion: 0.5-20 mcg/kg/hr. Peds: 0.5-1 mcg/kg IV.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Flumazenil', calc: 'fd', params: { v: '0.2 mg IV q1 min; max 1 mg', f: 'Benzodiazepine reversal. Peds: 0.01 mg/kg (max 0.2 mg) q1 min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Glycopyrrolate', calc: 'fd', params: { v: 'Adult: 0.2 mg IV; Peds: 4-10 mcg/kg', f: 'Anticholinergic. Give with neostigmine for NMB reversal.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Hydralazine', calc: 'fd', params: { v: '5-10 mg IV q10-20 min', f: 'Vasodilator for hypertension.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Hydrocortisone', calc: 'fd', params: { v: '100 mg IV; Peds: 1-2 mg/kg', f: 'Steroid / anaphylaxis.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Insulin Regular', calc: 'fd', params: { v: '5-10 U IV with D50 25-50 g', f: 'Hyperkalemia / hyperglycemia.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Ketamine (IV)', calc: 'occ_wr', params: { lo: 1, hi: 2, u: 'mg IV induction', card: 'Induction: 1-2 mg/kg IV. IM: 4-6 mg/kg. Analgesia: 0.2-0.8 mg/kg IV. Infusion: 2-15 mcg/kg/min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Ketorolac', calc: 'occ_wc', params: { f: 0.5, cap: 30, u: 'mg IV/IM', card: 'Adult: 15-30 mg IV/IM. Peds: 0.5 mg/kg (max 15 mg). Avoid in asthma, renal disease.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Labetalol', calc: 'fd', params: { v: '5-10 mg IV, double q5-10 min; max 300 mg', f: 'Alpha/beta blocker. Infusion 0.5-2 mg/min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Lidocaine', calc: 'occ_wr', params: { lo: 1, hi: 1.5, u: 'mg IV bolus', card: '1-1.5 mg/kg IV bolus. Infusion: 1-4 mg/min. Max toxic dose 4.5 mg/kg (7 with epi).' }, status: OCC, src: OCS, notes: null },
+      { label: 'Magnesium', calc: 'fd', params: { v: 'Eclampsia: 4-6 g IV load, 1-2 g/hr; Torsades: 1-2 g IV', f: 'Bronchospasm: 2 g IV over 20 min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Metaraminol', calc: 'fd', params: { v: '0.5-2 mg IV bolus; Infusion: 0.5-5 mg/hr', f: 'Vasopressor.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Methylergonovine', calc: 'fd', params: { v: '0.2 mg IM (avoid IV)', f: 'Uterotonic for PPH. Contraindicated in HTN, preeclampsia.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Methylprednisolone', calc: 'fd', params: { v: '125 mg IV', f: 'Steroid / anaphylaxis.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Metoclopramide', calc: 'fd', params: { v: '10-20 mg IV; Peds: 0.1-0.15 mg/kg', f: 'Prokinetic / antiemetic.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Midazolam', calc: 'occ_wr', params: { lo: 0.05, hi: 0.1, u: 'mg (peds)', card: 'Adult: 0.5-2 mg IV titrate. Peds: 0.05-0.1 mg/kg.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Milrinone', calc: 'occ_ws', params: { f: 50, u: 'mcg IV load', card: 'Load: 50 mcg/kg over 10 min. Infusion: 0.375-0.75 mcg/kg/min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Misoprostol', calc: 'fd', params: { v: '600-1000 mcg PR/SL', f: 'Uterotonic for PPH.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Naloxone', calc: 'fd', params: { v: 'Reversal: 0.04-0.4 mg IV titrate; max 10 mg', f: 'Opioid antagonist. Peds: 1-10 mcg/kg. Infusion 0.25-6.25 mcg/kg/hr.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Neostigmine', calc: 'occ_wr', params: { lo: 0.04, hi: 0.07, u: 'mg IV', card: '0.04-0.07 mg/kg IV (max 5 mg). Give with glycopyrrolate.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Nitroglycerin', calc: 'fd', params: { v: 'Bolus: 50-100 mcg IV; Infusion: 0.5-20 mcg/kg/min', f: 'Vasodilator. Uterine relaxation: 50-250 mcg IV.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Nitroprusside', calc: 'fd', params: { v: 'Infusion: 0.5-2 mcg/kg/min (max 10)', f: 'Vasodilator. Cyanide toxicity risk with prolonged use.' }, status: OCC, src: OCS, notes: null }
     ]
   },
   {
     title: 'OCC: Medications O-V',
     items: [
-      { label: 'Ondansetron', calc: 'fd', params: { v: 'Adult: 4 mg IV; Peds: 0.1 mg/kg (max 4 mg)', f: 'Antiemetic' }, status: OCC, src: OCS, notes: null },
-      { label: 'Oxytocin', calc: 'fd', params: { v: '3 U IV bolus over 30 sec; Infusion: 1-2 U/hr (max 40 U total)', f: 'Uterotonic' }, status: OCC, src: OCS, notes: 'Consider rule of 3s: 3 U load, consider repeat \u00d7 3.' },
-      { label: 'Pancuronium', calc: 'fd', params: { v: '0.08-0.12 mg/kg IV', f: 'NMB (long acting)' }, status: OCC, src: OCS, notes: null },
-      { label: 'Phenylephrine', calc: 'fd', params: { v: 'Bolus: 50-200 mcg IV; Infusion: 0.5-5 mcg/kg/min', f: 'Alpha-1 vasopressor' }, status: OCC, src: OCS, notes: 'Peds: 1-10 mcg/kg bolus.' },
-      { label: 'Prochlorperazine', calc: 'fd', params: { v: '5-10 mg IV/IM', f: 'Antiemetic' }, status: OCC, src: OCS, notes: 'Avoid in children < 2 yr or < 10 kg.' },
-      { label: 'Promethazine', calc: 'fd', params: { v: '6.25-12.5 mg IV/IM', f: 'Antiemetic / sedative' }, status: OCC, src: OCS, notes: null },
-      { label: 'Propofol', calc: 'fd', params: { v: 'Induction: 1.5-2.5 mg/kg IV; Infusion: 25-200 mcg/kg/min', f: 'Induction / sedation' }, status: OCC, src: OCS, notes: 'Peds: 2-4 mg/kg IV.' },
-      { label: 'Ranitidine', calc: 'fd', params: { v: '50 mg IV', f: 'H2 blocker' }, status: OCC, src: OCS, notes: null },
-      { label: 'Rocuronium', calc: 'fd', params: { v: 'Intubation: 0.6-1.2 mg/kg IV; Infusion: 5-15 mcg/kg/min', f: 'NMB' }, status: OCC, src: OCS, notes: 'RSI dose: 1.2 mg/kg. Peds: same.' },
-      { label: 'Scopolamine', calc: 'fd', params: { v: '1.5 mg transdermal patch q72h', f: 'Antiemetic' }, status: OCC, src: OCS, notes: 'Apply behind ear.' },
-      { label: 'Sodium Citrate', calc: 'fd', params: { v: '30 ml PO', f: 'Non-particulate antacid' }, status: OCC, src: OCS, notes: 'Give 15-30 min before induction.' },
-      { label: 'Succinylcholine', calc: 'fd', params: { v: '1-1.5 mg/kg IV; 4 mg/kg IM', f: 'Depolarizing NMB' }, status: OCC, src: OCS, notes: 'Peds: may need 2 mg/kg IV. Onset 30-60 sec, duration 5-10 min.' },
-      { label: 'Sugammadex', calc: 'fd', params: { v: 'Moderate block (TOF 1-2): 2 mg/kg; Deep block: 4 mg/kg; Immediate: 16 mg/kg', f: 'NMB reversal' }, status: OCC, src: OCS, notes: 'Use ideal body weight in obese. No anticholinergic needed.' },
-      { label: 'Vasopressin', calc: 'fd', params: { v: 'Shock: 0.03-0.04 U/min infusion', f: 'Non-adrenergic vasopressor' }, status: OCC, src: OCS, notes: 'ACLS: 40 U IV \u00d7 1 dose.' },
-      { label: 'Vecuronium', calc: 'fd', params: { v: '0.08-0.12 mg/kg IV; Infusion: 0.8-1.8 mcg/kg/min', f: 'NMB' }, status: OCC, src: OCS, notes: 'Onset 2-3 min, duration 25-40 min.' }
+      { label: 'Ondansetron', calc: 'occ_wc', params: { f: 0.1, cap: 4, u: 'mg IV', card: 'Adult: 4 mg IV. Peds: 0.1 mg/kg (max 4 mg). Antiemetic.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Oxytocin', calc: 'fd', params: { v: '3 U IV bolus; Infusion 1-2 U/hr (max 40 U)', f: 'Uterotonic. Rule of 3s: 3 U load, repeat \u00d7 3.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Pancuronium', calc: 'occ_wr', params: { lo: 0.08, hi: 0.12, u: 'mg IV', card: '0.08-0.12 mg/kg IV. NMB (long acting).' }, status: OCC, src: OCS, notes: null },
+      { label: 'Phenylephrine', calc: 'fd', params: { v: 'Bolus: 50-200 mcg IV; Infusion: 0.5-5 mcg/kg/min', f: 'Alpha-1 vasopressor. Peds: 1-10 mcg/kg bolus.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Prochlorperazine', calc: 'fd', params: { v: '5-10 mg IV/IM', f: 'Antiemetic. Avoid in children < 2 yr or < 10 kg.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Promethazine', calc: 'fd', params: { v: '6.25-12.5 mg IV/IM', f: 'Antiemetic / sedative.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Propofol', calc: 'occ_wr', params: { lo: 1.5, hi: 2.5, u: 'mg IV induction', card: 'Induction: 1.5-2.5 mg/kg IV. Infusion: 25-200 mcg/kg/min. Peds: 2-4 mg/kg IV.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Ranitidine', calc: 'fd', params: { v: '50 mg IV', f: 'H2 blocker.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Rocuronium', calc: 'occ_wr', params: { lo: 0.6, hi: 1.2, u: 'mg IV', card: 'Intubation: 0.6-1.2 mg/kg IV. RSI: 1.2 mg/kg. Infusion: 5-15 mcg/kg/min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Scopolamine', calc: 'fd', params: { v: '1.5 mg transdermal patch q72h', f: 'Antiemetic. Apply behind ear.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Sodium Citrate', calc: 'fd', params: { v: '30 ml PO', f: 'Non-particulate antacid. Give 15-30 min before induction.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Succinylcholine', calc: 'occ_wr', params: { lo: 1, hi: 1.5, u: 'mg IV', card: '1-1.5 mg/kg IV; 4 mg/kg IM. Peds: may need 2 mg/kg. Onset 30-60 sec, duration 5-10 min.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Sugammadex (TOF 1-2)', calc: 'occ_ws', params: { f: 2, u: 'mg IV', card: 'Moderate block (TOF 1-2): 2 mg/kg. Deep block: 4 mg/kg. Immediate: 16 mg/kg. Use IBW in obese.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Vasopressin', calc: 'fd', params: { v: 'Shock: 0.03-0.04 U/min infusion; ACLS: 40 U IV \u00d7 1', f: 'Non-adrenergic vasopressor.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Vecuronium', calc: 'occ_wr', params: { lo: 0.08, hi: 0.12, u: 'mg IV', card: '0.08-0.12 mg/kg IV. Infusion: 0.8-1.8 mcg/kg/min. Onset 2-3 min, duration 25-40 min.' }, status: OCC, src: OCS, notes: null }
     ]
   },
   {
@@ -680,25 +702,25 @@ var OCC_SECTIONS = [
       { label: 'Cefuroxime', calc: 'fd', params: { v: 'Adult: 1.5 g IV; Peds: 50 mg/kg; Redose q4h', f: 'Surgical prophylaxis' }, status: OCC, src: OCS, notes: null },
       { label: 'Clindamycin', calc: 'fd', params: { v: 'Adult: 900 mg IV; Peds: 10 mg/kg; Redose q6h', f: 'PCN allergy alternative' }, status: OCC, src: OCS, notes: null },
       { label: 'Ertapenem', calc: 'fd', params: { v: 'Adult: 1 g IV; No redose needed', f: 'Surgical prophylaxis' }, status: OCC, src: OCS, notes: null },
-      { label: 'Gentamicin', calc: 'fd', params: { v: 'Adult: 5 mg/kg IV; Peds: 2.5 mg/kg; No redose', f: 'Surgical prophylaxis' }, status: OCC, src: OCS, notes: null },
+      { label: 'Gentamicin', calc: 'occ_ws', params: { f: 5, u: 'mg IV', card: 'Adult: 5 mg/kg IV. Peds: 2.5 mg/kg. No redose. Surgical prophylaxis.' }, status: OCC, src: OCS, notes: null },
       { label: 'Metronidazole', calc: 'fd', params: { v: 'Adult: 500 mg IV; Peds: 15 mg/kg; No redose', f: 'Anaerobic coverage' }, status: OCC, src: OCS, notes: null },
-      { label: 'Vancomycin', calc: 'fd', params: { v: 'Adult: 15 mg/kg IV over 1-2 hr; Peds: 15 mg/kg; Redose q6-12h', f: 'MRSA coverage / PCN allergy' }, status: OCC, src: OCS, notes: 'Infuse over 1 hr to avoid red man syndrome.' }
+      { label: 'Vancomycin', calc: 'occ_ws', params: { f: 15, u: 'mg IV over 1-2 hr', card: 'Adult/Peds: 15 mg/kg IV. Redose q6-12h. MRSA coverage / PCN allergy. Infuse over 1 hr to avoid red man syndrome.' }, status: OCC, src: OCS, notes: null }
     ]
   },
   {
     title: 'OCC: Local & Inhalational',
     items: [
-      { label: 'Lidocaine \u2014 toxic dose', calc: 'fd', params: { v: 'Plain: 4.5 mg/kg; With epi: 7 mg/kg', f: 'Local anesthetic' }, status: OCC, src: OCS, notes: 'Onset: fast. Duration: 1-1.5 hr (plain), 2-3 hr (epi).' },
-      { label: 'Bupivacaine \u2014 toxic dose', calc: 'fd', params: { v: 'Plain: 2.5 mg/kg; With epi: 3 mg/kg', f: 'Local anesthetic' }, status: OCC, src: OCS, notes: 'Onset: moderate. Duration: 2-3 hr (plain), 4-12 hr (epi).' },
-      { label: 'Ropivacaine \u2014 toxic dose', calc: 'fd', params: { v: '3 mg/kg', f: 'Local anesthetic' }, status: OCC, src: OCS, notes: 'Onset: moderate. Duration: 2-3 hr. Less cardiotoxic than bupivacaine.' },
-      { label: 'Chloroprocaine \u2014 toxic dose', calc: 'fd', params: { v: '11 mg/kg', f: 'Local anesthetic (ester)' }, status: OCC, src: OCS, notes: 'Onset: fast. Duration: 0.5-1 hr. Rapid hydrolysis by plasma esterases.' },
-      { label: 'Mepivacaine \u2014 toxic dose', calc: 'fd', params: { v: 'Plain: 4.5 mg/kg; With epi: 7 mg/kg', f: 'Local anesthetic' }, status: OCC, src: OCS, notes: 'Onset: fast. Duration: 1.5-3 hr.' },
-      { label: 'Tetracaine \u2014 toxic dose', calc: 'fd', params: { v: '1.5 mg/kg', f: 'Local anesthetic (ester)' }, status: OCC, src: OCS, notes: 'Onset: slow. Duration: 2.5-3 hr (spinal).' },
+      { label: 'Lidocaine \u2014 max dose', calc: 'occ_max', params: { f: 4.5, f2: 7, u: 'mg', card: 'Plain: 4.5 mg/kg. With epi: 7 mg/kg. Onset: fast. Duration: 1-1.5 hr (plain), 2-3 hr (epi).' }, status: OCC, src: OCS, notes: null },
+      { label: 'Bupivacaine \u2014 max dose', calc: 'occ_max', params: { f: 2.5, f2: 3, u: 'mg', card: 'Plain: 2.5 mg/kg. With epi: 3 mg/kg. Onset: moderate. Duration: 2-3 hr (plain), 4-12 hr (epi).' }, status: OCC, src: OCS, notes: null },
+      { label: 'Ropivacaine \u2014 max dose', calc: 'occ_ws', params: { f: 3, u: 'mg max', card: '3 mg/kg max. Onset: moderate. Duration: 2-3 hr. Less cardiotoxic than bupivacaine.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Chloroprocaine \u2014 max dose', calc: 'occ_ws', params: { f: 11, u: 'mg max', card: '11 mg/kg max. Ester. Onset: fast. Duration: 0.5-1 hr. Rapid hydrolysis by plasma esterases.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Mepivacaine \u2014 max dose', calc: 'occ_max', params: { f: 4.5, f2: 7, u: 'mg', card: 'Plain: 4.5 mg/kg. With epi: 7 mg/kg. Onset: fast. Duration: 1.5-3 hr.' }, status: OCC, src: OCS, notes: null },
+      { label: 'Tetracaine \u2014 max dose', calc: 'occ_ws', params: { f: 1.5, u: 'mg max', card: '1.5 mg/kg max. Ester. Onset: slow. Duration: 2.5-3 hr (spinal).' }, status: OCC, src: OCS, notes: null },
       { label: 'MAC \u2014 Sevoflurane', calc: 'fd', params: { v: 'Neonate 3.3%; Infant 3.0%; Child 2.5%; Adult 2.1%; >60yr 1.7%', f: 'Inhalational MAC by age' }, status: OCC, src: OCS, notes: null },
       { label: 'MAC \u2014 Desflurane', calc: 'fd', params: { v: 'Neonate 9.2%; Infant 9.4%; Child 8.7%; Adult 6.0%; >60yr 5.2%', f: 'Inhalational MAC by age' }, status: OCC, src: OCS, notes: null },
       { label: 'MAC \u2014 Isoflurane', calc: 'fd', params: { v: 'Neonate 1.6%; Infant 1.9%; Child 1.6%; Adult 1.2%; >60yr 1.05%', f: 'Inhalational MAC by age' }, status: OCC, src: OCS, notes: null },
       { label: 'MAC \u2014 Nitrous Oxide', calc: 'fd', params: { v: '105% (all ages)', f: 'Inhalational MAC' }, status: OCC, src: OCS, notes: 'Cannot achieve 1 MAC alone at 1 atm.' },
-      { label: 'LAST treatment', calc: 'pa', params: { v: 'Stop injection; ABCs; Intralipid 20% bolus 1.5 ml/kg then 0.25 ml/kg/min infusion; Avoid vasopressin, CCBs, local anesthetics' }, status: OCC, src: OCS, notes: 'Max intralipid ~10 ml/kg over 30 min. See ASRA checklist.' }
+      { label: 'LAST \u2014 Intralipid bolus', calc: 'occ_ws', params: { f: 1.5, u: 'ml IV bolus (20%)', card: 'Stop injection. ABCs. Intralipid 20% bolus 1.5 ml/kg, then 0.25 ml/kg/min infusion. Max ~10 ml/kg over 30 min. Avoid vasopressin, CCBs, local anesthetics. See ASRA checklist.' }, status: OCC, src: OCS, notes: null }
     ]
   }
 ];

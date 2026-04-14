@@ -427,6 +427,9 @@
       font-family: var(--mono); font-size: 13px; font-weight: 600;
       color: var(--warn);
     }
+    .ref-item-value.long-val {
+      font-size: 11px; font-weight: 500;
+    }
     .ref-item-chevron {
       font-size: 10px; color: var(--dim); margin-left: 6px; flex-shrink: 0;
     }
@@ -552,7 +555,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.6.3.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.6.3.1</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -1384,10 +1387,11 @@ function renderRefItem(container, item) {
   var dot = st !== 'validated' ? '<span class="ref-status-dot ' + st + '"></span>' : '';
   var wtLabel = item.wt ? ' <span style="color:var(--dim);font-size:11px;font-family:var(--mono)">(' + item.wt + ')</span>' : '';
   var valHtml = (item.value || '').replace(/\n/g, '<br>');
+  var longCls = (item.value || '').length > 25 ? ' long-val' : '';
   row.innerHTML =
     '<span class="ref-item-label">' + dot + item.label + wtLabel + '</span>' +
     '<span class="ref-item-val-wrap">' +
-      '<span class="ref-item-value">' + valHtml + '</span>' +
+      '<span class="ref-item-value' + longCls + '">' + valHtml + '</span>' +
       '<span class="ref-item-chevron">\u203a</span>' +
     '</span>';
   row.addEventListener('click', function() { showItemDetail(item); });

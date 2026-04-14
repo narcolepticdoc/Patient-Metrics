@@ -10,6 +10,45 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.4.2] - 2026-04-14
+
+### Changed
+- Merged Malignant Hyperthermia and Anesthetic Crisis into single **"Anesthetic Crisis / MH"** page with section headers (Crisis Medications, Malignant Hyperthermia).
+- 16 clinical pages + Patient Summary = 17 total.
+
+---
+
+## [1.6.4.1] - 2026-04-14
+
+### Changed
+- Split "Airway / Induction / NMB" into **"Airway / Fluids"** and **"Induction / NMB"**.
+- Moved Blood & Fluids content (maintenance, fasting, mannitol, HS, blood products, EBV, ABL) into Airway / Fluids with section headers (Airway, Fluids, Blood Products, Blood Volume).
+- Removed standalone "Resuscitation: Blood & Fluids" page.
+- 17 clinical pages + Patient Summary = 18 total.
+
+---
+
+## [1.6.4.0] - 2026-04-14
+
+### Changed
+- Consolidated pages from 24 down to 18 (17 clinical + Patient Summary):
+  - Airway + Induction Agents + NMBs + Antagonists + Anticholinergics → **Airway / Induction / NMB**
+  - Local Anesthetics + Analgesics → **Analgesia**
+  - Inotropes & Vasopressors + Antiarrhythmics → **Cardiovascular**
+  - Hyperkalemia + Severe Hypokalemia → **Electrolytes**
+- Each merged page uses in-page section headers (`hdr` calc type) to separate sub-topics.
+
+---
+
+## [1.6.3.2] - 2026-04-14
+
+### Changed
+- Merged 5 sections (Airway, Induction Agents, Neuromuscular Blockers, Antagonists, Anticholinergics) into single "Airway / Induction / NMB" page with section headers.
+- Added `hdr` calc type for in-page section headers (Airway, Induction, Neuromuscular Blockade, Reversal, Anticholinergics).
+- Reduces total page count from 24 to 20.
+
+---
+
 ## [1.6.3.1] - 2026-04-14
 
 ### Fixed

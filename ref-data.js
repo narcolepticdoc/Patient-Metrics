@@ -307,8 +307,10 @@ function computeRef(item, d) {
 // ═══════════════════════════════════════════════════
 const REF_SECTIONS = [
   {
-    title: 'Airway',
+    title: 'Airway / Fluids',
     items: [
+      // ── Airway ──
+      { label: 'Airway', calc: 'hdr' },
       { label: 'Cuffed ET tube', calc: 'ett', params: { ins: '20-22 cm' },
         status: 'validated', src: ['occ:card'],
         notes: 'Height/10 - 9 mm. OCC card confirms 8.0 mm for 170 cm. Insertion distance is sex-dependent default.' },
@@ -317,12 +319,43 @@ const REF_SECTIONS = [
         notes: 'Standard weight-range lookup. Cuff volume is manufacturer-specified per size.' },
       { label: 'Tidal volume', calc: 'wr_ibw', params: { lo: 6, hi: 8, u: 'ml', ru: 'ml/kg IBW' },
         status: 'validated', src: ['web:tv1'],
-        notes: 'Lung-protective ventilation targets 6 ml/kg IBW; range 6-8 matches ARDSNet guidance.' }
+        notes: 'Lung-protective ventilation targets 6 ml/kg IBW; range 6-8 matches ARDSNet guidance.' },
+      // ── Fluids ──
+      { label: 'Fluids', calc: 'hdr' },
+      { label: 'IV maintenance (4/2/1)', calc: 'maint', params: {},
+        status: 'validated', src: ['web:290'], notes: null },
+      { label: '6 h fasting deficit', calc: 'fasting', params: { hours: 6 },
+        status: 'validated', src: ['web:290'], notes: null },
+      { label: 'Mannitol 20%', calc: 'wr', params: { lo: 1.25, hi: 2.5, u: 'ml', ru: 'ml/kg (0.25-0.5 g/kg)' },
+        status: 'validated', src: ['occ:card'], notes: 'Standard ICP management dose. 20% = 0.2 g/ml, so 0.25 g/kg = 1.25 ml/kg.' },
+      { label: 'HS 7.5%', calc: 'ws', params: { f: 2, u: 'ml', ru: 'ml/kg IV' },
+        status: 'validated', src: ['occ:card'], notes: 'Hypertonic saline for ICP reduction.' },
+      // ── Blood Products ──
+      { label: 'Blood Products', calc: 'hdr' },
+      { label: 'PRBC', calc: 'ws', params: { f: 4, u: 'ml', ru: 'ml/kg; expect Hb +1 g/dL' },
+        status: 'validated', src: ['web:303'], notes: 'Standard adult estimate: 1 unit PRBC \u2248 raises Hb ~1 g/dL.' },
+      { label: 'Plateletpheresis', calc: 'wr', params: { lo: 5, hi: 10, u: 'ml', ru: 'ml/kg; expect +50-100k' },
+        status: 'validated', src: ['web:304'], notes: 'Standard transfusion estimate.' },
+      { label: 'FFP', calc: 'wr', params: { lo: 10, hi: 15, u: 'ml', ru: 'ml/kg' },
+        status: 'validated', src: ['web:304'], notes: null },
+      { label: 'Cryoprecipitate', calc: 'fd',
+        params: { v: '1-2 units/10 kg; expect Fib +60-100 mg/dL', f: 'Weight-based units' },
+        status: 'validated', src: ['web:301', 'web:315'], notes: null },
+      // ── Blood Volume ──
+      { label: 'Blood Volume', calc: 'hdr' },
+      { label: 'Estimated blood volume', calc: 'ebv', params: { f: 70 },
+        status: 'validated', src: ['web:322', 'occ:card'],
+        notes: 'Adult 70 ml/kg. Term neonates 84 ml/kg, infants 0-1yr 80 ml/kg.' },
+      { label: 'Allowable blood loss', calc: 'abl', params: { hi: 40, hf: 30 },
+        status: 'validated', src: ['web:322'],
+        notes: 'Using default initial Hct 40% and final Hct 30%. ABL = EBV \u00d7 (Hi-Hf)/Hi.' }
     ]
   },
   {
-    title: 'Induction Agents',
+    title: 'Induction / NMB',
     items: [
+      // ── Induction ──
+      { label: 'Induction', calc: 'hdr' },
       { label: 'Propofol', calc: 'wr_lbw', params: { lo: 2, hi: 3, u: 'mg', ru: 'mg/kg LBW' },
         status: 'validated', src: ['web:ind1'], notes: 'Uses James lean body weight.' },
       { label: 'Ketamine', calc: 'wr_lbw', params: { lo: 1, hi: 2, u: 'mg', ru: 'mg/kg LBW' },
@@ -333,12 +366,9 @@ const REF_SECTIONS = [
         status: 'validated', src: ['web:ind3'], notes: null },
       { label: 'Midazolam', calc: 'wr_lbw', params: { lo: 0.15, hi: 0.35, u: 'mg', ru: 'mg/kg LBW' },
         status: 'validated', src: ['web:ind4'],
-        notes: 'Wide range: higher end for sedation/induction, lower for premedication.' }
-    ]
-  },
-  {
-    title: 'Neuromuscular Blockers',
-    items: [
+        notes: 'Wide range: higher end for sedation/induction, lower for premedication.' },
+      // ── Neuromuscular Blockade ──
+      { label: 'Neuromuscular Blockade', calc: 'hdr' },
       { label: 'Vecuronium', calc: 'ws_ibw', params: { f: 0.1, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
         status: 'validated', src: ['web:nmb1'], notes: null },
       { label: 'Rocuronium', calc: 'ws_ibw', params: { f: 0.6, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
@@ -351,12 +381,9 @@ const REF_SECTIONS = [
         status: 'validated', src: ['web:nmb1'], notes: null },
       { label: 'Succinylcholine', calc: 'ws', params: { f: 1, u: 'mg', ru: 'mg/kg TBW (2 ED95)' },
         status: 'validated', src: ['web:nmb2'],
-        notes: 'Uses total body weight (TBW), not IBW. Only NMB in this section dosed on TBW.' }
-    ]
-  },
-  {
-    title: 'Antagonists',
-    items: [
+        notes: 'Uses total body weight (TBW), not IBW. Only NMB dosed on TBW.' },
+      // ── Reversal ──
+      { label: 'Reversal', calc: 'hdr' },
       { label: 'Neostigmine', calc: 'wr', params: { lo: 0.04, hi: 0.07, u: 'mg', ru: 'mg/kg TBW' },
         status: 'validated', src: ['web:neo1'], notes: 'Neuromuscular reversal. Uses TBW.' },
       { label: 'Sugammadex', calc: 'ws', params: { f: 2, u: 'mg', ru: 'mg/kg TBW; TOF 1-3' },
@@ -367,12 +394,9 @@ const REF_SECTIONS = [
         notes: 'Typical titration band 0.1-2.0 mg; weight formula anchors per-bolus dosing.' },
       { label: 'Flumazenil', calc: 'fd', params: { v: '0.2 mg initial; titrate 0.7 mg/bolus; max 1 mg', f: 'Initial 0.2 mg then 10 mcg/kg per titration' },
         status: 'validated', src: ['web:flu1'],
-        notes: '0.2 mg is standard initial reversal dose regardless of weight.' }
-    ]
-  },
-  {
-    title: 'Anticholinergics',
-    items: [
+        notes: '0.2 mg is standard initial reversal dose regardless of weight.' },
+      // ── Anticholinergics ──
+      { label: 'Anticholinergics', calc: 'hdr' },
       { label: 'Atropine', calc: 'ws', params: { f: 0.02, u: 'mg', ru: 'mg/kg' },
         status: 'validated', src: ['occ:card'], notes: 'Card: 0.02 mg/kg; adult arrest 1mg q3-5min.' },
       { label: 'Glycopyrrolate', calc: 'ws', params: { f: 10, u: 'mcg', ru: 'mcg/kg' },
@@ -380,20 +404,19 @@ const REF_SECTIONS = [
     ]
   },
   {
-    title: 'Local Anesthetics',
+    title: 'Analgesia',
     items: [
+      // ── Local Anesthetics ──
+      { label: 'Local Anesthetics', calc: 'hdr' },
       { label: 'Lidocaine max dose', calc: 'wr', params: { lo: 4.5, hi: 7, u: 'mg', ru: 'mg/kg (plain / with epi)' },
         status: 'validated', src: ['web:125', 'occ:card'], notes: 'Plain: 4.5 mg/kg. With epi: 7 mg/kg.' },
       { label: 'Bupivacaine max dose', calc: 'wr', params: { lo: 2.5, hi: 3, u: 'mg', ru: 'mg/kg (plain / with epi)' },
         status: 'validated', src: ['web:125', 'occ:card'], notes: 'Plain: 2.5 mg/kg. With epi: 3 mg/kg.' },
       { label: 'Intralipid 20%', calc: 'bolus_inf', params: { bf: 1.5, ilo: 0.25, ihi: 0.5, u: 'ml' },
         status: 'validated', src: ['web:133', 'occ:card'],
-        notes: 'ASRA LAST protocol. Bolus 1.5 ml/kg; infusion 0.25-0.5 ml/kg/min. Max ~10 ml/kg over 30 min.' }
-    ]
-  },
-  {
-    title: 'Analgesics',
-    items: [
+        notes: 'ASRA LAST protocol. Bolus 1.5 ml/kg; infusion 0.25-0.5 ml/kg/min. Max ~10 ml/kg over 30 min.' },
+      // ── Analgesics ──
+      { label: 'Analgesics', calc: 'hdr' },
       { label: 'Fentanyl', calc: 'ws', params: { f: 1, u: 'mcg', ru: 'mcg/kg' },
         status: 'validated', src: ['web:134'], notes: null },
       { label: 'Hydromorphone', calc: 'ws', params: { f: 0.01, u: 'mg', ru: 'mg/kg' },
@@ -419,8 +442,10 @@ const REF_SECTIONS = [
     ]
   },
   {
-    title: 'Inotropes & Vasopressors',
+    title: 'Cardiovascular',
     items: [
+      // ── Vasopressors & Inotropes ──
+      { label: 'Vasopressors & Inotropes', calc: 'hdr' },
       { label: 'Norepinephrine 16 mcg/ml', calc: 'cr', params: { dose: 0.05, conc: 16, du: 'mcg/kg/min', cu: 'mcg/ml' },
         status: 'validated', src: ['web:161'], notes: null },
       { label: 'Vasopressin 1 IU/ml', calc: 'cr_fixed', params: { dose: 0.04, conc: 1, du: 'U/min', cu: 'U/ml' },
@@ -434,12 +459,9 @@ const REF_SECTIONS = [
         status: 'validated', src: ['web:184', 'occ:card'],
         notes: 'OCC card: 0.5-2 mcg/kg/min. Showing rate at 0.2 mcg/kg/min. Original app had arithmetic error (now corrected).' },
       { label: 'Labetalol', calc: 'fd', params: { v: '10-20 mg IV; double to 80 mg; max 300 mg', f: 'Stepwise bolus escalation' },
-        status: 'validated', src: ['web:173'], notes: null }
-    ]
-  },
-  {
-    title: 'Antiarrhythmics',
-    items: [
+        status: 'validated', src: ['web:173'], notes: null },
+      // ── Antiarrhythmics ──
+      { label: 'Antiarrhythmics', calc: 'hdr' },
       { label: 'Amiodarone \u2014 VF arrest', calc: 'wc', params: { f: 5, cap: 300, u: 'mg', ru: 'mg/kg IV, max 300 mg' },
         status: 'validated', src: ['web:180'], notes: null },
       { label: 'Amiodarone \u2014 AF rate ctrl', calc: 'fd', params: { v: '150 mg over 10-30 min', f: 'Fixed dose infusion' },
@@ -451,8 +473,10 @@ const REF_SECTIONS = [
     ]
   },
   {
-    title: 'Hyperkalemia',
+    title: 'Electrolytes',
     items: [
+      // ── Hyperkalemia ──
+      { label: 'Hyperkalemia', calc: 'hdr' },
       { label: 'Ca chloride 10%', calc: 'wr', params: { lo: 0.05, hi: 0.1, u: 'ml', ru: 'ml/kg' },
         status: 'validated', src: ['web:188', 'occ:card'], notes: 'Card: 0.5-1g CaCl IV.' },
       { label: 'Ca gluconate 10%', calc: 'wr', params: { lo: 0.15, hi: 0.3, u: 'ml', ru: 'ml/kg' },
@@ -466,12 +490,9 @@ const REF_SECTIONS = [
       { label: 'Dextrose + Insulin', calc: 'fd', params: { v: 'D10W 500 ml or D50W 50 ml + 10 U insulin over 30-60 min', f: 'Fixed combination regimen' },
         status: 'validated', src: ['web:188', 'web:208'], notes: null },
       { label: 'Kayexalate', calc: 'wc', params: { f: 1, cap: 40, u: 'g q4h', ru: 'g/kg, max 40 g' },
-        status: 'validated', src: ['web:194', 'occ:card'], notes: 'Card: 15-50g PO.' }
-    ]
-  },
-  {
-    title: 'Severe Hypokalemia',
-    items: [
+        status: 'validated', src: ['web:194', 'occ:card'], notes: 'Card: 15-50g PO.' },
+      // ── Hypokalemia ──
+      { label: 'Severe Hypokalemia', calc: 'hdr' },
       { label: 'KCl 200 mEq/L', calc: 'fd', params: { v: '50-100 ml/h = 10-20 mEq/h; central access', f: 'Concentration \u00d7 rate' },
         status: 'validated', src: ['web:224'], notes: null },
       { label: 'KCl 100 mEq/L', calc: 'fd', params: { v: '100 ml/h = 10 mEq/h; central access', f: 'Concentration \u00d7 rate' },
@@ -479,33 +500,10 @@ const REF_SECTIONS = [
     ]
   },
   {
-    title: 'Malignant Hyperthermia',
+    title: 'Anesthetic Crisis / MH',
     items: [
-      { label: 'Stop triggering agent', calc: 'pa', params: { v: 'Halogenated agents, Succinylcholine' },
-        status: 'validated', src: ['web:218'], notes: null },
-      { label: 'Call for help', calc: 'pa', params: { v: 'FiO\u2082 100%, high flow >10 L/min; double minute ventilation; switch to TIVA' },
-        status: 'validated', src: ['web:218'], notes: null },
-      { label: 'Dantrolene \u2014 initial', calc: 'wr', params: { lo: 2, hi: 3, u: 'mg', ru: 'mg/kg IV bolus' },
-        status: 'validated', src: ['web:216', 'web:218', 'occ:card'],
-        notes: 'Card confirms 2.5 mg/kg. Range 2-3 covers standard dosing band.' },
-      { label: 'Active cooling', calc: 'pa', params: { v: 'Ice packs, cold forced air, gastric lavage, etc.' },
-        status: 'validated', src: ['web:218'], notes: null },
-      { label: 'Associated conditions', calc: 'pa',
-        params: { v: 'Hyperkalemia: CaCl\u2082, NaHCO\u2083, glucose-insulin | Acidosis: NaHCO\u2083 | Arrhythmias: Esmolol, Lidocaine' },
-        status: 'validated', src: ['web:218'], notes: 'Standard MH complication management per MHAUS crisis protocol.' },
-      { label: 'Contraindicated drugs', calc: 'pa', params: { v: 'Calcium channel blockers with dantrolene \u2014 risk of hyperkalemia and cardiovascular collapse' },
-        status: 'validated', src: ['web:232'],
-        notes: 'MHAUS: Do not use calcium channel blockers in patients receiving dantrolene.' },
-      { label: 'Dantrolene \u2014 repeat bolus', calc: 'ws', params: { f: 2.5, u: 'mg', ru: 'mg/kg IV' },
-        status: 'validated', src: ['web:245'], notes: null },
-      { label: 'Dantrolene \u2014 ICU maintenance', calc: 'ws', params: { f: 1, u: 'mg q4-6h', ru: 'mg/kg; max 10 mg/kg total' },
-        status: 'validated', src: ['web:245'],
-        notes: 'Per StatPearls MH: 1 mg/kg q4-6h for 24-48h post-crisis. 20% recurrence risk in first 48h.' }
-    ]
-  },
-  {
-    title: 'Anesthetic Crisis',
-    items: [
+      // ── Crisis Medications ──
+      { label: 'Crisis Medications', calc: 'hdr' },
       { label: 'Adrenaline', calc: 'fd',
         params: { v: '10 mcg bradycardia; 50 mcg refractory hypotension; 1 mg arrest', f: 'Scenario-based fixed dose' },
         status: 'validated', src: ['web:254', 'web:260', 'occ:card'],
@@ -530,35 +528,29 @@ const REF_SECTIONS = [
         notes: 'AHA: 2 J/kg initial, up to 4 J/kg subsequent. Asynchronous.' },
       { label: 'Sono gastric volume', calc: 'sono', params: {},
         status: 'validated', src: ['web:291', 'web:perlas1'],
-        notes: 'Perlas formula validated (PMC9159396). Vol (ml) = 27 + 14.6 \u00d7 RLD_CSA (cm\u00b2) \u2212 1.28 \u00d7 age. Applicable 0-500 ml, non-pregnant adults.' }
-    ]
-  },
-  {
-    title: 'Resuscitation: Blood & Fluids',
-    items: [
-      { label: 'IV maintenance (4/2/1)', calc: 'maint', params: {},
-        status: 'validated', src: ['web:290'], notes: null },
-      { label: '6 h fasting deficit', calc: 'fasting', params: { hours: 6 },
-        status: 'validated', src: ['web:290'], notes: null },
-      { label: 'Mannitol 20%', calc: 'wr', params: { lo: 1.25, hi: 2.5, u: 'ml', ru: 'ml/kg (0.25-0.5 g/kg)' },
-        status: 'validated', src: ['occ:card'], notes: 'Standard ICP management dose. 20% = 0.2 g/ml, so 0.25 g/kg = 1.25 ml/kg.' },
-      { label: 'HS 7.5%', calc: 'ws', params: { f: 2, u: 'ml', ru: 'ml/kg IV' },
-        status: 'validated', src: ['occ:card'], notes: 'Hypertonic saline for ICP reduction.' },
-      { label: 'PRBC', calc: 'ws', params: { f: 4, u: 'ml', ru: 'ml/kg; expect Hb +1 g/dL' },
-        status: 'validated', src: ['web:303'], notes: 'Standard adult estimate: 1 unit PRBC \u2248 raises Hb ~1 g/dL.' },
-      { label: 'Plateletpheresis', calc: 'wr', params: { lo: 5, hi: 10, u: 'ml', ru: 'ml/kg; expect +50-100k' },
-        status: 'validated', src: ['web:304'], notes: 'Standard transfusion estimate.' },
-      { label: 'FFP', calc: 'wr', params: { lo: 10, hi: 15, u: 'ml', ru: 'ml/kg' },
-        status: 'validated', src: ['web:304'], notes: null },
-      { label: 'Cryoprecipitate', calc: 'fd',
-        params: { v: '1-2 units/10 kg; expect Fib +60-100 mg/dL', f: 'Weight-based units' },
-        status: 'validated', src: ['web:301', 'web:315'], notes: null },
-      { label: 'Estimated blood volume', calc: 'ebv', params: { f: 70 },
-        status: 'validated', src: ['web:322', 'occ:card'],
-        notes: 'Adult 70 ml/kg. Term neonates 84 ml/kg, infants 0-1yr 80 ml/kg.' },
-      { label: 'Allowable blood loss', calc: 'abl', params: { hi: 40, hf: 30 },
-        status: 'validated', src: ['web:322'],
-        notes: 'Using default initial Hct 40% and final Hct 30%. ABL = EBV \u00d7 (Hi-Hf)/Hi.' }
+        notes: 'Perlas formula validated (PMC9159396). Vol (ml) = 27 + 14.6 \u00d7 RLD_CSA (cm\u00b2) \u2212 1.28 \u00d7 age. Applicable 0-500 ml, non-pregnant adults.' },
+      // ── Malignant Hyperthermia ──
+      { label: 'Malignant Hyperthermia', calc: 'hdr' },
+      { label: 'Stop triggering agent', calc: 'pa', params: { v: 'Halogenated agents, Succinylcholine' },
+        status: 'validated', src: ['web:218'], notes: null },
+      { label: 'Call for help', calc: 'pa', params: { v: 'FiO\u2082 100%, high flow >10 L/min; double minute ventilation; switch to TIVA' },
+        status: 'validated', src: ['web:218'], notes: null },
+      { label: 'Dantrolene \u2014 initial', calc: 'wr', params: { lo: 2, hi: 3, u: 'mg', ru: 'mg/kg IV bolus' },
+        status: 'validated', src: ['web:216', 'web:218', 'occ:card'],
+        notes: 'Card confirms 2.5 mg/kg. Range 2-3 covers standard dosing band.' },
+      { label: 'Active cooling', calc: 'pa', params: { v: 'Ice packs, cold forced air, gastric lavage, etc.' },
+        status: 'validated', src: ['web:218'], notes: null },
+      { label: 'Associated conditions', calc: 'pa',
+        params: { v: 'Hyperkalemia: CaCl\u2082, NaHCO\u2083, glucose-insulin | Acidosis: NaHCO\u2083 | Arrhythmias: Esmolol, Lidocaine' },
+        status: 'validated', src: ['web:218'], notes: 'Standard MH complication management per MHAUS crisis protocol.' },
+      { label: 'Contraindicated drugs', calc: 'pa', params: { v: 'Calcium channel blockers with dantrolene \u2014 risk of hyperkalemia and cardiovascular collapse' },
+        status: 'validated', src: ['web:232'],
+        notes: 'MHAUS: Do not use calcium channel blockers in patients receiving dantrolene.' },
+      { label: 'Dantrolene \u2014 repeat bolus', calc: 'ws', params: { f: 2.5, u: 'mg', ru: 'mg/kg IV' },
+        status: 'validated', src: ['web:245'], notes: null },
+      { label: 'Dantrolene \u2014 ICU maintenance', calc: 'ws', params: { f: 1, u: 'mg q4-6h', ru: 'mg/kg; max 10 mg/kg total' },
+        status: 'validated', src: ['web:245'],
+        notes: 'Per StatPearls MH: 1 mg/kg q4-6h for 24-48h post-crisis. 20% recurrence risk in first 48h.' }
     ]
   },
   {

@@ -10,6 +10,25 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.0.5] - 2026-04-14
+
+### Fixed
+- Full audit of all computed values — all formulas verified correct for 70 kg reference patient.
+- Esmolol infusion: now displays in mg/min (was mcg/min — 3500-21000 mcg/min → 3.5-21 mg/min).
+- Propofol infusion: now displays in mg/min (was mcg/min — 1750-14000 mcg/min → 1.8-14 mg/min).
+- Milrinone load: now displays in mg (was mcg — 3500 mcg → 3.5 mg). Infusion stays mcg/min (standard).
+
+---
+
+## [1.6.0.4] - 2026-04-14
+
+### Fixed
+- Propofol infusion: was using mg/kg factors (1.5-12) instead of mcg/kg/min (25-200). Now correctly computes mcg/min.
+- Esmolol infusion: same error, was pre-multiplied. Now uses 50-300 mcg/kg/min factors.
+- Milrinone infusion: was pre-multiplied (22.5-45). Now uses 0.375-0.75 mcg/kg/min factors.
+
+---
+
 ## [1.6.0.3] - 2026-04-14
 
 ### Changed

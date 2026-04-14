@@ -307,7 +307,7 @@ function computeRef(item, d) {
 // ═══════════════════════════════════════════════════
 const REF_SECTIONS = [
   {
-    title: 'Airway / Induction / NMB',
+    title: 'Airway / Fluids',
     items: [
       // ── Airway ──
       { label: 'Airway', calc: 'hdr' },
@@ -320,6 +320,40 @@ const REF_SECTIONS = [
       { label: 'Tidal volume', calc: 'wr_ibw', params: { lo: 6, hi: 8, u: 'ml', ru: 'ml/kg IBW' },
         status: 'validated', src: ['web:tv1'],
         notes: 'Lung-protective ventilation targets 6 ml/kg IBW; range 6-8 matches ARDSNet guidance.' },
+      // ── Fluids ──
+      { label: 'Fluids', calc: 'hdr' },
+      { label: 'IV maintenance (4/2/1)', calc: 'maint', params: {},
+        status: 'validated', src: ['web:290'], notes: null },
+      { label: '6 h fasting deficit', calc: 'fasting', params: { hours: 6 },
+        status: 'validated', src: ['web:290'], notes: null },
+      { label: 'Mannitol 20%', calc: 'wr', params: { lo: 1.25, hi: 2.5, u: 'ml', ru: 'ml/kg (0.25-0.5 g/kg)' },
+        status: 'validated', src: ['occ:card'], notes: 'Standard ICP management dose. 20% = 0.2 g/ml, so 0.25 g/kg = 1.25 ml/kg.' },
+      { label: 'HS 7.5%', calc: 'ws', params: { f: 2, u: 'ml', ru: 'ml/kg IV' },
+        status: 'validated', src: ['occ:card'], notes: 'Hypertonic saline for ICP reduction.' },
+      // ── Blood Products ──
+      { label: 'Blood Products', calc: 'hdr' },
+      { label: 'PRBC', calc: 'ws', params: { f: 4, u: 'ml', ru: 'ml/kg; expect Hb +1 g/dL' },
+        status: 'validated', src: ['web:303'], notes: 'Standard adult estimate: 1 unit PRBC \u2248 raises Hb ~1 g/dL.' },
+      { label: 'Plateletpheresis', calc: 'wr', params: { lo: 5, hi: 10, u: 'ml', ru: 'ml/kg; expect +50-100k' },
+        status: 'validated', src: ['web:304'], notes: 'Standard transfusion estimate.' },
+      { label: 'FFP', calc: 'wr', params: { lo: 10, hi: 15, u: 'ml', ru: 'ml/kg' },
+        status: 'validated', src: ['web:304'], notes: null },
+      { label: 'Cryoprecipitate', calc: 'fd',
+        params: { v: '1-2 units/10 kg; expect Fib +60-100 mg/dL', f: 'Weight-based units' },
+        status: 'validated', src: ['web:301', 'web:315'], notes: null },
+      // ── Blood Volume ──
+      { label: 'Blood Volume', calc: 'hdr' },
+      { label: 'Estimated blood volume', calc: 'ebv', params: { f: 70 },
+        status: 'validated', src: ['web:322', 'occ:card'],
+        notes: 'Adult 70 ml/kg. Term neonates 84 ml/kg, infants 0-1yr 80 ml/kg.' },
+      { label: 'Allowable blood loss', calc: 'abl', params: { hi: 40, hf: 30 },
+        status: 'validated', src: ['web:322'],
+        notes: 'Using default initial Hct 40% and final Hct 30%. ABL = EBV \u00d7 (Hi-Hf)/Hi.' }
+    ]
+  },
+  {
+    title: 'Induction / NMB',
+    items: [
       // ── Induction ──
       { label: 'Induction', calc: 'hdr' },
       { label: 'Propofol', calc: 'wr_lbw', params: { lo: 2, hi: 3, u: 'mg', ru: 'mg/kg LBW' },
@@ -518,34 +552,6 @@ const REF_SECTIONS = [
       { label: 'Sono gastric volume', calc: 'sono', params: {},
         status: 'validated', src: ['web:291', 'web:perlas1'],
         notes: 'Perlas formula validated (PMC9159396). Vol (ml) = 27 + 14.6 \u00d7 RLD_CSA (cm\u00b2) \u2212 1.28 \u00d7 age. Applicable 0-500 ml, non-pregnant adults.' }
-    ]
-  },
-  {
-    title: 'Resuscitation: Blood & Fluids',
-    items: [
-      { label: 'IV maintenance (4/2/1)', calc: 'maint', params: {},
-        status: 'validated', src: ['web:290'], notes: null },
-      { label: '6 h fasting deficit', calc: 'fasting', params: { hours: 6 },
-        status: 'validated', src: ['web:290'], notes: null },
-      { label: 'Mannitol 20%', calc: 'wr', params: { lo: 1.25, hi: 2.5, u: 'ml', ru: 'ml/kg (0.25-0.5 g/kg)' },
-        status: 'validated', src: ['occ:card'], notes: 'Standard ICP management dose. 20% = 0.2 g/ml, so 0.25 g/kg = 1.25 ml/kg.' },
-      { label: 'HS 7.5%', calc: 'ws', params: { f: 2, u: 'ml', ru: 'ml/kg IV' },
-        status: 'validated', src: ['occ:card'], notes: 'Hypertonic saline for ICP reduction.' },
-      { label: 'PRBC', calc: 'ws', params: { f: 4, u: 'ml', ru: 'ml/kg; expect Hb +1 g/dL' },
-        status: 'validated', src: ['web:303'], notes: 'Standard adult estimate: 1 unit PRBC \u2248 raises Hb ~1 g/dL.' },
-      { label: 'Plateletpheresis', calc: 'wr', params: { lo: 5, hi: 10, u: 'ml', ru: 'ml/kg; expect +50-100k' },
-        status: 'validated', src: ['web:304'], notes: 'Standard transfusion estimate.' },
-      { label: 'FFP', calc: 'wr', params: { lo: 10, hi: 15, u: 'ml', ru: 'ml/kg' },
-        status: 'validated', src: ['web:304'], notes: null },
-      { label: 'Cryoprecipitate', calc: 'fd',
-        params: { v: '1-2 units/10 kg; expect Fib +60-100 mg/dL', f: 'Weight-based units' },
-        status: 'validated', src: ['web:301', 'web:315'], notes: null },
-      { label: 'Estimated blood volume', calc: 'ebv', params: { f: 70 },
-        status: 'validated', src: ['web:322', 'occ:card'],
-        notes: 'Adult 70 ml/kg. Term neonates 84 ml/kg, infants 0-1yr 80 ml/kg.' },
-      { label: 'Allowable blood loss', calc: 'abl', params: { hi: 40, hf: 30 },
-        status: 'validated', src: ['web:322'],
-        notes: 'Using default initial Hct 40% and final Hct 30%. ABL = EBV \u00d7 (Hi-Hf)/Hi.' }
     ]
   },
   {

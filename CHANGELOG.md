@@ -10,6 +10,16 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.4.1] - 2026-04-14
+
+### Changed
+- Split "Airway / Induction / NMB" into **"Airway / Fluids"** and **"Induction / NMB"**.
+- Moved Blood & Fluids content (maintenance, fasting, mannitol, HS, blood products, EBV, ABL) into Airway / Fluids with section headers (Airway, Fluids, Blood Products, Blood Volume).
+- Removed standalone "Resuscitation: Blood & Fluids" page.
+- 17 clinical pages + Patient Summary = 18 total.
+
+---
+
 ## [1.6.4.0] - 2026-04-14
 
 ### Changed

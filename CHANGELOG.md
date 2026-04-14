@@ -10,6 +10,21 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.7.0.0] - 2026-04-14
+
+### Added
+- New page **Antiemetics / Prophylaxis** with PONV (Ondansetron, Dexamethasone, Prochlorperazine, Promethazine, Metoclopramide, Scopolamine) and Aspiration Prophylaxis (Sodium Citrate, Ranitidine, Metoclopramide) sections.
+- New page **Obstetric Drugs** with Uterotonics (Oxytocin, Methylergonovine, Carboprost, Misoprostol), Hypertension/Eclampsia (Magnesium load + maintenance, Labetalol, Hydralazine), and Hemorrhage (TXA) sections.
+- **Cardiovascular** restructured into 5 subsections: Vasopressors & Inotropes, Push-dose Pressors (NEW: Ephedrine, Phenylephrine, Metaraminol), Beta Blockers (NEW: Labetalol moved, Metoprolol moved, Esmolol new), Vasodilators / Antihypertensives (NEW: Hydralazine, Nitroglycerin, Nitroprusside moved), Antiarrhythmics (Adenosine moved here from Crisis).
+- **Anesthetic Crisis / MH** gains Steroids & Anaphylaxis subsection (Hydrocortisone, Methylprednisolone, Dexamethasone, Diphenhydramine, Ranitidine, Albuterol).
+- Magnesium added to Crisis (torsades, bronchospasm) and OB Drugs (eclampsia).
+
+### Changed
+- Item moves: Nitroprusside → Vasodilators; Labetalol & Metoprolol → Beta Blockers; Adenosine → Antiarrhythmics; Hydrocortisone → Steroids subsection.
+- Total pages: 17 → 19 (+ Patient Summary = 20).
+
+---
+
 ## [1.6.5.0] - 2026-04-14
 
 ### Added

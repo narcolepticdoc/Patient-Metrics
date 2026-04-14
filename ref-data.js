@@ -455,26 +455,64 @@ const REF_SECTIONS = [
         status: 'validated', src: ['web:161'], notes: null },
       { label: 'Vasopressin 1 IU/ml', calc: 'cr_fixed', params: { dose: 0.04, conc: 1, du: 'U/min', cu: 'U/ml' },
         status: 'validated', src: ['web:164', 'occ:card'],
-        notes: 'OCC card: 0.03-0.04 U/min. Using 0.04 U/min (upper standard range). Original app used 0.1 U/min which exceeds standard.' },
+        notes: 'OCC card: 0.03-0.04 U/min. Using 0.04 U/min (upper standard range).' },
       { label: 'Dobutamine 2 mg/ml', calc: 'cr', params: { dose: 2, conc: 2000, du: 'mcg/kg/min', cu: 'mcg/ml' },
         status: 'validated', src: ['web:161'], notes: null },
       { label: 'Milrinone 200 mcg/ml', calc: 'cr', params: { dose: 0.375, conc: 200, du: 'mcg/kg/min', cu: 'mcg/ml' },
         status: 'validated', src: ['web:161', 'web:170'], notes: null },
+      // ── Push-dose Pressors ──
+      { label: 'Push-dose Pressors', calc: 'hdr' },
+      { label: 'Ephedrine', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult: 5-10 mg IV' },
+          { type: 'ws', age: 'peds', label: 'Peds', f: 0.1, u: 'mg' }
+        ], card: 'Adult: 5-10 mg IV. Peds: 0.1 mg/kg. Mixed \u03b1/\u03b2 sympathomimetic.' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Phenylephrine', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult bolus: 50-200 mcg IV' },
+          { type: 'wr', label: 'Infusion', lo: 0.5, hi: 5, u: 'mcg/min' },
+          { type: 'wr', age: 'peds', label: 'Peds bolus', lo: 1, hi: 10, u: 'mcg' }
+        ], card: 'Bolus: 50-200 mcg IV. Infusion: 0.5-5 mcg/kg/min. Peds: 1-10 mcg/kg bolus. \u03b1-1 selective vasopressor.' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Metaraminol', calc: 'fd', params: { v: '0.5-2 mg IV bolus; Infusion: 0.5-5 mg/hr', f: 'Indirect sympathomimetic vasopressor' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      // ── Beta Blockers ──
+      { label: 'Beta Blockers', calc: 'hdr' },
+      { label: 'Labetalol', calc: 'fd', params: { v: '10-20 mg IV; double to 80 mg; max 300 mg', f: '\u03b1/\u03b2 blocker; stepwise bolus escalation' },
+        status: 'validated', src: ['web:173', 'occ:card'], notes: null },
+      { label: 'Metoprolol \u2014 AF rate ctrl', calc: 'fd', params: { v: '2.5-5 mg q5min; max 15 mg', f: '\u03b21-selective; repeat bolus to effect' },
+        status: 'validated', src: ['web:180'], notes: null },
+      { label: 'Esmolol', calc: 'occ_multi', params: { rows: [
+          { type: 'wr', label: 'Load', lo: 0.5, hi: 1, u: 'mg IV' },
+          { type: 'wr', label: 'Infusion', lo: 0.05, hi: 0.3, u: 'mg/min' }
+        ], card: 'Load: 0.5-1 mg/kg IV. Infusion: 50-300 mcg/kg/min. Ultra-short-acting \u03b21-selective blocker.' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      // ── Vasodilators / Antihypertensives ──
+      { label: 'Vasodilators / Antihypertensives', calc: 'hdr' },
+      { label: 'Hydralazine', calc: 'fd', params: { v: '5-10 mg IV q10-20 min', f: 'Direct arteriolar vasodilator' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Nitroglycerin', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', v: 'Bolus: 50-100 mcg IV' },
+          { type: 'wr', label: 'Infusion', lo: 0.5, hi: 20, u: 'mcg/min' },
+          { type: 'txt', v: 'Uterine relaxation: 50-250 mcg IV' }
+        ], card: 'Bolus: 50-100 mcg IV. Infusion: 0.5-20 mcg/kg/min. Uterine relaxation: 50-250 mcg IV.' },
+        status: 'validated', src: ['occ:card'], notes: null },
       { label: 'Nitroprusside 200 mcg/ml', calc: 'cr', params: { dose: 0.2, conc: 200, du: 'mcg/kg/min', cu: 'mcg/ml' },
         status: 'validated', src: ['web:184', 'occ:card'],
-        notes: 'OCC card: 0.5-2 mcg/kg/min. Showing rate at 0.2 mcg/kg/min. Original app had arithmetic error (now corrected).' },
-      { label: 'Labetalol', calc: 'fd', params: { v: '10-20 mg IV; double to 80 mg; max 300 mg', f: 'Stepwise bolus escalation' },
-        status: 'validated', src: ['web:173'], notes: null },
+        notes: 'OCC card: 0.5-2 mcg/kg/min (max 10). Cyanide toxicity risk with prolonged use.' },
       // ── Antiarrhythmics ──
       { label: 'Antiarrhythmics', calc: 'hdr' },
+      { label: 'Adenosine', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult: 6 mg IV push, then 12 mg' },
+          { type: 'wc', age: 'peds', label: 'Peds 1st', f: 0.1, cap: 6, u: 'mg' },
+          { type: 'wc', age: 'peds', label: 'Peds 2nd', f: 0.2, cap: 12, u: 'mg' }
+        ], card: 'Adult: 6 mg IV push, then 12 mg q1-2 min. Peds: 0.1 mg/kg (max 6 mg), 0.2 mg/kg (max 12 mg). First-line SVT.' },
+        status: 'validated', src: ['web:247', 'occ:card'], notes: null },
       { label: 'Amiodarone \u2014 VF arrest', calc: 'wc', params: { f: 5, cap: 300, u: 'mg', ru: 'mg/kg IV, max 300 mg' },
         status: 'validated', src: ['web:180'], notes: null },
       { label: 'Amiodarone \u2014 AF rate ctrl', calc: 'fd', params: { v: '150 mg over 10-30 min', f: 'Fixed dose infusion' },
         status: 'validated', src: ['occ:card'], notes: 'OCC card: 150-300 mg IV over 30 min, then 1 mg/min infusion.' },
-      { label: 'Metoprolol \u2014 AF rate ctrl', calc: 'fd', params: { v: '2.5-5 mg q5min; max 15 mg', f: 'Repeat bolus to effect' },
-        status: 'validated', src: ['web:180'], notes: null },
       { label: 'Digoxin IV load', calc: 'wr', params: { lo: 0.008, hi: 0.012, u: 'mg', ru: 'mg/kg in divided doses' },
-        status: 'validated', src: ['web:digoxin1'], notes: 'StatPearls: 8-12 mcg/kg IBW. Give 50% initially, then 25% q6-8h \u00d7 2. Or 0.25 mg IV q2h (max 1.5 mg). Peak effect delayed 3-6h.' }
+        status: 'validated', src: ['web:digoxin1'], notes: 'StatPearls: 8-12 mcg/kg IBW. Give 50% initially, then 25% q6-8h \u00d7 2. Peak effect delayed 3-6h.' }
     ]
   },
   {
@@ -513,18 +551,15 @@ const REF_SECTIONS = [
         params: { v: '10 mcg bradycardia; 50 mcg refractory hypotension; 1 mg arrest', f: 'Scenario-based fixed dose' },
         status: 'validated', src: ['web:254', 'web:260', 'occ:card'],
         notes: 'Card: 0.5-1mg arrest, 10-50mcg IV increments if hypotensive.' },
-      { label: 'Adenosine', calc: 'fd',
-        params: { v: '6 mg / 12 mg (100-200 mcg/kg, max 6/12 mg)', f: 'Capped weight-based escalation' },
-        status: 'validated', src: ['web:247'], notes: null },
       { label: 'Bicarbonate', calc: 'wr', params: { lo: 1, hi: 2, u: 'mEq', ru: 'mEq/kg IV' },
         status: 'validated', src: ['web:218', 'web:262'], notes: null },
-      { label: 'Hydrocortisone', calc: 'wr', params: { lo: 2, hi: 3, u: 'mg', ru: 'mg/kg IV (Anaphylaxis)' },
-        status: 'validated', src: ['occ:card'], notes: 'Card: 100mg IV for anaphylaxis.' },
       { label: 'Dextrose', calc: 'dext', params: {},
         status: 'validated', src: ['web:271', 'occ:card'], notes: 'OCC card: D50W 25-50 g. D50W 0.5 ml/kg = 0.25 g/kg dextrose; D10W 2.5 ml/kg equivalent.' },
       { label: 'Insulin (correctional)', calc: 'fd',
         params: { v: 'BG >180: start IV infusion; BG 140-180: 2-4 U SC q2h', f: 'ADA target 140-180 mg/dL perioperatively' },
         status: 'validated', src: ['web:278', 'web:insulin1'], notes: 'StatPearls Diabetic Perioperative Mgmt: correctional SC insulin q2h for short cases; IV infusion for BG >180 or long cases.' },
+      { label: 'Magnesium', calc: 'fd', params: { v: 'Torsades: 1-2 g IV over 5-60 min; Bronchospasm: 2 g IV over 20 min', f: 'Multiple indications' },
+        status: 'validated', src: ['occ:card'], notes: 'Eclampsia loading 4-6 g (see OB Drugs).' },
       { label: 'Cardioversion', calc: 'esc', params: { lo: 0.5, hi: 2, mode: 'SYNC' },
         status: 'validated', src: ['web:286'],
         notes: 'AHA PALS: 0.5-1 J/kg initial, up to 2 J/kg. Synchronized.' },
@@ -534,6 +569,29 @@ const REF_SECTIONS = [
       { label: 'Sono gastric volume', calc: 'sono', params: {},
         status: 'validated', src: ['web:291', 'web:perlas1'],
         notes: 'Perlas formula validated (PMC9159396). Vol (ml) = 27 + 14.6 \u00d7 RLD_CSA (cm\u00b2) \u2212 1.28 \u00d7 age. Applicable 0-500 ml, non-pregnant adults.' },
+      // ── Steroids & Anaphylaxis ──
+      { label: 'Steroids & Anaphylaxis', calc: 'hdr' },
+      { label: 'Hydrocortisone', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult: 100 mg IV' },
+          { type: 'wr', age: 'peds', label: 'Peds', lo: 1, hi: 2, u: 'mg' }
+        ], card: 'Adult: 100 mg IV. Peds: 1-2 mg/kg. Steroid / anaphylaxis.' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Methylprednisolone', calc: 'fd', params: { v: '125 mg IV', f: 'Steroid / anaphylaxis' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Dexamethasone', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult: 4-10 mg IV' },
+          { type: 'wc', age: 'peds', label: 'Peds', f: 0.15, cap: 10, u: 'mg' }
+        ], card: 'Adult: 4-10 mg IV. Peds: 0.15 mg/kg (max 10 mg). Antiemetic / anti-inflammatory.' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Diphenhydramine', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult: 25-50 mg IV/IM' },
+          { type: 'wr', age: 'peds', label: 'Peds', lo: 1, hi: 1.25, u: 'mg' }
+        ], card: 'Adult: 25-50 mg IV/IM. Peds: 1-1.25 mg/kg. H1 blocker.' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Ranitidine', calc: 'fd', params: { v: '50 mg IV', f: 'H2 blocker for anaphylaxis' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Albuterol', calc: 'fd', params: { v: '2.5 mg nebulized q20min; MDI 4-8 puffs q20min', f: 'Bronchospasm (anaphylaxis, asthma)' },
+        status: 'validated', src: ['web:208', 'occ:card'], notes: null },
       // ── Malignant Hyperthermia ──
       { label: 'Malignant Hyperthermia', calc: 'hdr' },
       { label: 'Stop triggering agent', calc: 'pa', params: { v: 'Halogenated agents, Succinylcholine' },
@@ -570,6 +628,71 @@ const REF_SECTIONS = [
       { label: 'Creatinine clearance', calc: 'crcl', params: { cr: 0.6 },
         status: 'validated', src: ['web:332'],
         notes: 'Cockcroft-Gault + BSA normalization. Uses default Cr 0.6, male. App labels as CG but displays BSA-normalized units.' }
+    ]
+  },
+  {
+    title: 'Antiemetics / Prophylaxis',
+    items: [
+      // ── PONV ──
+      { label: 'PONV', calc: 'hdr' },
+      { label: 'Ondansetron', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult: 4 mg IV' },
+          { type: 'wc', age: 'peds', label: 'Peds', f: 0.1, cap: 4, u: 'mg' }
+        ], card: 'Adult: 4 mg IV. Peds: 0.1 mg/kg (max 4 mg). 5-HT3 antagonist.' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Dexamethasone', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult: 4-10 mg IV' },
+          { type: 'wc', age: 'peds', label: 'Peds', f: 0.15, cap: 10, u: 'mg' }
+        ], card: 'Adult: 4-10 mg IV. Peds: 0.15 mg/kg (max 10 mg). PONV prophylaxis.' },
+        status: 'validated', src: ['occ:card'], notes: 'Also in Crisis/Steroids.' },
+      { label: 'Prochlorperazine', calc: 'fd', params: { v: '5-10 mg IV/IM', f: 'D2 antagonist' },
+        status: 'validated', src: ['occ:card'], notes: 'Avoid in children < 2 yr or < 10 kg.' },
+      { label: 'Promethazine', calc: 'fd', params: { v: '6.25-12.5 mg IV/IM', f: 'H1 + D2 antagonist; sedating' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Metoclopramide', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult: 10-20 mg IV' },
+          { type: 'wr', age: 'peds', label: 'Peds', lo: 0.1, hi: 0.15, u: 'mg' }
+        ], card: 'Adult: 10-20 mg IV. Peds: 0.1-0.15 mg/kg. D2 antagonist + prokinetic.' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Scopolamine', calc: 'fd', params: { v: '1.5 mg transdermal patch q72h', f: 'Anticholinergic; apply behind ear' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      // ── Aspiration Prophylaxis ──
+      { label: 'Aspiration Prophylaxis', calc: 'hdr' },
+      { label: 'Sodium Citrate', calc: 'fd', params: { v: '30 ml PO', f: 'Non-particulate antacid' },
+        status: 'validated', src: ['occ:card'], notes: 'Give 15-30 min before induction.' },
+      { label: 'Ranitidine', calc: 'fd', params: { v: '50 mg IV', f: 'H2 blocker' },
+        status: 'validated', src: ['occ:card'], notes: 'Also used in anaphylaxis (see Crisis/Steroids).' },
+      { label: 'Metoclopramide (prokinetic)', calc: 'fd', params: { v: '10-20 mg IV', f: 'Accelerates gastric emptying' },
+        status: 'validated', src: ['occ:card'], notes: 'Cross-listed from PONV above.' }
+    ]
+  },
+  {
+    title: 'Obstetric Drugs',
+    items: [
+      // ── Uterotonics ──
+      { label: 'Uterotonics', calc: 'hdr' },
+      { label: 'Oxytocin', calc: 'fd', params: { v: '3 U IV bolus; Infusion 1-2 U/hr (max 40 U)', f: 'First-line uterotonic' },
+        status: 'validated', src: ['occ:card'], notes: 'Rule of 3s: 3 U load, repeat \u00d7 3.' },
+      { label: 'Methylergonovine', calc: 'fd', params: { v: '0.2 mg IM (avoid IV)', f: 'Ergot alkaloid; second-line' },
+        status: 'validated', src: ['occ:card'], notes: 'Contraindicated in HTN, preeclampsia.' },
+      { label: 'Carboprost (Hemabate)', calc: 'fd', params: { v: '250 mcg IM q15 min; max 2 mg (8 doses)', f: 'Prostaglandin F2\u03b1; third-line' },
+        status: 'validated', src: ['occ:card'], notes: 'Contraindicated in asthma.' },
+      { label: 'Misoprostol', calc: 'fd', params: { v: '600-1000 mcg PR/SL', f: 'Prostaglandin E1' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      // ── Hypertension / Eclampsia ──
+      { label: 'Hypertension / Eclampsia', calc: 'hdr' },
+      { label: 'Magnesium \u2014 loading', calc: 'fd', params: { v: '4-6 g IV over 15-30 min', f: 'Eclampsia seizure prophylaxis / treatment' },
+        status: 'validated', src: ['occ:card'], notes: 'Monitor deep tendon reflexes, respiratory rate, urine output.' },
+      { label: 'Magnesium \u2014 maintenance', calc: 'fd', params: { v: '1-2 g/hr IV infusion', f: 'Maintain therapeutic level 4-7 mEq/L' },
+        status: 'validated', src: ['occ:card'], notes: 'Toxicity: loss DTR > respiratory depression > cardiac arrest.' },
+      { label: 'Labetalol', calc: 'fd', params: { v: '10-20 mg IV, double q5-10 min; max 300 mg', f: 'Severe HTN: SBP>160 or DBP>110' },
+        status: 'validated', src: ['occ:card'], notes: 'Cross-listed from Cardiovascular.' },
+      { label: 'Hydralazine', calc: 'fd', params: { v: '5-10 mg IV q10-20 min', f: 'Severe HTN in pre-eclampsia' },
+        status: 'validated', src: ['occ:card'], notes: 'Cross-listed from Cardiovascular.' },
+      // ── Hemorrhage ──
+      { label: 'Hemorrhage', calc: 'hdr' },
+      { label: 'Tranexamic acid (TXA)', calc: 'fd', params: { v: '1 g IV over 10 min; repeat \u00d7 1 after 30 min', f: 'Antifibrinolytic' },
+        status: 'validated', src: ['occ:card'], notes: 'Give within 3 hours of hemorrhage onset.' }
     ]
   }
 ];

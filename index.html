@@ -552,7 +552,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.6.0.1</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.6.0.2</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -1364,8 +1364,9 @@ function buildRefPages(d) {
           var result = computeRef(item, d);
           var refs = (item.src || []).map(function(k) { return WEB_REFS[k] || k; });
           renderRefItem(container, {
-            label: item.label, value: result.value, formula: result.formula,
-            notes: item.notes, status: item.status, references: refs
+            label: item.label, value: result.value, wt: result.wt,
+            formula: result.formula, notes: item.notes, status: item.status,
+            references: refs
           });
         });
       }
@@ -1381,10 +1382,12 @@ function renderRefItem(container, item) {
   var st = item.status || 'validated';
   row.className = 'ref-list-item' + (st === 'issue' ? ' status-issue' : '') + (st === 'unresolved' ? ' status-unresolved' : '');
   var dot = st !== 'validated' ? '<span class="ref-status-dot ' + st + '"></span>' : '';
+  var wtLabel = item.wt ? ' <span style="color:var(--dim);font-size:11px;font-family:var(--mono)">(' + item.wt + ')</span>' : '';
+  var valHtml = (item.value || '').replace(/\n/g, '<br>');
   row.innerHTML =
-    '<span class="ref-item-label">' + dot + item.label + '</span>' +
+    '<span class="ref-item-label">' + dot + item.label + wtLabel + '</span>' +
     '<span class="ref-item-val-wrap">' +
-      '<span class="ref-item-value">' + item.value + '</span>' +
+      '<span class="ref-item-value">' + valHtml + '</span>' +
       '<span class="ref-item-chevron">\u203a</span>' +
     '</span>';
   row.addEventListener('click', function() { showItemDetail(item); });

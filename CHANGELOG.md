@@ -10,6 +10,19 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.0.2] - 2026-04-14
+
+### Changed
+- Weight basis moved from value to label: items now show "Atropine (70.3 kg)" on the left with clean value on the right.
+- All weight-computed items (ws, wr, wc, cr, maint, fasting, ebv, abl, bsa, co, crcl, IBW, LBW, OCC types, etc.) now include `wt` field.
+- IBW/LBW items show weight type: "(IBW 65.9 kg)" or "(LBW 55.3 kg)".
+- ETT shows "(170 cm)" since it's height-based.
+- Local anesthetic toxic doses (`occ_max`) now display multiple lines: plain and with-epi on separate rows.
+- Values containing newlines render as `<br>` in the list view.
+- Fixed ABL formula to use 70 ml/kg (was still using 75 internally).
+
+---
+
 ## [1.6.0.1] - 2026-04-14
 
 ### Changed

@@ -10,6 +10,23 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.3.0] - 2026-04-14
+
+### Changed
+- **All 194 items now validated (100%).** Final 9 partially_verified items researched and resolved:
+  - Morphine: updated to 0.1-0.15 mg/kg range per StatPearls (NBK526115).
+  - Oxycodone: confirmed 0.1 mg/kg IV per PMC5369887.
+  - Meperidine: updated to 0.5-1 mg/kg range per StatPearls (NBK470362). Added normeperidine warning.
+  - Diclofenac: **changed from 1 mg/kg (oral dose) to 37.5 mg IV fixed** per StatPearls (NBK557879).
+  - Dipyrone: updated to 10-20 mg/kg range per PMC6540653. Added agranulocytosis note.
+  - Tramadol: updated to 1-2 mg/kg range per PubMed 12514150.
+  - Digoxin: **replaced concentration-rate format with standard 8-12 mcg/kg loading** per StatPearls (NBK556025).
+  - Insulin: **replaced glucose-band lookup with ADA perioperative protocol** (target 140-180, correctional SC q2h or IV infusion) per StatPearls (NBK540965).
+  - Sono gastric volume: Perlas formula confirmed by PMC9159396 validation study.
+- 9 new web reference sources added to WEB_REFS.
+
+---
+
 ## [1.6.2.0] - 2026-04-14
 
 ### Removed

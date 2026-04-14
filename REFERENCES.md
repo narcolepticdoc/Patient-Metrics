@@ -150,3 +150,14 @@ The following sources were used to verify the clinical data in `ref-data.js`. Ea
 
 ### OpenCriticalCare Pocket Card
 - **OpenCriticalCare Pocket Anesthesia Reference Card v4.212**: Collaborative reference by providers from UCSF and multiple academic medical centers. Covers general knowledge, medications, neuraxial anesthesia, obstetric emergencies, emergencies (hyperkalemia, anaphylaxis, high spinal), antibiotics, local anesthetic toxic doses, and inhalational anesthetic MAC values. Used as primary validation source for existing clinical data and as the basis for the OCC compendium pages. Card included in repository as `Anesthesia-Pocket-Card-v4.212-dslrfp.pdf`.
+
+### Additional Analgesic / Medication Sources
+- **Morphine — StatPearls**: NBK526115. NCBI Bookshelf. IV dosing 0.1-0.15 mg/kg.
+- **Oxycodone — StatPearls**: NBK482226. IV post-op loading 0.1 mg/kg (PMC5369887).
+- **Meperidine — StatPearls**: NBK470362. NCBI Bookshelf. IV 50-100 mg analgesic doses.
+- **Diclofenac — StatPearls**: NBK557879. NCBI Bookshelf. IV 37.5 mg bolus q6h.
+- **Dipyrone (Metamizole)**: PMC6540653. Single dose dipyrone for acute postoperative pain.
+- **Tramadol — StatPearls**: NBK537060. Optimal intraoperative loading 2.5 mg/kg (PubMed 12514150).
+- **Digoxin — StatPearls**: NBK556025. Loading 8-12 mcg/kg IBW in divided doses.
+- **Diabetic Perioperative Management — StatPearls**: NBK540965. ADA target 140-180 mg/dL.
+- **Gastric US volume (Perlas formula validation)**: PMC9159396. Vol = 27 + 14.6 × RLD_CSA − 1.28 × age.

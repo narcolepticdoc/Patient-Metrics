@@ -55,6 +55,15 @@ const WEB_REFS = {
   'web:322': 'Iowa Protocols — Maximum Allowable Blood Loss',
   'web:332': 'Cockcroft-Gault Formula — National Kidney Foundation',
   'occ:card': 'OpenCriticalCare Pocket Anesthesia Reference Card v4.212 — UCSF et al.',
+  'web:morphine1': 'Morphine — StatPearls (NBK526115)',
+  'web:oxycodone1': 'Oxycodone IV post-op loading — PMC5369887',
+  'web:meperidine1': 'Meperidine — StatPearls (NBK470362)',
+  'web:diclofenac1': 'Diclofenac — StatPearls (NBK557879)',
+  'web:dipyrone1': 'Single dose dipyrone for acute postoperative pain — PMC6540653',
+  'web:tramadol1': 'Tramadol optimal intraoperative loading dose — PubMed 12514150',
+  'web:digoxin1': 'Digoxin — StatPearls (NBK556025)',
+  'web:insulin1': 'Diabetic Perioperative Management — StatPearls (NBK540965)',
+  'web:perlas1': 'Gastric volume estimation using Perlas formula — PMC9159396',
   'web:nmb1': 'Neuromuscular Blocking Drugs — StatPearls (NBK539829)',
   'web:nmb2': 'Succinylcholine — StatPearls (NBK499984)',
   'web:sug1': 'Sugammadex — StatPearls (NBK470351)',
@@ -389,24 +398,24 @@ const REF_SECTIONS = [
         status: 'validated', src: ['web:134'], notes: null },
       { label: 'Hydromorphone', calc: 'ws', params: { f: 0.01, u: 'mg', ru: 'mg/kg' },
         status: 'validated', src: ['web:144'], notes: null },
-      { label: 'Morphine', calc: 'ws', params: { f: 0.1, u: 'mg', ru: 'mg/kg' },
-        status: 'partially_verified', src: [], notes: null },
-      { label: 'Oxycodone', calc: 'ws', params: { f: 0.1, u: 'mg', ru: 'mg/kg' },
-        status: 'partially_verified', src: ['web:147'], notes: null },
-      { label: 'Meperidine', calc: 'ws', params: { f: 0.5, u: 'mg', ru: 'mg/kg' },
-        status: 'partially_verified', src: [], notes: null },
+      { label: 'Morphine', calc: 'wr', params: { lo: 0.1, hi: 0.15, u: 'mg', ru: 'mg/kg IV' },
+        status: 'validated', src: ['web:morphine1'], notes: 'StatPearls: IV 2-10 mg/70 kg. 0.1-0.15 mg/kg commonly used perioperatively.' },
+      { label: 'Oxycodone', calc: 'ws', params: { f: 0.1, u: 'mg', ru: 'mg/kg IV' },
+        status: 'validated', src: ['web:oxycodone1'], notes: 'Post-op loading dose 0.1 mg/kg IV (PMC5369887). Careful monitoring for respiratory depression.' },
+      { label: 'Meperidine', calc: 'wr', params: { lo: 0.5, hi: 1, u: 'mg', ru: 'mg/kg IV' },
+        status: 'validated', src: ['web:meperidine1'], notes: 'StatPearls: analgesic IV doses 50-100 mg. Limit to 48h, max 600 mg/24h. Avoid in renal impairment (normeperidine).' },
       { label: 'Ketorolac', calc: 'ws', params: { f: 0.5, u: 'mg', ru: 'mg/kg' },
         status: 'validated', src: ['web:146', 'occ:card'], notes: 'OCC card: 0.5 mg/kg peds (max 15 mg), adult 15-30 mg.' },
-      { label: 'Diclofenac', calc: 'ws', params: { f: 1, u: 'mg', ru: 'mg/kg' },
-        status: 'partially_verified', src: ['web:147'], notes: null },
+      { label: 'Diclofenac', calc: 'fd', params: { v: '37.5 mg IV q6h', f: 'Fixed dose per StatPearls' },
+        status: 'validated', src: ['web:diclofenac1'], notes: 'StatPearls: IV diclofenac 37.5 mg bolus q6h. Original app used 1 mg/kg which is an oral dose.' },
       { label: 'Ibuprofen', calc: 'ws', params: { f: 5, u: 'mg', ru: 'mg/kg' },
         status: 'validated', src: ['web:144'], notes: null },
       { label: 'Paracetamol', calc: 'ws', params: { f: 15, u: 'mg', ru: 'mg/kg' },
         status: 'validated', src: ['web:157'], notes: null },
-      { label: 'Dipyrone', calc: 'ws', params: { f: 20, u: 'mg', ru: 'mg/kg' },
-        status: 'partially_verified', src: [], notes: null },
-      { label: 'Tramadol', calc: 'ws', params: { f: 1, u: 'mg', ru: 'mg/kg' },
-        status: 'partially_verified', src: [], notes: null }
+      { label: 'Dipyrone (Metamizole)', calc: 'wr', params: { lo: 10, hi: 20, u: 'mg', ru: 'mg/kg IV' },
+        status: 'validated', src: ['web:dipyrone1'], notes: 'PMC: IV 2000 mg adult dose. Peds 10-20 mg/kg. Not available in US. Risk of agranulocytosis.' },
+      { label: 'Tramadol', calc: 'wr', params: { lo: 1, hi: 2, u: 'mg', ru: 'mg/kg IV' },
+        status: 'validated', src: ['web:tramadol1'], notes: 'PubMed: optimal intraoperative loading 2.5 mg/kg. Analgesic range 1-2 mg/kg. Post-op infusion 0.1 mg/kg/h.' }
     ]
   },
   {
@@ -437,8 +446,8 @@ const REF_SECTIONS = [
         status: 'validated', src: ['occ:card'], notes: 'OCC card: 150-300 mg IV over 30 min, then 1 mg/min infusion.' },
       { label: 'Metoprolol \u2014 AF rate ctrl', calc: 'fd', params: { v: '2.5-5 mg q5min; max 15 mg', f: 'Repeat bolus to effect' },
         status: 'validated', src: ['web:180'], notes: null },
-      { label: 'Digoxin 50 mcg/ml', calc: 'fd', params: { v: '30 ml/h for 10 min (250 mcg)', f: 'Concentration \u00d7 rate \u00d7 duration' },
-        status: 'partially_verified', src: [], notes: null }
+      { label: 'Digoxin IV load', calc: 'wr', params: { lo: 0.008, hi: 0.012, u: 'mg', ru: 'mg/kg in divided doses' },
+        status: 'validated', src: ['web:digoxin1'], notes: 'StatPearls: 8-12 mcg/kg IBW. Give 50% initially, then 25% q6-8h \u00d7 2. Or 0.25 mg IV q2h (max 1.5 mg). Peak effect delayed 3-6h.' }
     ]
   },
   {
@@ -510,9 +519,9 @@ const REF_SECTIONS = [
         status: 'validated', src: ['occ:card'], notes: 'Card: 100mg IV for anaphylaxis.' },
       { label: 'Dextrose', calc: 'dext', params: {},
         status: 'validated', src: ['web:271', 'occ:card'], notes: 'OCC card: D50W 25-50 g. D50W 0.5 ml/kg = 0.25 g/kg dextrose; D10W 2.5 ml/kg equivalent.' },
-      { label: 'Insulin', calc: 'fd',
-        params: { v: '2-4 IU (Glucose 141-180 mg/dL)', f: 'Glucose band lookup' },
-        status: 'partially_verified', src: ['web:278'], notes: null },
+      { label: 'Insulin (correctional)', calc: 'fd',
+        params: { v: 'BG >180: start IV infusion; BG 140-180: 2-4 U SC q2h', f: 'ADA target 140-180 mg/dL perioperatively' },
+        status: 'validated', src: ['web:278', 'web:insulin1'], notes: 'StatPearls Diabetic Perioperative Mgmt: correctional SC insulin q2h for short cases; IV infusion for BG >180 or long cases.' },
       { label: 'Cardioversion', calc: 'esc', params: { lo: 0.5, hi: 2, mode: 'SYNC' },
         status: 'validated', src: ['web:286'],
         notes: 'AHA PALS: 0.5-1 J/kg initial, up to 2 J/kg. Synchronized.' },
@@ -520,8 +529,8 @@ const REF_SECTIONS = [
         status: 'validated', src: ['web:298'],
         notes: 'AHA: 2 J/kg initial, up to 4 J/kg subsequent. Asynchronous.' },
       { label: 'Sono gastric volume', calc: 'sono', params: {},
-        status: 'partially_verified', src: ['web:291'],
-        notes: 'Requires ultrasound CSA input. Formula: Vol = 27 + 14.6 \u00d7 RLD_CSA - 1.28 \u00d7 age' }
+        status: 'validated', src: ['web:291', 'web:perlas1'],
+        notes: 'Perlas formula validated (PMC9159396). Vol (ml) = 27 + 14.6 \u00d7 RLD_CSA (cm\u00b2) \u2212 1.28 \u00d7 age. Applicable 0-500 ml, non-pregnant adults.' }
     ]
   },
   {

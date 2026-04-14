@@ -979,3 +979,38 @@ var OCC_SECTIONS = [
 
 // Append OCC compendium to main REF_SECTIONS
 REF_SECTIONS.push.apply(REF_SECTIONS, OCC_SECTIONS);
+
+// ═══════════════════════════════════════════════════
+// PAGE ORDER
+// Anesthetic workflow: pre-op → induction → maintenance →
+// specialty → emergencies → OCC reference (alpha drug list last)
+// ═══════════════════════════════════════════════════
+var SECTION_ORDER = [
+  // Clinical (workflow order)
+  'Airway / Fluids',
+  'Antiemetics / Prophylaxis',
+  'Induction / NMB',
+  'Analgesia',
+  'Cardiovascular',
+  'Electrolytes',
+  'Obstetric Drugs',
+  'CPB / Derived Physiology',
+  'Anesthetic Crisis / MH',
+  // OCC compendium (topical first, alphabetical drug lookup last)
+  'OCC: Quick Reference',
+  'OCC: Emergencies',
+  'OCC: Neuraxial',
+  'OCC: OB Emergencies',
+  'OCC: Antibiotics',
+  'OCC: Local & Inhalational',
+  'OCC: Medications A-E',
+  'OCC: Medications F-N',
+  'OCC: Medications O-V'
+];
+REF_SECTIONS.sort(function(a, b) {
+  var ia = SECTION_ORDER.indexOf(a.title);
+  var ib = SECTION_ORDER.indexOf(b.title);
+  if (ia === -1) return 1;
+  if (ib === -1) return -1;
+  return ia - ib;
+});

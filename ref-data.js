@@ -113,22 +113,23 @@ function computeRef(item, d) {
   switch (item.calc) {
     case 'ws': { // weight single
       var v = refRound(kg * p.f);
-      return { value: v + ' ' + p.u, formula: kg + ' kg \u00d7 ' + p.f + ' ' + p.ru };
+      return { value: v + ' ' + p.u, wt: refRound(kg, 1) + ' kg',
+        formula: kg + ' kg \u00d7 ' + p.f + ' ' + p.ru };
     }
     case 'wr': { // weight range
       var lo = refRound(kg * p.lo), hi = refRound(kg * p.hi);
-      return { value: lo + '-' + hi + ' ' + p.u,
+      return { value: lo + '-' + hi + ' ' + p.u, wt: refRound(kg, 1) + ' kg',
         formula: kg + ' kg \u00d7 (' + p.lo + ' to ' + p.hi + ') ' + p.ru };
     }
     case 'wc': { // weight capped
       var raw = kg * p.f, v = refRound(Math.min(raw, p.cap));
       var note = raw > p.cap ? ' (capped at ' + p.cap + ')' : '';
-      return { value: v + ' ' + p.u + note,
+      return { value: v + ' ' + p.u + note, wt: refRound(kg, 1) + ' kg',
         formula: 'min(' + kg + ' kg \u00d7 ' + p.f + ', ' + p.cap + ') ' + p.ru };
     }
     case 'cr': { // concentration to rate
       var rate = refRound(kg * p.dose * 60 / p.conc, 1);
-      return { value: rate + ' ml/h',
+      return { value: rate + ' ml/h', wt: refRound(kg, 1) + ' kg',
         formula: kg + ' kg \u00d7 ' + p.dose + ' ' + p.du + ' \u00d7 60 \u00f7 ' + p.conc + ' ' + p.cu };
     }
     case 'cr_fixed': { // concentration to rate, not weight-based
@@ -142,36 +143,37 @@ function computeRef(item, d) {
       return { value: p.v, formula: null };
     case 'maint': { // 4/2/1 maintenance
       var rate = refRound(maintenanceRate(kg), 0);
-      return { value: rate + ' ml/h',
+      return { value: rate + ' ml/h', wt: refRound(kg, 1) + ' kg',
         formula: '4/2/1 rule: 4 ml/kg/h first 10 kg + 2 ml/kg/h next 10 kg + 1 ml/kg/h remainder' };
     }
     case 'fasting': {
       var rate = maintenanceRate(kg);
       var vol = refRound(rate * p.hours, 0);
-      return { value: vol + ' ml',
+      return { value: vol + ' ml', wt: refRound(kg, 1) + ' kg',
         formula: refRound(rate, 0) + ' ml/h \u00d7 ' + p.hours + ' h' };
     }
     case 'ebv': {
       var v = refRound(kg * p.f, 0);
-      return { value: v + ' ml', formula: kg + ' kg \u00d7 ' + p.f + ' ml/kg' };
+      return { value: v + ' ml', wt: refRound(kg, 1) + ' kg',
+        formula: kg + ' kg \u00d7 ' + p.f + ' ml/kg' };
     }
     case 'abl': {
-      var ebv = kg * 75;
+      var ebv = kg * 70;
       var abl = refRound(ebv * (p.hi - p.hf) / p.hi, 0);
-      return { value: abl + ' ml',
+      return { value: abl + ' ml', wt: refRound(kg, 1) + ' kg',
         formula: refRound(ebv, 0) + ' ml EBV \u00d7 (' + p.hi + ' - ' + p.hf + ') / ' + p.hi };
     }
     case 'bsa': {
       if (cm === null) return { value: '\u2014', formula: 'Enter height' };
       var bsa = Math.sqrt(cm * kg / 3600);
-      return { value: refRound(bsa, 2) + ' m\u00b2',
+      return { value: refRound(bsa, 2) + ' m\u00b2', wt: refRound(kg, 1) + ' kg',
         formula: '\u221a(' + cm + ' cm \u00d7 ' + kg + ' kg / 3600) [Mosteller]' };
     }
     case 'co': {
       if (cm === null) return { value: '\u2014', formula: 'Enter height' };
       var bsa = Math.sqrt(cm * kg / 3600);
       var co = refRound(p.ci * bsa, 2);
-      return { value: co + ' L/min',
+      return { value: co + ' L/min', wt: refRound(kg, 1) + ' kg',
         formula: 'CI ' + p.ci + ' \u00d7 BSA ' + refRound(bsa, 2) + ' m\u00b2' };
     }
     case 'crcl': {
@@ -181,75 +183,72 @@ function computeRef(item, d) {
       if (d.sex === 'F') raw *= 0.85;
       var norm = refRound(raw * 1.73 / bsa, 1);
       var sexNote = d.sex === 'F' ? ' \u00d7 0.85' : '';
-      return { value: norm + ' ml/min/1.73m\u00b2',
+      return { value: norm + ' ml/min/1.73m\u00b2', wt: refRound(kg, 1) + ' kg',
         formula: '((140-' + age + ') \u00d7 ' + kg + ') / (72 \u00d7 ' + p.cr + ')' + sexNote + ' \u00d7 1.73 / BSA ' + refRound(bsa, 2) + ' [CG + BSA norm, ' + (d.sex || 'M') + ']' };
     }
     case 'bolus_inf': {
       var bml = refRound(kg * p.bf);
       var lo = refRound(kg * p.ilo * 60), hi = refRound(kg * p.ihi * 60);
-      return { value: bml + ' ml bolus; ' + lo + '-' + hi + ' ml/h infusion',
+      return { value: bml + ' ml bolus; ' + lo + '-' + hi + ' ml/h infusion', wt: refRound(kg, 1) + ' kg',
         formula: 'Bolus: ' + kg + ' kg \u00d7 ' + p.bf + ' ml/kg; Infusion: ' + kg + ' kg \u00d7 (' + p.ilo + '-' + p.ihi + ') ml/kg/min \u00d7 60' };
     }
     case 'esc': { // escalation (cardioversion/defib)
       var lo = refRound(kg * p.lo, 0), hi = refRound(kg * p.hi, 0);
-      return { value: lo + '-' + hi + ' J',
+      return { value: lo + '-' + hi + ' J', wt: refRound(kg, 1) + ' kg',
         formula: kg + ' kg \u00d7 ' + p.lo + ' to ' + p.hi + ' J/kg ' + p.mode };
     }
     case 'dext': { // dextrose equivalents
       var d50 = refRound(kg * 0.5, 0), d10 = refRound(kg * 2.5, 0);
-      return { value: d50 + ' ml D50W / ' + d10 + ' ml D10W',
+      return { value: d50 + ' ml D50W / ' + d10 + ' ml D10W', wt: refRound(kg, 1) + ' kg',
         formula: 'D50W: ' + kg + ' kg \u00d7 0.5 ml/kg; D10W: ' + kg + ' kg \u00d7 2.5 ml/kg' };
     }
     case 'sono': {
       return { value: 'Requires US input', formula: 'Vol = 27 + 14.6 \u00d7 RLD_CSA - 1.28 \u00d7 age' };
     }
-    case 'occ_ws': { // OCC weight single — shows computed + "(based on XX kg)"
+    case 'occ_ws': { // OCC weight single
       var v = refRound(kg * p.f);
-      return { value: v + ' ' + p.u + ' (based on ' + refRound(kg, 1) + ' kg)',
-        formula: p.card };
+      return { value: v + ' ' + p.u, wt: refRound(kg, 1) + ' kg', formula: p.card };
     }
     case 'occ_wr': { // OCC weight range
       var lo = refRound(kg * p.lo), hi = refRound(kg * p.hi);
-      return { value: lo + '-' + hi + ' ' + p.u + ' (based on ' + refRound(kg, 1) + ' kg)',
-        formula: p.card };
+      return { value: lo + '-' + hi + ' ' + p.u, wt: refRound(kg, 1) + ' kg', formula: p.card };
     }
     case 'occ_wc': { // OCC weight capped
       var raw = kg * p.f, v = refRound(Math.min(raw, p.cap));
       var note = raw > p.cap ? ' (capped)' : '';
-      return { value: v + note + ' ' + p.u + ' (based on ' + refRound(kg, 1) + ' kg)',
-        formula: p.card };
+      return { value: v + note + ' ' + p.u, wt: refRound(kg, 1) + ' kg', formula: p.card };
     }
-    case 'occ_max': { // OCC weight-based toxic max dose
-      var v = refRound(kg * p.f);
-      var v2 = p.f2 ? ' / ' + refRound(kg * p.f2) + ' ' + p.u + ' w/epi' : '';
-      return { value: 'Max ' + v + ' ' + p.u + ' plain' + v2 + ' (based on ' + refRound(kg, 1) + ' kg)',
-        formula: p.card };
+    case 'occ_max': { // OCC weight-based toxic max dose — multiple lines
+      var plain = refRound(kg * p.f);
+      var lines = 'Plain: ' + plain + ' ' + p.u + ' (' + p.f + ' ' + p.u + '/kg)';
+      if (p.f2) lines += '\nWith epi: ' + refRound(kg * p.f2) + ' ' + p.u + ' (' + p.f2 + ' ' + p.u + '/kg)';
+      return { value: lines, wt: refRound(kg, 1) + ' kg', formula: p.card };
     }
     case 'ws_ibw': { // weight single using IBW
       if (d.cm === null) return { value: '\u2014', formula: 'Enter height for IBW' };
       var ibw = calcIBW(d.cm, d.sex);
       var v = refRound(ibw * p.f);
-      return { value: v + ' ' + p.u,
+      return { value: v + ' ' + p.u, wt: 'IBW ' + refRound(ibw, 1) + ' kg',
         formula: 'IBW ' + refRound(ibw, 1) + ' kg \u00d7 ' + p.f + ' ' + p.ru + ' [Devine, ' + (d.sex || 'M') + ']' };
     }
     case 'wr_ibw': { // weight range using IBW
       if (d.cm === null) return { value: '\u2014', formula: 'Enter height for IBW' };
       var ibw = calcIBW(d.cm, d.sex);
       var lo = refRound(ibw * p.lo), hi = refRound(ibw * p.hi);
-      return { value: lo + '-' + hi + ' ' + p.u,
+      return { value: lo + '-' + hi + ' ' + p.u, wt: 'IBW ' + refRound(ibw, 1) + ' kg',
         formula: 'IBW ' + refRound(ibw, 1) + ' kg \u00d7 (' + p.lo + ' to ' + p.hi + ') ' + p.ru + ' [Devine, ' + (d.sex || 'M') + ']' };
     }
     case 'wr_lbw': { // weight range using LBW
       if (d.cm === null) return { value: '\u2014', formula: 'Enter height for LBW' };
       var lbw = calcLBW(kg, d.cm, d.sex);
       var lo = refRound(lbw * p.lo), hi = refRound(lbw * p.hi);
-      return { value: lo + '-' + hi + ' ' + p.u,
+      return { value: lo + '-' + hi + ' ' + p.u, wt: 'LBW ' + refRound(lbw, 1) + ' kg',
         formula: 'LBW ' + refRound(lbw, 1) + ' kg \u00d7 (' + p.lo + ' to ' + p.hi + ') ' + p.ru + ' [James, ' + (d.sex || 'M') + ']' };
     }
     case 'ett': { // ETT tube size from height
       if (d.cm === null) return { value: '\u2014', formula: 'Enter height' };
       var size = refRound(d.cm / 10 - 9, 1);
-      return { value: size + ' mm; insertion ' + p.ins,
+      return { value: size + ' mm; insertion ' + p.ins, wt: d.cm + ' cm',
         formula: d.cm + ' cm / 10 - 9 = ' + size + ' mm' };
     }
     case 'lma': { // LMA size lookup
@@ -261,12 +260,12 @@ function computeRef(item, d) {
       else if (kg < 50) { size = 3; cuff = 20; }
       else if (kg < 70) { size = 4; cuff = 30; }
       else { size = 5; cuff = 40; }
-      return { value: 'Size ' + size + '; cuff ' + cuff + ' ml',
+      return { value: 'Size ' + size + '; cuff ' + cuff + ' ml', wt: refRound(kg, 1) + ' kg',
         formula: 'Weight-based lookup: ' + kg + ' kg \u2192 size ' + size };
     }
     case 'titration': { // titration with cap
       var lo = refRound(kg * p.lo / 1000, 2), hi = refRound(kg * p.hi / 1000, 1);
-      return { value: lo + '-' + hi + ' mg per bolus; max ' + p.cap + ' mg',
+      return { value: lo + '-' + hi + ' mg per bolus; max ' + p.cap + ' mg', wt: refRound(kg, 1) + ' kg',
         formula: kg + ' kg \u00d7 (' + p.lo + '-' + p.hi + ') mcg/kg = ' + refRound(kg * p.lo) + '-' + refRound(kg * p.hi) + ' mcg' };
     }
     default:

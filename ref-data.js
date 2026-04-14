@@ -370,20 +370,19 @@ const REF_SECTIONS = [
     ]
   },
   {
-    title: 'Local Anesthetics',
+    title: 'Analgesia',
     items: [
+      // ── Local Anesthetics ──
+      { label: 'Local Anesthetics', calc: 'hdr' },
       { label: 'Lidocaine max dose', calc: 'wr', params: { lo: 4.5, hi: 7, u: 'mg', ru: 'mg/kg (plain / with epi)' },
         status: 'validated', src: ['web:125', 'occ:card'], notes: 'Plain: 4.5 mg/kg. With epi: 7 mg/kg.' },
       { label: 'Bupivacaine max dose', calc: 'wr', params: { lo: 2.5, hi: 3, u: 'mg', ru: 'mg/kg (plain / with epi)' },
         status: 'validated', src: ['web:125', 'occ:card'], notes: 'Plain: 2.5 mg/kg. With epi: 3 mg/kg.' },
       { label: 'Intralipid 20%', calc: 'bolus_inf', params: { bf: 1.5, ilo: 0.25, ihi: 0.5, u: 'ml' },
         status: 'validated', src: ['web:133', 'occ:card'],
-        notes: 'ASRA LAST protocol. Bolus 1.5 ml/kg; infusion 0.25-0.5 ml/kg/min. Max ~10 ml/kg over 30 min.' }
-    ]
-  },
-  {
-    title: 'Analgesics',
-    items: [
+        notes: 'ASRA LAST protocol. Bolus 1.5 ml/kg; infusion 0.25-0.5 ml/kg/min. Max ~10 ml/kg over 30 min.' },
+      // ── Analgesics ──
+      { label: 'Analgesics', calc: 'hdr' },
       { label: 'Fentanyl', calc: 'ws', params: { f: 1, u: 'mcg', ru: 'mcg/kg' },
         status: 'validated', src: ['web:134'], notes: null },
       { label: 'Hydromorphone', calc: 'ws', params: { f: 0.01, u: 'mg', ru: 'mg/kg' },
@@ -409,8 +408,10 @@ const REF_SECTIONS = [
     ]
   },
   {
-    title: 'Inotropes & Vasopressors',
+    title: 'Cardiovascular',
     items: [
+      // ── Vasopressors & Inotropes ──
+      { label: 'Vasopressors & Inotropes', calc: 'hdr' },
       { label: 'Norepinephrine 16 mcg/ml', calc: 'cr', params: { dose: 0.05, conc: 16, du: 'mcg/kg/min', cu: 'mcg/ml' },
         status: 'validated', src: ['web:161'], notes: null },
       { label: 'Vasopressin 1 IU/ml', calc: 'cr_fixed', params: { dose: 0.04, conc: 1, du: 'U/min', cu: 'U/ml' },
@@ -424,12 +425,9 @@ const REF_SECTIONS = [
         status: 'validated', src: ['web:184', 'occ:card'],
         notes: 'OCC card: 0.5-2 mcg/kg/min. Showing rate at 0.2 mcg/kg/min. Original app had arithmetic error (now corrected).' },
       { label: 'Labetalol', calc: 'fd', params: { v: '10-20 mg IV; double to 80 mg; max 300 mg', f: 'Stepwise bolus escalation' },
-        status: 'validated', src: ['web:173'], notes: null }
-    ]
-  },
-  {
-    title: 'Antiarrhythmics',
-    items: [
+        status: 'validated', src: ['web:173'], notes: null },
+      // ── Antiarrhythmics ──
+      { label: 'Antiarrhythmics', calc: 'hdr' },
       { label: 'Amiodarone \u2014 VF arrest', calc: 'wc', params: { f: 5, cap: 300, u: 'mg', ru: 'mg/kg IV, max 300 mg' },
         status: 'validated', src: ['web:180'], notes: null },
       { label: 'Amiodarone \u2014 AF rate ctrl', calc: 'fd', params: { v: '150 mg over 10-30 min', f: 'Fixed dose infusion' },
@@ -441,8 +439,10 @@ const REF_SECTIONS = [
     ]
   },
   {
-    title: 'Hyperkalemia',
+    title: 'Electrolytes',
     items: [
+      // ── Hyperkalemia ──
+      { label: 'Hyperkalemia', calc: 'hdr' },
       { label: 'Ca chloride 10%', calc: 'wr', params: { lo: 0.05, hi: 0.1, u: 'ml', ru: 'ml/kg' },
         status: 'validated', src: ['web:188', 'occ:card'], notes: 'Card: 0.5-1g CaCl IV.' },
       { label: 'Ca gluconate 10%', calc: 'wr', params: { lo: 0.15, hi: 0.3, u: 'ml', ru: 'ml/kg' },
@@ -456,12 +456,9 @@ const REF_SECTIONS = [
       { label: 'Dextrose + Insulin', calc: 'fd', params: { v: 'D10W 500 ml or D50W 50 ml + 10 U insulin over 30-60 min', f: 'Fixed combination regimen' },
         status: 'validated', src: ['web:188', 'web:208'], notes: null },
       { label: 'Kayexalate', calc: 'wc', params: { f: 1, cap: 40, u: 'g q4h', ru: 'g/kg, max 40 g' },
-        status: 'validated', src: ['web:194', 'occ:card'], notes: 'Card: 15-50g PO.' }
-    ]
-  },
-  {
-    title: 'Severe Hypokalemia',
-    items: [
+        status: 'validated', src: ['web:194', 'occ:card'], notes: 'Card: 15-50g PO.' },
+      // ── Hypokalemia ──
+      { label: 'Severe Hypokalemia', calc: 'hdr' },
       { label: 'KCl 200 mEq/L', calc: 'fd', params: { v: '50-100 ml/h = 10-20 mEq/h; central access', f: 'Concentration \u00d7 rate' },
         status: 'validated', src: ['web:224'], notes: null },
       { label: 'KCl 100 mEq/L', calc: 'fd', params: { v: '100 ml/h = 10 mEq/h; central access', f: 'Concentration \u00d7 rate' },

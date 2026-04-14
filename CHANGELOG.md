@@ -10,6 +10,18 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.4.0] - 2026-04-14
+
+### Changed
+- Consolidated pages from 24 down to 18 (17 clinical + Patient Summary):
+  - Airway + Induction Agents + NMBs + Antagonists + Anticholinergics → **Airway / Induction / NMB**
+  - Local Anesthetics + Analgesics → **Analgesia**
+  - Inotropes & Vasopressors + Antiarrhythmics → **Cardiovascular**
+  - Hyperkalemia + Severe Hypokalemia → **Electrolytes**
+- Each merged page uses in-page section headers (`hdr` calc type) to separate sub-topics.
+
+---
+
 ## [1.6.3.2] - 2026-04-14
 
 ### Changed

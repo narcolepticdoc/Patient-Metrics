@@ -10,6 +10,28 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.7.1.0] - 2026-04-14
+
+### Added
+- `occ_multi` compute engine now supports per-row weight basis (`wb: 'ibw'` or `wb: 'lbw'`) so NMB intubation doses use IBW and induction doses use LBW while other rows stay on TBW.
+
+### Fixed / Changed
+- **Atropine**: now includes peds min 0.1 mg / max 0.5 mg caps + pretreatment range + adult arrest dose.
+- **Neostigmine**: 5 mg total cap now shown explicitly (per OCC card).
+- **Glycopyrrolate**: split to adult fixed 0.2 mg IV vs peds 4-10 mcg/kg range.
+- **Labetalol**: starting dose corrected 10-20 mg → **5-10 mg** IV (per OCC card). Also updated in OB Drugs cross-reference and OCC OB Emergencies protocol text.
+- **Flumazenil**: replaced incorrect "0.7 mg/bolus" legacy value. Now shows adult 0.2 mg q1 min (max 1 mg) and peds 0.01 mg/kg (max 0.2 mg).
+- **Pancuronium**: dose corrected 0.14 mg/kg → **0.08-0.12 mg/kg** IBW (OCC standard intubating range).
+- **Midazolam**: expanded to show LBW-based induction dose + adult titrate + peds weight-based.
+- **Rocuronium**: expanded to show intubation range (IBW) + RSI dose (IBW 1.2 mg/kg) + infusion.
+- **Succinylcholine**: expanded IV 1-1.5 mg/kg range + IM 4 mg/kg.
+- **Sugammadex**: expanded to all three tiers: moderate (2), deep (4), immediate (16) mg/kg.
+- **Ketamine**: expanded to IV induction (LBW) + IM (4-6 mg/kg) + analgesia (0.2-0.8 mg/kg).
+- **Fentanyl**: expanded to analgesia range + infusion.
+- **Naloxone**: split to adult fixed (0.04-0.4 mg IV, max 10 mg) + peds weight-based + infusion. Peds display now in mcg for clarity.
+
+---
+
 ## [1.7.0.1] - 2026-04-14
 
 ### Changed

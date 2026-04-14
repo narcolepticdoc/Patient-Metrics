@@ -10,6 +10,14 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.4.2] - 2026-04-14
+
+### Changed
+- Merged Malignant Hyperthermia and Anesthetic Crisis into single **"Anesthetic Crisis / MH"** page with section headers (Crisis Medications, Malignant Hyperthermia).
+- 16 clinical pages + Patient Summary = 17 total.
+
+---
+
 ## [1.6.4.1] - 2026-04-14
 
 ### Changed

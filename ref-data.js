@@ -500,33 +500,10 @@ const REF_SECTIONS = [
     ]
   },
   {
-    title: 'Malignant Hyperthermia',
+    title: 'Anesthetic Crisis / MH',
     items: [
-      { label: 'Stop triggering agent', calc: 'pa', params: { v: 'Halogenated agents, Succinylcholine' },
-        status: 'validated', src: ['web:218'], notes: null },
-      { label: 'Call for help', calc: 'pa', params: { v: 'FiO\u2082 100%, high flow >10 L/min; double minute ventilation; switch to TIVA' },
-        status: 'validated', src: ['web:218'], notes: null },
-      { label: 'Dantrolene \u2014 initial', calc: 'wr', params: { lo: 2, hi: 3, u: 'mg', ru: 'mg/kg IV bolus' },
-        status: 'validated', src: ['web:216', 'web:218', 'occ:card'],
-        notes: 'Card confirms 2.5 mg/kg. Range 2-3 covers standard dosing band.' },
-      { label: 'Active cooling', calc: 'pa', params: { v: 'Ice packs, cold forced air, gastric lavage, etc.' },
-        status: 'validated', src: ['web:218'], notes: null },
-      { label: 'Associated conditions', calc: 'pa',
-        params: { v: 'Hyperkalemia: CaCl\u2082, NaHCO\u2083, glucose-insulin | Acidosis: NaHCO\u2083 | Arrhythmias: Esmolol, Lidocaine' },
-        status: 'validated', src: ['web:218'], notes: 'Standard MH complication management per MHAUS crisis protocol.' },
-      { label: 'Contraindicated drugs', calc: 'pa', params: { v: 'Calcium channel blockers with dantrolene \u2014 risk of hyperkalemia and cardiovascular collapse' },
-        status: 'validated', src: ['web:232'],
-        notes: 'MHAUS: Do not use calcium channel blockers in patients receiving dantrolene.' },
-      { label: 'Dantrolene \u2014 repeat bolus', calc: 'ws', params: { f: 2.5, u: 'mg', ru: 'mg/kg IV' },
-        status: 'validated', src: ['web:245'], notes: null },
-      { label: 'Dantrolene \u2014 ICU maintenance', calc: 'ws', params: { f: 1, u: 'mg q4-6h', ru: 'mg/kg; max 10 mg/kg total' },
-        status: 'validated', src: ['web:245'],
-        notes: 'Per StatPearls MH: 1 mg/kg q4-6h for 24-48h post-crisis. 20% recurrence risk in first 48h.' }
-    ]
-  },
-  {
-    title: 'Anesthetic Crisis',
-    items: [
+      // ── Crisis Medications ──
+      { label: 'Crisis Medications', calc: 'hdr' },
       { label: 'Adrenaline', calc: 'fd',
         params: { v: '10 mcg bradycardia; 50 mcg refractory hypotension; 1 mg arrest', f: 'Scenario-based fixed dose' },
         status: 'validated', src: ['web:254', 'web:260', 'occ:card'],
@@ -551,7 +528,29 @@ const REF_SECTIONS = [
         notes: 'AHA: 2 J/kg initial, up to 4 J/kg subsequent. Asynchronous.' },
       { label: 'Sono gastric volume', calc: 'sono', params: {},
         status: 'validated', src: ['web:291', 'web:perlas1'],
-        notes: 'Perlas formula validated (PMC9159396). Vol (ml) = 27 + 14.6 \u00d7 RLD_CSA (cm\u00b2) \u2212 1.28 \u00d7 age. Applicable 0-500 ml, non-pregnant adults.' }
+        notes: 'Perlas formula validated (PMC9159396). Vol (ml) = 27 + 14.6 \u00d7 RLD_CSA (cm\u00b2) \u2212 1.28 \u00d7 age. Applicable 0-500 ml, non-pregnant adults.' },
+      // ── Malignant Hyperthermia ──
+      { label: 'Malignant Hyperthermia', calc: 'hdr' },
+      { label: 'Stop triggering agent', calc: 'pa', params: { v: 'Halogenated agents, Succinylcholine' },
+        status: 'validated', src: ['web:218'], notes: null },
+      { label: 'Call for help', calc: 'pa', params: { v: 'FiO\u2082 100%, high flow >10 L/min; double minute ventilation; switch to TIVA' },
+        status: 'validated', src: ['web:218'], notes: null },
+      { label: 'Dantrolene \u2014 initial', calc: 'wr', params: { lo: 2, hi: 3, u: 'mg', ru: 'mg/kg IV bolus' },
+        status: 'validated', src: ['web:216', 'web:218', 'occ:card'],
+        notes: 'Card confirms 2.5 mg/kg. Range 2-3 covers standard dosing band.' },
+      { label: 'Active cooling', calc: 'pa', params: { v: 'Ice packs, cold forced air, gastric lavage, etc.' },
+        status: 'validated', src: ['web:218'], notes: null },
+      { label: 'Associated conditions', calc: 'pa',
+        params: { v: 'Hyperkalemia: CaCl\u2082, NaHCO\u2083, glucose-insulin | Acidosis: NaHCO\u2083 | Arrhythmias: Esmolol, Lidocaine' },
+        status: 'validated', src: ['web:218'], notes: 'Standard MH complication management per MHAUS crisis protocol.' },
+      { label: 'Contraindicated drugs', calc: 'pa', params: { v: 'Calcium channel blockers with dantrolene \u2014 risk of hyperkalemia and cardiovascular collapse' },
+        status: 'validated', src: ['web:232'],
+        notes: 'MHAUS: Do not use calcium channel blockers in patients receiving dantrolene.' },
+      { label: 'Dantrolene \u2014 repeat bolus', calc: 'ws', params: { f: 2.5, u: 'mg', ru: 'mg/kg IV' },
+        status: 'validated', src: ['web:245'], notes: null },
+      { label: 'Dantrolene \u2014 ICU maintenance', calc: 'ws', params: { f: 1, u: 'mg q4-6h', ru: 'mg/kg; max 10 mg/kg total' },
+        status: 'validated', src: ['web:245'],
+        notes: 'Per StatPearls MH: 1 mg/kg q4-6h for 24-48h post-crisis. 20% recurrence risk in first 48h.' }
     ]
   },
   {

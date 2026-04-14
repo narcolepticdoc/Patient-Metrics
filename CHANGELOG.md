@@ -10,6 +10,13 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.3.1] - 2026-04-14
+
+### Fixed
+- Long text values (fixed-dose and procedural items like Hyperventilation, Dextrose + Insulin) now render at 11px/500 weight instead of 13px/600, preventing oversized wrapped text blocks.
+
+---
+
 ## [1.6.3.0] - 2026-04-14
 
 ### Changed

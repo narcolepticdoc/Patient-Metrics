@@ -241,16 +241,27 @@ function computeRef(item, d) {
         // age filter: skip rows tagged for the opposite age group
         if (r.age === 'peds' && isAdult) return;
         if (r.age === 'adult' && isPeds) return;
+        // weight basis: default TBW, or 'ibw'/'lbw' for this row
+        var w = kg, wLabel = '';
+        if (r.wb === 'ibw') {
+          if (d.cm === null) { lines.push(r.label + ': \u2014 (need height)'); return; }
+          w = calcIBW(d.cm, d.sex);
+          wLabel = ' (IBW ' + refRound(w, 1) + ' kg)';
+        } else if (r.wb === 'lbw') {
+          if (d.cm === null) { lines.push(r.label + ': \u2014 (need height)'); return; }
+          w = calcLBW(kg, d.cm, d.sex);
+          wLabel = ' (LBW ' + refRound(w, 1) + ' kg)';
+        }
         if (r.type === 'wr') {
-          lines.push(r.label + ': ' + refRound(kg * r.lo) + '-' + refRound(kg * r.hi) + ' ' + r.u);
+          lines.push(r.label + wLabel + ': ' + refRound(w * r.lo) + '-' + refRound(w * r.hi) + ' ' + r.u);
         } else if (r.type === 'ws') {
-          lines.push(r.label + ': ' + refRound(kg * r.f) + ' ' + r.u);
+          lines.push(r.label + wLabel + ': ' + refRound(w * r.f) + ' ' + r.u);
         } else if (r.type === 'wc') {
-          var raw = kg * r.f;
-          lines.push(r.label + ': ' + refRound(Math.min(raw, r.cap)) + ' ' + r.u + (raw > r.cap ? ' (capped)' : ''));
+          var raw = w * r.f;
+          lines.push(r.label + wLabel + ': ' + refRound(Math.min(raw, r.cap)) + ' ' + r.u + (raw > r.cap ? ' (capped)' : ''));
         } else if (r.type === 'max') {
-          lines.push(r.label + ' plain: ' + refRound(kg * r.f) + ' ' + r.u);
-          if (r.f2) lines.push(r.label + ' w/epi: ' + refRound(kg * r.f2) + ' ' + r.u);
+          lines.push(r.label + ' plain: ' + refRound(w * r.f) + ' ' + r.u);
+          if (r.f2) lines.push(r.label + ' w/epi: ' + refRound(w * r.f2) + ' ' + r.u);
         } else if (r.type === 'txt') {
           lines.push(r.v);
         }
@@ -363,49 +374,85 @@ const REF_SECTIONS = [
       { label: 'Induction', calc: 'hdr' },
       { label: 'Propofol', calc: 'wr_lbw', params: { lo: 2, hi: 3, u: 'mg', ru: 'mg/kg LBW' },
         status: 'validated', src: ['web:ind1'], notes: 'Uses James lean body weight.' },
-      { label: 'Ketamine', calc: 'wr_lbw', params: { lo: 1, hi: 2, u: 'mg', ru: 'mg/kg LBW' },
-        status: 'validated', src: ['web:ind2'], notes: null },
+      { label: 'Ketamine', calc: 'occ_multi', params: { rows: [
+          { type: 'wr', wb: 'lbw', label: 'IV induction', lo: 1, hi: 2, u: 'mg' },
+          { type: 'wr', label: 'IM', lo: 4, hi: 6, u: 'mg' },
+          { type: 'wr', label: 'Analgesia IV', lo: 0.2, hi: 0.8, u: 'mg' }
+        ], card: 'Induction: 1-2 mg/kg IV (LBW). IM: 4-6 mg/kg. Analgesia: 0.2-0.8 mg/kg IV. Infusion: 2-15 mcg/kg/min.' },
+        status: 'validated', src: ['web:ind2', 'occ:card'],
+        notes: 'IV induction dose uses LBW; IM and analgesia use TBW.' },
       { label: 'Thiopental', calc: 'wr_lbw', params: { lo: 5, hi: 7, u: 'mg', ru: 'mg/kg LBW' },
         status: 'validated', src: [], notes: null },
       { label: 'Etomidate', calc: 'wr_lbw', params: { lo: 0.2, hi: 0.3, u: 'mg', ru: 'mg/kg LBW' },
         status: 'validated', src: ['web:ind3'], notes: null },
-      { label: 'Midazolam', calc: 'wr_lbw', params: { lo: 0.15, hi: 0.35, u: 'mg', ru: 'mg/kg LBW' },
-        status: 'validated', src: ['web:ind4'],
-        notes: 'Wide range: higher end for sedation/induction, lower for premedication.' },
+      { label: 'Midazolam', calc: 'occ_multi', params: { rows: [
+          { type: 'wr', wb: 'lbw', label: 'Induction', lo: 0.15, hi: 0.35, u: 'mg' },
+          { type: 'txt', age: 'adult', v: 'Adult titrate: 0.5-2 mg IV' },
+          { type: 'wr', age: 'peds', label: 'Peds titrate', lo: 0.05, hi: 0.1, u: 'mg' }
+        ], card: 'Adult titrate: 0.5-2 mg IV. Peds: 0.05-0.1 mg/kg. Induction dose (higher range) uses LBW.' },
+        status: 'validated', src: ['web:ind4', 'occ:card'],
+        notes: 'Induction dose based on LBW; titration doses on TBW.' },
       // ── Neuromuscular Blockade ──
       { label: 'Neuromuscular Blockade', calc: 'hdr' },
       { label: 'Vecuronium', calc: 'ws_ibw', params: { f: 0.1, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
         status: 'validated', src: ['web:nmb1'], notes: null },
-      { label: 'Rocuronium', calc: 'ws_ibw', params: { f: 0.6, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
-        status: 'validated', src: ['web:nmb1'], notes: null },
-      { label: 'Pancuronium', calc: 'ws_ibw', params: { f: 0.14, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
-        status: 'validated', src: ['web:nmb1'], notes: null },
+      { label: 'Rocuronium', calc: 'occ_multi', params: { rows: [
+          { type: 'wr', wb: 'ibw', label: 'Intubation', lo: 0.6, hi: 1.2, u: 'mg' },
+          { type: 'ws', wb: 'ibw', label: 'RSI', f: 1.2, u: 'mg' },
+          { type: 'wr', label: 'Infusion', lo: 5, hi: 15, u: 'mcg/min' }
+        ], card: 'Intubation: 0.6-1.2 mg/kg IBW. RSI: 1.2 mg/kg IBW. Infusion: 5-15 mcg/kg/min.' },
+        status: 'validated', src: ['web:nmb1', 'occ:card'],
+        notes: 'Intubation and RSI doses use IBW; infusion uses TBW.' },
+      { label: 'Pancuronium', calc: 'wr_ibw', params: { lo: 0.08, hi: 0.12, u: 'mg', ru: 'mg/kg IBW' },
+        status: 'validated', src: ['web:nmb1', 'occ:card'], notes: 'Standard intubating dose 0.08-0.12 mg/kg IBW per OCC card. Long-acting NMB.' },
       { label: 'Cisatracurium', calc: 'ws_ibw', params: { f: 0.1, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
         status: 'validated', src: ['web:nmb1'], notes: null },
       { label: 'Atracurium', calc: 'ws_ibw', params: { f: 0.46, u: 'mg', ru: 'mg/kg IBW (2 ED95)' },
         status: 'validated', src: ['web:nmb1'], notes: null },
-      { label: 'Succinylcholine', calc: 'ws', params: { f: 1, u: 'mg', ru: 'mg/kg TBW (2 ED95)' },
-        status: 'validated', src: ['web:nmb2'],
-        notes: 'Uses total body weight (TBW), not IBW. Only NMB dosed on TBW.' },
+      { label: 'Succinylcholine', calc: 'occ_multi', params: { rows: [
+          { type: 'wr', label: 'IV', lo: 1, hi: 1.5, u: 'mg' },
+          { type: 'ws', label: 'IM', f: 4, u: 'mg' }
+        ], card: '1-1.5 mg/kg IV; 4 mg/kg IM. Peds may need 2 mg/kg. Onset 30-60 sec, duration 5-10 min.' },
+        status: 'validated', src: ['web:nmb2', 'occ:card'],
+        notes: 'Uses TBW \u2014 only NMB dosed on TBW.' },
       // ── Reversal ──
       { label: 'Reversal', calc: 'hdr' },
-      { label: 'Neostigmine', calc: 'wr', params: { lo: 0.04, hi: 0.07, u: 'mg', ru: 'mg/kg TBW' },
-        status: 'validated', src: ['web:neo1'], notes: 'Neuromuscular reversal. Uses TBW.' },
-      { label: 'Sugammadex', calc: 'ws', params: { f: 2, u: 'mg', ru: 'mg/kg TBW; TOF 1-3' },
-        status: 'validated', src: ['web:sug1'],
-        notes: 'TOF 1-3 indication. Standard 4 mg/kg dose for deep block not shown on this screen.' },
-      { label: 'Naloxone', calc: 'titration', params: { lo: 10, hi: 100, cap: 10 },
-        status: 'validated', src: ['web:nal1'],
-        notes: 'Typical titration band 0.1-2.0 mg; weight formula anchors per-bolus dosing.' },
-      { label: 'Flumazenil', calc: 'fd', params: { v: '0.2 mg initial; titrate 0.7 mg/bolus; max 1 mg', f: 'Initial 0.2 mg then 10 mcg/kg per titration' },
-        status: 'validated', src: ['web:flu1'],
-        notes: '0.2 mg is standard initial reversal dose regardless of weight.' },
+      { label: 'Neostigmine', calc: 'occ_multi', params: { rows: [
+          { type: 'wr', label: 'Range', lo: 0.04, hi: 0.07, u: 'mg' },
+          { type: 'wc', label: 'Max dose', f: 0.07, cap: 5, u: 'mg IV' }
+        ], card: '0.04-0.07 mg/kg IV (max 5 mg). Give with glycopyrrolate. NMB reversal.' },
+        status: 'validated', src: ['web:neo1', 'occ:card'], notes: 'TBW-based. 5 mg ceiling per OCC.' },
+      { label: 'Sugammadex', calc: 'occ_multi', params: { rows: [
+          { type: 'ws', label: 'Moderate (TOF 1-2)', f: 2, u: 'mg' },
+          { type: 'ws', label: 'Deep block', f: 4, u: 'mg' },
+          { type: 'ws', label: 'Immediate reversal', f: 16, u: 'mg' }
+        ], card: 'Moderate block (TOF 1-2): 2 mg/kg. Deep block: 4 mg/kg. Immediate reversal: 16 mg/kg. Use IBW in obese.' },
+        status: 'validated', src: ['web:sug1', 'occ:card'], notes: 'TBW for standard cases. Use IBW in obese.' },
+      { label: 'Naloxone', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult reversal: 0.04-0.4 mg IV titrate; max 10 mg' },
+          { type: 'wr', age: 'peds', label: 'Peds', lo: 1, hi: 10, u: 'mcg' },
+          { type: 'wr', label: 'Infusion', lo: 0.25, hi: 6.25, u: 'mcg/hr' }
+        ], card: 'Reversal: 0.04-0.4 mg IV titrate (max 10 mg). Peds: 1-10 mcg/kg. Infusion 0.25-6.25 mcg/kg/hr.' },
+        status: 'validated', src: ['web:nal1', 'occ:card'], notes: null },
+      { label: 'Flumazenil', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult: 0.2 mg IV q1 min; max 1 mg' },
+          { type: 'wc', age: 'peds', label: 'Peds', f: 0.01, cap: 0.2, u: 'mg q1 min' }
+        ], card: 'Adult: 0.2 mg IV q1 min; max 1 mg. Peds: 0.01 mg/kg (max 0.2 mg) q1 min. Benzodiazepine reversal.' },
+        status: 'validated', src: ['web:flu1', 'occ:card'], notes: null },
       // ── Anticholinergics ──
       { label: 'Anticholinergics', calc: 'hdr' },
-      { label: 'Atropine', calc: 'ws', params: { f: 0.02, u: 'mg', ru: 'mg/kg' },
-        status: 'validated', src: ['occ:card'], notes: 'Card: 0.02 mg/kg; adult arrest 1mg q3-5min.' },
-      { label: 'Glycopyrrolate', calc: 'ws', params: { f: 10, u: 'mcg', ru: 'mcg/kg' },
-        status: 'validated', src: ['occ:card'], notes: 'Card: 0.2mg adult, 4-10 mcg/kg peds.' }
+      { label: 'Atropine', calc: 'occ_multi', params: { rows: [
+          { type: 'ws', age: 'peds', label: 'Peds dose (0.02 mg/kg)', f: 0.02, u: 'mg' },
+          { type: 'txt', age: 'peds', v: 'Min 0.1 mg; max 0.5 mg per dose' },
+          { type: 'wr', age: 'peds', label: 'Pretreatment', lo: 0.01, hi: 0.02, u: 'mg' },
+          { type: 'txt', age: 'adult', v: 'Adult arrest: 1 mg IV q3-5 min' }
+        ], card: 'Peds: 0.02 mg/kg (min 0.1 mg, max 0.5 mg). Adult arrest: 1 mg q3-5 min. Pretreatment: 0.01-0.02 mg/kg.' },
+        status: 'validated', src: ['occ:card'], notes: null },
+      { label: 'Glycopyrrolate', calc: 'occ_multi', params: { rows: [
+          { type: 'txt', age: 'adult', v: 'Adult: 0.2 mg IV' },
+          { type: 'wr', age: 'peds', label: 'Peds', lo: 4, hi: 10, u: 'mcg' }
+        ], card: 'Adult: 0.2 mg IV. Peds: 4-10 mcg/kg. Give with neostigmine for NMB reversal.' },
+        status: 'validated', src: ['occ:card'], notes: null }
     ]
   },
   {
@@ -422,8 +469,11 @@ const REF_SECTIONS = [
         notes: 'ASRA LAST protocol. Bolus 1.5 ml/kg; infusion 0.25-0.5 ml/kg/min. Max ~10 ml/kg over 30 min.' },
       // ── Analgesics ──
       { label: 'Analgesics', calc: 'hdr' },
-      { label: 'Fentanyl', calc: 'ws', params: { f: 1, u: 'mcg', ru: 'mcg/kg' },
-        status: 'validated', src: ['web:134'], notes: null },
+      { label: 'Fentanyl', calc: 'occ_multi', params: { rows: [
+          { type: 'wr', label: 'Analgesia', lo: 0.5, hi: 2, u: 'mcg' },
+          { type: 'wr', label: 'Infusion', lo: 0.5, hi: 20, u: 'mcg/hr' }
+        ], card: 'Analgesia: 0.5-2 mcg/kg IV. Infusion: 0.5-20 mcg/kg/hr. Peds analgesia: 0.5-1 mcg/kg.' },
+        status: 'validated', src: ['web:134', 'occ:card'], notes: null },
       { label: 'Hydromorphone', calc: 'ws', params: { f: 0.01, u: 'mg', ru: 'mg/kg' },
         status: 'validated', src: ['web:144'], notes: null },
       { label: 'Morphine', calc: 'wr', params: { lo: 0.1, hi: 0.15, u: 'mg', ru: 'mg/kg IV' },
@@ -477,8 +527,8 @@ const REF_SECTIONS = [
         status: 'validated', src: ['occ:card'], notes: null },
       // ── Beta Blockers ──
       { label: 'Beta Blockers', calc: 'hdr' },
-      { label: 'Labetalol', calc: 'fd', params: { v: '10-20 mg IV; double to 80 mg; max 300 mg', f: '\u03b1/\u03b2 blocker; stepwise bolus escalation' },
-        status: 'validated', src: ['web:173', 'occ:card'], notes: null },
+      { label: 'Labetalol', calc: 'fd', params: { v: '5-10 mg IV, double q5-10 min; max 300 mg', f: '\u03b1/\u03b2 blocker. Infusion 0.5-2 mg/min.' },
+        status: 'validated', src: ['web:173', 'occ:card'], notes: 'OCC standard starting dose 5-10 mg. Updated from legacy 10-20 mg.' },
       { label: 'Metoprolol \u2014 AF rate ctrl', calc: 'fd', params: { v: '2.5-5 mg q5min; max 15 mg', f: '\u03b21-selective; repeat bolus to effect' },
         status: 'validated', src: ['web:180'], notes: null },
       { label: 'Esmolol', calc: 'occ_multi', params: { rows: [
@@ -685,7 +735,7 @@ const REF_SECTIONS = [
         status: 'validated', src: ['occ:card'], notes: 'Monitor deep tendon reflexes, respiratory rate, urine output.' },
       { label: 'Magnesium \u2014 maintenance', calc: 'fd', params: { v: '1-2 g/hr IV infusion', f: 'Maintain therapeutic level 4-7 mEq/L' },
         status: 'validated', src: ['occ:card'], notes: 'Toxicity: loss DTR > respiratory depression > cardiac arrest.' },
-      { label: 'Labetalol', calc: 'fd', params: { v: '10-20 mg IV, double q5-10 min; max 300 mg', f: 'Severe HTN: SBP>160 or DBP>110' },
+      { label: 'Labetalol', calc: 'fd', params: { v: '5-10 mg IV, double q5-10 min; max 300 mg', f: 'Severe HTN: SBP>160 or DBP>110' },
         status: 'validated', src: ['occ:card'], notes: 'Cross-listed from Cardiovascular.' },
       { label: 'Hydralazine', calc: 'fd', params: { v: '5-10 mg IV q10-20 min', f: 'Severe HTN in pre-eclampsia' },
         status: 'validated', src: ['occ:card'], notes: 'Cross-listed from Cardiovascular.' },
@@ -842,7 +892,7 @@ var OCC_SECTIONS = [
       { label: 'Misoprostol', calc: 'fd', params: { v: '600-1000 mcg PR/SL', f: 'Uterotonic for PPH.' }, status: OCC, src: OCS, notes: null },
       { label: 'Naloxone', calc: 'occ_multi', params: { rows: [
           { type: 'txt', age: 'adult', v: 'Adult reversal: 0.04-0.4 mg IV titrate; max 10 mg' },
-          { type: 'wr', age: 'peds', label: 'Peds', lo: 0.001, hi: 0.01, u: 'mg' },
+          { type: 'wr', age: 'peds', label: 'Peds', lo: 1, hi: 10, u: 'mcg' },
           { type: 'wr', label: 'Infusion', lo: 0.25, hi: 6.25, u: 'mcg/hr' }
         ], card: 'Reversal: 0.04-0.4 mg IV titrate; max 10 mg. Peds: 1-10 mcg/kg. Infusion 0.25-6.25 mcg/kg/hr.' }, status: OCC, src: OCS, notes: null },
       { label: 'Neostigmine', calc: 'occ_multi', params: { rows: [
@@ -919,7 +969,7 @@ var OCC_SECTIONS = [
       { label: 'Pre-eclampsia \u2014 MgSO4 load', calc: 'fd', params: { v: '4-6 g IV over 15-30 min', f: 'Seizure prophylaxis' }, status: OCC, src: OCS, notes: 'Monitor deep tendon reflexes, respiratory rate, urine output.' },
       { label: 'Pre-eclampsia \u2014 MgSO4 maint', calc: 'fd', params: { v: '1-2 g/hr IV infusion', f: 'Maintain therapeutic level' }, status: OCC, src: OCS, notes: 'Therapeutic: 4-7 mEq/L. Toxicity: loss DTR > resp depression > cardiac arrest.' },
       { label: 'Eclampsia \u2014 Treatment', calc: 'pa', params: { v: 'MgSO4 4-6 g IV; if seizing on Mg give additional 2 g; Secure airway; Left uterine displacement; Prepare for delivery' }, status: OCC, src: OCS, notes: null },
-      { label: 'Severe HTN in pre-eclampsia', calc: 'fd', params: { v: 'Labetalol 10-20 mg IV, double q10 min (max 300 mg); or Hydralazine 5-10 mg IV q20 min', f: 'SBP>160 or DBP>110' }, status: OCC, src: OCS, notes: null },
+      { label: 'Severe HTN in pre-eclampsia', calc: 'fd', params: { v: 'Labetalol 5-10 mg IV, double q5-10 min (max 300 mg); or Hydralazine 5-10 mg IV q20 min', f: 'SBP>160 or DBP>110' }, status: OCC, src: OCS, notes: null },
       { label: 'PPH \u2014 Oxytocin', calc: 'fd', params: { v: '3 U IV bolus; Infusion 1-2 U/hr', f: 'First-line uterotonic' }, status: OCC, src: OCS, notes: null },
       { label: 'PPH \u2014 Methylergonovine', calc: 'fd', params: { v: '0.2 mg IM (avoid IV)', f: 'Second-line uterotonic' }, status: OCC, src: OCS, notes: 'Contraindicated in HTN, preeclampsia.' },
       { label: 'PPH \u2014 Carboprost', calc: 'fd', params: { v: '250 mcg IM q15 min; max 2 mg', f: 'Third-line uterotonic' }, status: OCC, src: OCS, notes: 'Contraindicated in asthma.' },

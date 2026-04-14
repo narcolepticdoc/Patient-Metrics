@@ -646,8 +646,8 @@ var OCC_SECTIONS = [
       { label: 'Epinephrine', calc: 'fd', params: { v: 'Arrest: 1 mg q3-5 min; Hypotension: 5-20 mcg IV; Bronchospasm: 0.3-0.5 mg IM', f: 'Peds arrest: 10 mcg/kg (0.01 mg/kg). Infusion 0.05-0.5 mcg/kg/min.' }, status: OCC, src: OCS, notes: null },
       { label: 'Esmolol', calc: 'occ_multi', params: { rows: [
           { type: 'wr', label: 'Load', lo: 0.5, hi: 1, u: 'mg IV' },
-          { type: 'wr', label: 'Infusion', lo: 3, hi: 18, u: 'mg/min' }
-        ], card: 'Load: 0.5-1 mg/kg IV. Infusion: 50-300 mcg/kg/min.' }, status: OCC, src: OCS, notes: 'Infusion computed as 50-300 mcg/kg/min.' },
+          { type: 'wr', label: 'Infusion', lo: 50, hi: 300, u: 'mcg/min' }
+        ], card: 'Load: 0.5-1 mg/kg IV. Infusion: 50-300 mcg/kg/min.' }, status: OCC, src: OCS, notes: null },
       { label: 'Etomidate', calc: 'occ_wr', params: { lo: 0.2, hi: 0.3, u: 'mg IV', card: '0.2-0.3 mg/kg IV. Peds: same range.' }, status: OCC, src: OCS, notes: null }
     ]
   },
@@ -683,8 +683,8 @@ var OCC_SECTIONS = [
       { label: 'Midazolam', calc: 'occ_wr', params: { lo: 0.05, hi: 0.1, u: 'mg (peds)', card: 'Adult: 0.5-2 mg IV titrate. Peds: 0.05-0.1 mg/kg.' }, status: OCC, src: OCS, notes: null },
       { label: 'Milrinone', calc: 'occ_multi', params: { rows: [
           { type: 'ws', label: 'Load (over 10 min)', f: 50, u: 'mcg' },
-          { type: 'wr', label: 'Infusion', lo: 22.5, hi: 45, u: 'mcg/min' }
-        ], card: 'Load: 50 mcg/kg over 10 min. Infusion: 0.375-0.75 mcg/kg/min.' }, status: OCC, src: OCS, notes: 'Infusion computed as 0.375-0.75 mcg/kg/min.' },
+          { type: 'wr', label: 'Infusion', lo: 0.375, hi: 0.75, u: 'mcg/min' }
+        ], card: 'Load: 50 mcg/kg over 10 min. Infusion: 0.375-0.75 mcg/kg/min.' }, status: OCC, src: OCS, notes: null },
       { label: 'Misoprostol', calc: 'fd', params: { v: '600-1000 mcg PR/SL', f: 'Uterotonic for PPH.' }, status: OCC, src: OCS, notes: null },
       { label: 'Naloxone', calc: 'fd', params: { v: 'Reversal: 0.04-0.4 mg IV titrate; max 10 mg', f: 'Opioid antagonist. Peds: 1-10 mcg/kg. Infusion 0.25-6.25 mcg/kg/hr.' }, status: OCC, src: OCS, notes: null },
       { label: 'Neostigmine', calc: 'occ_multi', params: { rows: [
@@ -706,7 +706,7 @@ var OCC_SECTIONS = [
       { label: 'Promethazine', calc: 'fd', params: { v: '6.25-12.5 mg IV/IM', f: 'Antiemetic / sedative.' }, status: OCC, src: OCS, notes: null },
       { label: 'Propofol', calc: 'occ_multi', params: { rows: [
           { type: 'wr', label: 'Induction', lo: 1.5, hi: 2.5, u: 'mg IV' },
-          { type: 'wr', label: 'Infusion', lo: 1.5, hi: 12, u: 'mg/min' }
+          { type: 'wr', label: 'Infusion', lo: 25, hi: 200, u: 'mcg/min' }
         ], card: 'Induction: 1.5-2.5 mg/kg IV. Infusion: 25-200 mcg/kg/min. Peds: 2-4 mg/kg IV.' }, status: OCC, src: OCS, notes: null },
       { label: 'Ranitidine', calc: 'fd', params: { v: '50 mg IV', f: 'H2 blocker.' }, status: OCC, src: OCS, notes: null },
       { label: 'Rocuronium', calc: 'occ_multi', params: { rows: [

@@ -10,6 +10,15 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.6.0.4] - 2026-04-14
+
+### Fixed
+- Propofol infusion: was using mg/kg factors (1.5-12) instead of mcg/kg/min (25-200). Now correctly computes mcg/min.
+- Esmolol infusion: same error, was pre-multiplied. Now uses 50-300 mcg/kg/min factors.
+- Milrinone infusion: was pre-multiplied (22.5-45). Now uses 0.375-0.75 mcg/kg/min factors.
+
+---
+
 ## [1.6.0.3] - 2026-04-14
 
 ### Changed

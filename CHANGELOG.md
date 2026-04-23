@@ -10,6 +10,13 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.7.2.1] - 2026-04-23
+
+### Fixed
+- Reference page dots were being obscured by the iOS home indicator bar. Added `viewport-fit=cover` and `env(safe-area-inset-bottom)` padding so the dot strip sits above the home indicator on iPhone.
+
+---
+
 ## [1.7.2.0] - 2026-04-23
 
 ### Added

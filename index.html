@@ -448,11 +448,13 @@
       display: flex; justify-content: center; gap: 8px;
       padding: 10px 0 14px; flex-shrink: 0;
       background: var(--bg);
+      touch-action: none;
+      user-select: none; -webkit-user-select: none;
     }
     .ref-dot {
       width: 7px; height: 7px; border-radius: 50%;
       background: var(--dim); transition: background .2s;
-      cursor: pointer;
+      cursor: pointer; pointer-events: none;
     }
     .ref-dot.active { background: var(--accent); }
 
@@ -555,7 +557,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.7.1.1</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.7.2.0</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -1466,10 +1468,9 @@ function renderRefPagesDOM() {
     pg.render(page);
     track.appendChild(page);
 
-    // Dot
+    // Dot (navigation handled by slide handler on container)
     const dot = document.createElement('div');
     dot.className = 'ref-dot' + (i === refCurrentPage ? ' active' : '');
-    dot.addEventListener('click', () => navigateToPage(i));
     dots.appendChild(dot);
 
     // Nav item
@@ -1588,6 +1589,59 @@ $('refCloseBtn').addEventListener('click', closeRefPanel);
       navigateToPage(refCurrentPage);
     }
   }
+})();
+
+// ── Tap / slide along the dots strip to jump between pages ──
+(function initRefDotsSlide() {
+  const dotsEl = $('refDots');
+  let sliding = false;
+
+  function dotIndexAtX(clientX) {
+    const dots = dotsEl.children;
+    if (!dots.length) return 0;
+    const firstRect = dots[0].getBoundingClientRect();
+    const lastRect  = dots[dots.length - 1].getBoundingClientRect();
+    if (clientX <= firstRect.left + firstRect.width / 2) return 0;
+    if (clientX >= lastRect.left  + lastRect.width  / 2) return dots.length - 1;
+    let best = 0, bestDist = Infinity;
+    for (let i = 0; i < dots.length; i++) {
+      const r = dots[i].getBoundingClientRect();
+      const d = Math.abs(clientX - (r.left + r.width / 2));
+      if (d < bestDist) { bestDist = d; best = i; }
+    }
+    return best;
+  }
+
+  function getX(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
+
+  function onStart(e) {
+    sliding = true;
+    e.preventDefault();
+    const target = dotIndexAtX(getX(e));
+    if (target !== refCurrentPage) navigateToPage(target);
+    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('touchend',  onEnd);
+    window.addEventListener('touchcancel', onEnd);
+    window.addEventListener('mouseup',   onEnd);
+  }
+  function onMove(e) {
+    if (!sliding) return;
+    e.preventDefault();
+    const target = dotIndexAtX(getX(e));
+    if (target !== refCurrentPage) navigateToPage(target);
+  }
+  function onEnd() {
+    sliding = false;
+    window.removeEventListener('touchmove', onMove);
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('touchend',  onEnd);
+    window.removeEventListener('touchcancel', onEnd);
+    window.removeEventListener('mouseup',   onEnd);
+  }
+
+  dotsEl.addEventListener('touchstart', onStart, { passive: false });
+  dotsEl.addEventListener('mousedown',  onStart);
 })();
 
 // ═══════════════════════════════════════════════════

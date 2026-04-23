@@ -10,6 +10,13 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.7.2.0] - 2026-04-23
+
+### Added
+- Reference page dots at the bottom of the reference panel now support **tap-and-slide**: drag a finger (or click-drag with mouse) along the dot strip to scrub quickly through pages. Tapping a single dot still jumps directly to it.
+
+---
+
 ## [1.7.1.1] - 2026-04-14
 
 ### Added

@@ -10,6 +10,14 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.7.3.0] - 2026-04-23
+
+### Added
+- **Patient Summary — inline metric editing.** The Patient Summary page in the reference panel now has editable fields for Age (yr), Weight (kg), Height (cm), and a Male / Female toggle. Values can be entered directly in metric (useful when patient info is already in SI units), and every reference page reflects the edited values immediately for what-if calculations.
+- **Mismatch warning + Sync.** When the summary values differ from the main conversion page, a warning banner appears with a **Sync to main** button (writes the metric values back to the main page's lb / ft / in / birth year / sex — rounded to the nearest lb and inch) and a **Reset** button to discard edits. Unsynced overrides persist across close/reopen of the reference panel.
+
+---
+
 ## [1.7.2.1] - 2026-04-23
 
 ### Fixed

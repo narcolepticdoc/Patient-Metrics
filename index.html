@@ -443,6 +443,42 @@
     }
     .ref-empty-icon { font-size: 32px; margin-bottom: 12px; opacity: .5; }
 
+    /* ── Patient Summary edit grid ── */
+    .summary-edit-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin: 4px 0 6px;
+    }
+    .summary-edit-grid .field { display: flex; flex-direction: column; gap: 3px; }
+    .summary-edit-grid .text-input { font-size: 14px; padding: 6px 8px; }
+    .summary-edit-grid .sex-row {
+      grid-column: span 2;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 2px 0;
+    }
+    .summary-alt-units {
+      font-family: var(--mono); font-size: 10px; color: var(--dim);
+      text-align: right; margin: 0 0 10px; letter-spacing: .04em;
+    }
+    .summary-warn {
+      background: rgba(244,162,97,.12);
+      border: 1px solid rgba(244,162,97,.4);
+      border-radius: var(--radius);
+      padding: 10px 12px; margin-bottom: 10px;
+      font-family: var(--sans); font-size: 12px; color: var(--warn);
+      line-height: 1.4;
+    }
+    .summary-warn-actions { display: flex; gap: 8px; margin-top: 8px; }
+    .summary-warn-btn {
+      background: var(--warn); color: var(--bg); border: none;
+      padding: 6px 12px; border-radius: 4px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+      text-transform: uppercase; cursor: pointer;
+    }
+    .summary-warn-btn.secondary {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
     /* ── Dot indicators ── */
     .ref-dots {
       display: flex; justify-content: center; gap: 8px;
@@ -557,7 +593,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.7.2.1</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.7.3.0</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -726,6 +762,9 @@ const state = {
   factor:    1.00,
   wtInertia: 0.94
 };
+
+// Patient Summary page overrides (metric-native edits). null = inherit from main state.
+const summaryOverride = { age: null, kg: null, cm: null, sex: null };
 
 const $ = id => document.getElementById(id);
 
@@ -1273,26 +1312,67 @@ function syncInertiaSlider() {
 // REFERENCE MODULE
 // ═══════════════════════════════════════════════════
 
-// ── Demographics helper ──
+// ── Demographics helpers ──
+const curYear = () => new Date().getFullYear();
+
+// Values that the main conversion page currently reflects, in metric form.
+function mainDerived() {
+  return {
+    age: state.birthYear !== null ? curYear() - state.birthYear : null,
+    kg:  state.lbs !== null ? lbToKg(state.lbs) : null,
+    cm:  (state.feet !== null && state.inches !== null)
+          ? ftInToCm(state.feet, state.inches) : null,
+    sex: state.sex || 'M'
+  };
+}
+
+// Merge summaryOverride on top of mainDerived (metric-native).
+function effectiveSummary() {
+  const m = mainDerived();
+  return {
+    age: summaryOverride.age !== null ? summaryOverride.age : m.age,
+    kg:  summaryOverride.kg  !== null ? summaryOverride.kg  : m.kg,
+    cm:  summaryOverride.cm  !== null ? summaryOverride.cm  : m.cm,
+    sex: summaryOverride.sex !== null ? summaryOverride.sex : m.sex
+  };
+}
+
+// Which overridden fields actually differ from main state (within tolerance).
+function summaryMismatchKeys() {
+  const m = mainDerived();
+  const out = [];
+  if (summaryOverride.age !== null && summaryOverride.age !== m.age) out.push('age');
+  if (summaryOverride.kg  !== null &&
+      (m.kg === null || Math.abs(summaryOverride.kg - m.kg) > 0.05)) out.push('kg');
+  if (summaryOverride.cm  !== null &&
+      (m.cm === null || Math.abs(summaryOverride.cm - m.cm) > 0.1 )) out.push('cm');
+  if (summaryOverride.sex !== null && summaryOverride.sex !== m.sex) out.push('sex');
+  return out;
+}
+function hasSummaryMismatch() { return summaryMismatchKeys().length > 0; }
+
 function getDemographics() {
-  const kg  = state.lbs !== null ? lbToKg(state.lbs) : null;
-  const cm  = state.feet !== null && state.inches !== null
-              ? ftInToCm(state.feet, state.inches) : null;
+  const eff = effectiveSummary();
+  const kg  = eff.kg;
+  const cm  = eff.cm;
   const m   = cm !== null ? cm / 100 : null;
-  const age = state.birthYear !== null
-              ? new Date().getFullYear() - state.birthYear : null;
+  const age = eff.age;
+  const sex = eff.sex;
   const bmi = kg !== null && cm !== null ? calcBmi(kg, cm) : null;
-  const sex = state.sex || 'M';
   const ibw = cm !== null ? calcIBW(cm, sex) : null;
   const lbw = kg !== null && cm !== null ? calcLBW(kg, cm, sex) : null;
+  // Derive imperial equivalents from the effective metric values (may be fractional).
+  const lbs    = kg !== null ? kg / 0.45359237 : null;
+  const totIn  = cm !== null ? cm / 2.54 : null;
+  const feet   = totIn !== null ? Math.floor(totIn / 12) : null;
+  const inches = totIn !== null ? totIn - feet * 12 : null;
   return {
     age, sex,
     kg:  kg !== null ? +kg.toFixed(2) : null,
-    lbs: state.lbs,
+    lbs: lbs !== null ? +lbs.toFixed(1) : null,
     cm:  cm !== null ? +cm.toFixed(1) : null,
     m:   m  !== null ? +m.toFixed(4)  : null,
-    feet: state.feet,
-    inches: state.inches,
+    feet, inches: inches !== null ? +inches.toFixed(1) : null,
     bmi: bmi !== null ? +bmi.toFixed(1) : null,
     bmiCategory: bmi !== null ? bmiCat(bmi) : null,
     ibw: ibw !== null ? +ibw.toFixed(1) : null,
@@ -1303,29 +1383,111 @@ function getDemographics() {
 // ── Page registry (generated from REF_SECTIONS in ref-data.js) ──
 function buildRefPages(d) {
   var pages = [];
-  // Patient Summary page
+  // Patient Summary page (editable, metric-native)
   pages.push({ id: 'demographics', title: 'Patient Summary', render: function(container) {
     var sec = function(label) {
       var h = document.createElement('div');
       h.className = 'ref-section-hdr'; h.textContent = label;
       container.appendChild(h);
     };
+
+    // Mismatch warning banner (with Sync / Reset actions)
+    if (hasSummaryMismatch()) {
+      var warn = document.createElement('div');
+      warn.className = 'summary-warn';
+      warn.innerHTML =
+        'These values differ from the main conversion page. ' +
+        'Sync will round to the nearest lb / inch when writing back.' +
+        '<div class="summary-warn-actions">' +
+          '<button class="summary-warn-btn" id="summarySyncBtn">Sync to main</button>' +
+          '<button class="summary-warn-btn secondary" id="summaryResetBtn">Reset</button>' +
+        '</div>';
+      container.appendChild(warn);
+    }
+
+    // Editable grid (metric input)
     sec('Measurements');
-    if (d.age !== null)
-      renderRefItem(container, { label: 'Age', value: d.age + ' yr',
-        formula: 'Current year \u2212 birth year',
-        notes: 'Estimated from birth year. Actual birthday not captured.',
-        status: 'validated', references: [] });
-    if (d.kg !== null)
-      renderRefItem(container, { label: 'Weight', value: refRound(d.kg, 1) + ' kg',
-        formula: d.lbs + ' lb \u00d7 0.45359237',
-        notes: 'Exact conversion per International Yard and Pound Agreement (1959).',
-        status: 'validated', references: ['NIST SP 811, 2008 Edition, Table 7'] });
-    if (d.cm !== null)
-      renderRefItem(container, { label: 'Height', value: d.cm + ' cm (' + d.m + ' m)',
-        formula: '(' + d.feet + ' ft \u00d7 12 + ' + d.inches + ' in) \u00d7 2.54',
-        notes: 'Exact conversion per International Yard and Pound Agreement (1959).',
-        status: 'validated', references: ['NIST SP 811, 2008 Edition, Table 6'] });
+    var grid = document.createElement('div');
+    grid.className = 'summary-edit-grid';
+
+    var eff = effectiveSummary();
+
+    function mkNumField(labelText, key, min, max, step, initVal) {
+      var f = document.createElement('div');
+      f.className = 'field';
+      var lb = document.createElement('label'); lb.textContent = labelText;
+      var inp = document.createElement('input');
+      inp.type = 'number'; inp.className = 'text-input';
+      inp.min = min; inp.max = max; inp.step = step;
+      inp.setAttribute('inputmode', 'decimal');
+      if (initVal !== null && initVal !== undefined) inp.value = +(+initVal).toFixed(step < 1 ? 1 : 0);
+      inp.addEventListener('focus', function() { inp.select(); });
+      inp.addEventListener('change', function() {
+        var raw = inp.value;
+        var val = raw === '' ? null : Number(raw);
+        if (val !== null) {
+          if (Number.isNaN(val)) val = null;
+          else val = Math.max(min, Math.min(max, val));
+        }
+        var mv = mainDerived()[key];
+        var tol = key === 'age' ? 0 : (key === 'kg' ? 0.05 : 0.1);
+        if (val !== null && mv !== null && Math.abs(val - mv) <= tol) {
+          summaryOverride[key] = null;
+        } else {
+          summaryOverride[key] = val;
+        }
+        refreshRefPages();
+      });
+      f.appendChild(lb); f.appendChild(inp);
+      return f;
+    }
+
+    grid.appendChild(mkNumField('Age (yr)',      'age', 0, 120, 1,   eff.age));
+    grid.appendChild(mkNumField('Weight (kg)',   'kg',  1, 500, 0.1, eff.kg));
+    grid.appendChild(mkNumField('Height (cm)',   'cm',  30, 250, 0.1, eff.cm));
+
+    // Sex row (Male / Female indicator + toggle)
+    var sexRow = document.createElement('div');
+    sexRow.className = 'sex-row';
+    var sexLbl = document.createElement('label'); sexLbl.textContent = 'Sex';
+    var sexToggle = document.createElement('div');
+    sexToggle.className = 'sex-toggle';
+    ['M', 'F'].forEach(function(s) {
+      var btn = document.createElement('button');
+      btn.className = 'sex-btn' + (eff.sex === s ? ' active' : '');
+      btn.dataset.sex = s;
+      btn.textContent = s === 'M' ? 'Male' : 'Female';
+      btn.addEventListener('click', function() {
+        var mv = mainDerived().sex;
+        summaryOverride.sex = (s === mv) ? null : s;
+        refreshRefPages();
+      });
+      sexToggle.appendChild(btn);
+    });
+    sexRow.appendChild(sexLbl);
+    sexRow.appendChild(sexToggle);
+    grid.appendChild(sexRow);
+
+    container.appendChild(grid);
+
+    // Imperial equivalents hint (so user sees what Sync will round to)
+    if (d.kg !== null || d.cm !== null || d.age !== null) {
+      var parts = [];
+      if (d.kg !== null) parts.push(refRound(d.kg / 0.45359237, 0) + ' lb');
+      if (d.cm !== null) {
+        var totIn = d.cm / 2.54;
+        var ft = Math.floor(totIn / 12);
+        var inc = Math.round(totIn - ft * 12);
+        if (inc === 12) { ft += 1; inc = 0; }
+        parts.push(ft + "\u2032" + inc + "\u2033");
+      }
+      if (d.age !== null) parts.push('born ' + (curYear() - d.age));
+      var alt = document.createElement('div');
+      alt.className = 'summary-alt-units';
+      alt.textContent = '\u2248 ' + parts.join('  \u2022  ');
+      container.appendChild(alt);
+    }
+
     if (d.bmi !== null) {
       sec('Body Composition');
       renderRefItem(container, { label: 'BMI', value: d.bmi + ' (' + d.bmiCategory + ')',
@@ -1359,6 +1521,12 @@ function buildRefPages(d) {
       empty.innerHTML = '<div class="ref-empty-icon">\u2195</div>Enter patient data above<br>to see calculated values';
       container.appendChild(empty);
     }
+
+    // Wire up Sync / Reset buttons if the warning banner was rendered
+    var syncBtn = container.querySelector('#summarySyncBtn');
+    if (syncBtn) syncBtn.addEventListener('click', syncSummaryToMain);
+    var resetBtn = container.querySelector('#summaryResetBtn');
+    if (resetBtn) resetBtn.addEventListener('click', resetSummaryOverrides);
   }});
   // Clinical sections from ref-data.js
   REF_SECTIONS.forEach(function(section) {
@@ -1517,6 +1685,37 @@ function toggleNavDropdown(force) {
   $('refTitleBtn').classList.toggle('nav-open', navDropdownOpen);
 }
 $('refTitleBtn').addEventListener('click', () => toggleNavDropdown());
+
+// ── Rebuild all reference pages with current effective demographics ──
+function refreshRefPages() {
+  REF_PAGES = buildRefPages(getDemographics());
+  renderRefPagesDOM();
+  navigateToPage(refCurrentPage);
+}
+
+// ── Push Patient Summary overrides back into main state ──
+function syncSummaryToMain() {
+  if (summaryOverride.age !== null) state.birthYear = curYear() - summaryOverride.age;
+  if (summaryOverride.kg  !== null) state.lbs = Math.round(summaryOverride.kg / 0.45359237);
+  if (summaryOverride.cm  !== null) {
+    const totalIn = summaryOverride.cm / 2.54;
+    let ft = Math.floor(totalIn / 12);
+    let inc = Math.round(totalIn - ft * 12);
+    if (inc === 12) { ft += 1; inc = 0; }
+    state.feet = ft; state.inches = inc;
+  }
+  if (summaryOverride.sex !== null) state.sex = summaryOverride.sex;
+  summaryOverride.age = summaryOverride.kg = summaryOverride.cm = summaryOverride.sex = null;
+  renderInputs();
+  syncSexUi();
+  savePersistedState();
+  refreshRefPages();
+}
+
+function resetSummaryOverrides() {
+  summaryOverride.age = summaryOverride.kg = summaryOverride.cm = summaryOverride.sex = null;
+  refreshRefPages();
+}
 
 // ── Open / close overlay ──
 function openRefPanel() {

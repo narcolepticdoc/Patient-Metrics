@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#0f1923">
@@ -446,7 +446,7 @@
     /* ── Dot indicators ── */
     .ref-dots {
       display: flex; justify-content: center; gap: 8px;
-      padding: 10px 0 14px; flex-shrink: 0;
+      padding: 10px 0 calc(14px + env(safe-area-inset-bottom)); flex-shrink: 0;
       background: var(--bg);
       touch-action: none;
       user-select: none; -webkit-user-select: none;
@@ -557,7 +557,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.7.2.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.7.2.1</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 

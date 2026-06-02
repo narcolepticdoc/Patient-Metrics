@@ -851,9 +851,9 @@ function clearPersistedState() {
 // ═══════════════════════════════════════════════════
 
 // TCI Sim deployment that owns the /api/sync serverless function.
-// NOTE: confirm this host matches the live TCI Sim deployment, and add
-// this app's origin to that deployment's SYNC_ALLOWED_ORIGINS env var
-// (comma-separated) or the browser will block the CORS request.
+// NOTE: this app's origin must be added to that deployment's
+// SYNC_ALLOWED_ORIGINS env var (comma-separated) or the browser will
+// block the cross-origin POST at the CORS preflight.
 const SYNC_ENDPOINT = 'https://tci-sim.vercel.app/api/sync';
 
 // 6 uppercase alphanumerics, excluding ambiguous 0 O 1 I.

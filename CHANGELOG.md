@@ -10,6 +10,16 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.8.0.0] - 2026-06-02
+
+### Added
+- **Sync to TCI Sim (sender).** New opt-in **Settings → Sync to TCI Sim** section that pushes de-identified demographics to a paired TCI Sim app. Only **age, sex, height, and weight** transfer (canonical metric: cm/kg); no names, MRNs, or dates leave the device.
+  - **Pairing code**: a stable 6-character code (`[A-HJ-NP-Z2-9]`, excluding ambiguous `0 O 1 I`) is generated via `crypto.getRandomValues`, displayed in Settings, and persisted in `localStorage`. The user types it into TCI Sim → Settings → Sync. A **Regenerate** button (with confirmation) issues a new code, which un-pairs the previous connection.
+  - **Auto-push**: when enabled, demographics are pushed transparently on every change, debounced (800 ms), via `POST {host}/api/sync` with `{ code, patient: { age, sex, heightCm, weightKg } }`. Pushes no-op until all four fields are valid and in range (age 1–120, height 30–250 cm, weight 0.5–300 kg), and offline/blocked errors are swallowed (the next change retries). Entries auto-expire server-side after 30 min; active editing keeps them fresh.
+  - Endpoint host is a single `SYNC_ENDPOINT` constant in `index.html` — confirm it matches the live TCI Sim deployment, and add this app's origin to that deployment's `SYNC_ALLOWED_ORIGINS` env var so the CORS preflight succeeds.
+
+---
+
 ## [1.7.3.0] - 2026-04-23
 
 ### Added

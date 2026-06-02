@@ -208,6 +208,27 @@
     .toggle-opt.active .toggle-switch { background: var(--accent); }
     .toggle-opt.active .toggle-knob { left: 16px; }
 
+    /* ── Sync (TCI Sim pairing) ── */
+    .sync-code-row {
+      display: flex; flex-direction: column; gap: 6px;
+      padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius);
+    }
+    .sync-code-label { font-size: 13px; color: var(--text); }
+    .sync-code-label small { display: block; font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .sync-code {
+      font-family: var(--mono); font-size: 22px; font-weight: 700;
+      letter-spacing: 0.18em; color: var(--accent); text-align: center;
+      padding: 6px 0; user-select: all;
+    }
+    .sync-actions { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .sync-status { font-size: 11px; color: var(--muted); flex: 1; }
+    .sync-regen-btn {
+      font-size: 11px; color: var(--dim); background: none;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 4px 8px; cursor: pointer; transition: border-color .15s, color .15s;
+    }
+    .sync-regen-btn:hover { border-color: var(--accent); color: var(--accent); }
+
     /* ── Settings footer ── */
     .settings-footer {
       padding: 10px 10px 12px;
@@ -593,7 +614,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.7.3.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.8.0.0</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -627,6 +648,23 @@
         <div class="toggle-switch"><div class="toggle-knob"></div></div>
         <div class="mode-text">Remember values <small>Save inputs on this device between sessions</small></div>
       </label>
+    </div>
+    <!-- Sync to TCI Sim -->
+    <div class="card-header" style="border-top: 1px solid var(--border);">Sync to TCI Sim</div>
+    <div class="settings-body">
+      <label class="toggle-opt" id="syncToggle">
+        <input type="checkbox" id="syncCheckbox">
+        <div class="toggle-switch"><div class="toggle-knob"></div></div>
+        <div class="mode-text">Push to TCI Sim <small>Auto-send age, sex, height &amp; weight (de-identified) to your paired TCI Sim app. No names, MRNs, or dates leave this device.</small></div>
+      </label>
+      <div class="sync-code-row" id="syncCodeRow" style="display:none">
+        <div class="sync-code-label">Pairing code <small>Enter this in TCI Sim → Settings → Sync</small></div>
+        <div class="sync-code" id="syncCodeVal">——————</div>
+        <div class="sync-actions">
+          <span class="sync-status" id="syncStatus"></span>
+          <button type="button" class="sync-regen-btn" id="syncRegenBtn">Regenerate</button>
+        </div>
+      </div>
     </div>
     <!-- Inertia control — only shown in wheel mode -->
     <div id="inertiaRow" class="inertia-row">
@@ -804,6 +842,128 @@ function clearPersistedState() {
   try { localStorage.removeItem(LS_SAVED_STATE); } catch {}
 }
 
+// ═══════════════════════════════════════════════════
+// SYNC → TCI Sim (sender side)
+// De-identified push: only age, sex, height (cm) and
+// weight (kg) — canonical metric — leave this device.
+// Opt-in; debounced auto-push on every demographics change.
+// Contract: scratchpad → TCI Sim patient sync spec.
+// ═══════════════════════════════════════════════════
+
+// TCI Sim deployment that owns the /api/sync serverless function.
+// NOTE: confirm this host matches the live TCI Sim deployment, and add
+// this app's origin to that deployment's SYNC_ALLOWED_ORIGINS env var
+// (comma-separated) or the browser will block the CORS request.
+const SYNC_ENDPOINT = 'https://tci-sim.vercel.app/api/sync';
+
+// 6 uppercase alphanumerics, excluding ambiguous 0 O 1 I.
+const SYNC_CODE_RE = /^[A-HJ-NP-Z2-9]{6}$/;
+const SYNC_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no 0/O/1/I
+
+const LS_SYNC_ENABLED = 'pm_sync_enabled';
+const LS_SYNC_CODE    = 'pm_sync_code';
+let   syncEnabled = false;
+let   syncCode    = '';
+let   lastSyncAt  = null;
+let   _syncTimer  = null;
+
+function generatePairingCode() {
+  const a = crypto.getRandomValues(new Uint8Array(6));
+  return Array.from(a, b => SYNC_ALPHABET[b % SYNC_ALPHABET.length]).join('');
+}
+
+// The (normalized) pairing code, or '' when sync is off.
+function getSyncCode() {
+  return syncEnabled ? (syncCode || '').replace(/\s+/g, '').toUpperCase() : '';
+}
+
+// Canonical-metric patient object, or null until all four fields are
+// valid and in range — keeps partial entries out of the scratch area.
+function getPatientMetric() {
+  const eff = effectiveSummary();
+  if (eff.age === null || eff.sex === null || eff.cm === null || eff.kg === null) return null;
+  const age = Math.round(eff.age);
+  const sex = eff.sex === 'M' ? 'male' : eff.sex === 'F' ? 'female' : null;
+  if (!sex) return null;
+  if (!(age >= 1 && age <= 120))      return null; // integer 1..120
+  if (!(eff.cm >= 30 && eff.cm <= 250)) return null; // number 30..250
+  if (!(eff.kg >= 0.5 && eff.kg <= 300)) return null; // number 0.5..300
+  return {
+    age,
+    sex,
+    heightCm: +eff.cm.toFixed(1),
+    weightKg: +eff.kg.toFixed(1)
+  };
+}
+
+// Debounced push. No-ops when the code is invalid or fields are
+// incomplete; swallows offline/blocked errors (next change re-pushes).
+function scheduleSync(delay = 800) {
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(async () => {
+    const code = getSyncCode();
+    const patient = getPatientMetric();
+    if (!SYNC_CODE_RE.test(code) || !patient) return;
+    try {
+      const res = await fetch(SYNC_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, patient }),
+        keepalive: true // lets the push complete if the app is backgrounded
+      });
+      if (res && res.ok) { lastSyncAt = Date.now(); refreshSyncStatus(); }
+    } catch (_) {
+      /* offline or blocked — next field change will retry */
+    }
+  }, delay);
+}
+
+function maybeScheduleSync() {
+  if (!syncEnabled) return;
+  refreshSyncStatus();
+  scheduleSync();
+}
+
+function ensureSyncCode() {
+  if (!SYNC_CODE_RE.test(syncCode)) {
+    syncCode = generatePairingCode();
+    try { localStorage.setItem(LS_SYNC_CODE, syncCode); } catch {}
+  }
+  return syncCode;
+}
+
+function loadSyncState() {
+  try {
+    syncEnabled = localStorage.getItem(LS_SYNC_ENABLED) === '1';
+    const c = (localStorage.getItem(LS_SYNC_CODE) || '').replace(/\s+/g, '').toUpperCase();
+    if (SYNC_CODE_RE.test(c)) syncCode = c;
+  } catch {}
+}
+
+function refreshSyncStatus() {
+  const el = $('syncStatus');
+  if (!el) return;
+  if (!syncEnabled) { el.textContent = ''; return; }
+  if (!getPatientMetric()) {
+    el.textContent = 'Enter age, sex, height & weight to start syncing.';
+    return;
+  }
+  if (lastSyncAt) {
+    const t = new Date(lastSyncAt);
+    el.textContent = 'Last synced ' + t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } else {
+    el.textContent = 'Syncing…';
+  }
+}
+
+function updateSyncUi() {
+  $('syncToggle').classList.toggle('active', syncEnabled);
+  $('syncCheckbox').checked = syncEnabled;
+  $('syncCodeRow').style.display = syncEnabled ? '' : 'none';
+  $('syncCodeVal').textContent = syncCode || '——————';
+  refreshSyncStatus();
+}
+
 const lbToKg    = lb  => lb * 0.45359237;
 const ftInToCm  = (ft, inch) => (ft * 12 + inch) * 2.54;
 const calcBmi   = (kg, cm)   => kg / Math.pow(cm / 100, 2);
@@ -851,6 +1011,7 @@ function recalc() {
   }
 
   savePersistedState();
+  maybeScheduleSync();
 }
 
 // ═══════════════════════════════════════════════════
@@ -1269,6 +1430,32 @@ $('persistToggle').addEventListener('click', e => {
       clearPersistedState();
     }
   } catch {}
+});
+
+// Sync toggle — opt-in push to TCI Sim
+$('syncToggle').addEventListener('click', e => {
+  e.preventDefault();
+  syncEnabled = !syncEnabled;
+  try {
+    if (syncEnabled) {
+      ensureSyncCode();
+      localStorage.setItem(LS_SYNC_ENABLED, '1');
+    } else {
+      localStorage.removeItem(LS_SYNC_ENABLED);
+    }
+  } catch {}
+  updateSyncUi();
+  if (syncEnabled) maybeScheduleSync(); // push current values right away
+});
+
+// Regenerate pairing code (un-pairs the current TCI Sim connection)
+$('syncRegenBtn').addEventListener('click', () => {
+  if (!confirm('Regenerate the pairing code? This un-pairs the current TCI Sim connection — you will need to enter the new code in TCI Sim → Settings → Sync.')) return;
+  syncCode = generatePairingCode();
+  try { localStorage.setItem(LS_SYNC_CODE, syncCode); } catch {}
+  lastSyncAt = null;
+  updateSyncUi();
+  maybeScheduleSync();
 });
 
 // Sex toggle
@@ -1691,6 +1878,9 @@ function refreshRefPages() {
   REF_PAGES = buildRefPages(getDemographics());
   renderRefPagesDOM();
   navigateToPage(refCurrentPage);
+  // Patient Summary metric edits change effectiveSummary() without touching
+  // the main inputs (which call recalc), so push from here too.
+  maybeScheduleSync();
 }
 
 // ── Push Patient Summary overrides back into main state ──
@@ -1847,7 +2037,9 @@ $('refCloseBtn').addEventListener('click', closeRefPanel);
 // INIT
 // ═══════════════════════════════════════════════════
 loadPersistedState();
+loadSyncState();
 updatePersistUi();
+updateSyncUi();
 syncSexUi();
 syncModeUi();
 syncFactorSlider();

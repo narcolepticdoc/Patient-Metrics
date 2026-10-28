@@ -1,4 +1,4 @@
-const CACHE = 'patient-metrics-v1.8.0.0';
+const CACHE = 'patient-metrics-v1.8.1.1';
 
 const STATIC_ASSETS = [
   './manifest.json',

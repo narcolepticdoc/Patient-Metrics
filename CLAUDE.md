@@ -68,6 +68,7 @@ Version must be updated in **three** places before any push:
 - Test in browser after changes; service worker caching can mask stale code during development.
 - The app uses a custom drum/wheel picker component (built from scratch, not a library).
 - State persistence is opt-in via localStorage ("Remember values" toggle in Settings).
+- Every computed field is tap-to-type (`DIRECT_ENTRY` in `index.html`). Typed metric values are backfilled exactly, so `state.lbs` / `state.inches` (and `state.factor`) can be fractional — never look them up in an option list directly; the white inputs round for display via `shownInputs()` / `optsWith()`.
 - Device counter uses the Abacus API (abacus.jasoncameron.dev).
 
 ## Changelog

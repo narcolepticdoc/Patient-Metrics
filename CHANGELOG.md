@@ -10,6 +10,35 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.8.1.1] - 2026-10-28
+
+### Changed
+- **Patient Summary → Sync to main writes values back exactly.** Values typed on the Patient Summary are the source of truth, so weight and height are no longer rounded to the nearest lb / inch when synced: 70 kg / 170 cm stay 70.0 kg / 170.0 cm on the main page instead of becoming 69.9 kg / 170.2 cm. The white lb / ft / in inputs only round them for display. The banner text and the ≈ imperial hint (now to 0.1 lb / 0.1 in) are updated to match.
+
+### Fixed
+- A Patient Summary entry close to the main page's value could be silently discarded because it fell inside a ±0.1 cm / ±0.05 kg tolerance — e.g. changing 165.1 cm to 165.2 cm snapped back to 165.1. Now any typed value is kept exactly, unless it is just the number the field already showed for the main page (age to 1 yr, kg / cm to 0.1); the "values differ" banner compares exactly.
+
+---
+
+## [1.8.1.0] - 2026-10-28
+
+### Added
+- **Tap-to-type on every computed field.** Age, Centimetres, Metres, Kilograms, BMI, Weight factor, Adj. kg and Adj. lb (the orange / blue boxes) can now be tapped and typed into on the keypad. Everything else — including the white inputs — backfills live as you type:
+  - **Age** → birth year (current year − age).
+  - **Centimetres / Metres** → feet + inches.
+  - **Kilograms** → pounds.
+  - **BMI** → weight at the current height (kg = BMI × m²; needs a height).
+  - **Weight factor** → slider. **Adj. kg / Adj. lb** → weight factor, weight held (needs a weight).
+- Typed metric values are kept exactly rather than rounded through whole pounds / inches (70 kg stays 70.0 kg, not 69.9). The white inputs show the nearest value they can display: whole numbers on the wheel / popup, 0.1 in text entry. Wheel and popup ranges widen when a backfilled value falls outside them (e.g. a 15 kg child = 33 lb, age 0, 8 ft).
+- Ranges: age 0–120 yr (whole years), height 30–250 cm, weight 1–500 kg (same bounds as the Patient Summary editor), factor 0.60–1.40 (slider span). An entry above range turns the box red; one below range simply isn't applied yet. Leaving a field whose entry wasn't applied restores the previous values with a brief red flash. Enter commits, Esc cancels, and a decimal comma (e.g. `70,5`) is accepted.
+
+### Changed
+- Weight factor shows 3 decimals when it isn't a whole 0.01 step (e.g. after solving it from Adj. kg).
+- Changing feet or inches keeps the other's displayed value, so a rounded backfill (5′11.9″ shown as 6′0″ on the wheel) can't combine into a different height.
+- Computed boxes keep the unit right after the number and still wrap it on narrow screens, as before.
+
+---
+
 ## [1.8.0.0] - 2026-06-02
 
 ### Added

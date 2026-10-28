@@ -32,6 +32,7 @@ All medical and scientific data used in this application must be traceable to ve
   - URL: https://www.who.int/data/gho/data/themes/topics/topic-details/GHO/body-mass-index
 - **Original work**: Quetelet, Adolphe. "A Treatise on Man and the Development of His Faculties," 1842. (Historical origin of the formula; WHO is the modern authority.)
 - **Note**: BMI is a screening tool, not a diagnostic measure. It does not account for muscle mass, bone density, age, sex, or ethnicity.
+- **Inverse use**: when BMI is typed directly on the main page, weight is solved as weight (kg) = BMI × [height (m)]^2 with height held. This is an algebraic rearrangement of the same formula and introduces no additional constants. Likewise, typed kg / cm values are converted back to lb / in using the exact constants above (lb = kg ÷ 0.45359237; in = cm ÷ 2.54).
 
 ### BMI Classification Thresholds (Adults)
 

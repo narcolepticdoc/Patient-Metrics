@@ -10,6 +10,16 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.8.1.1] - 2026-10-28
+
+### Changed
+- **Patient Summary → Sync to main writes values back exactly.** Values typed on the Patient Summary are the source of truth, so weight and height are no longer rounded to the nearest lb / inch when synced: 70 kg / 170 cm stay 70.0 kg / 170.0 cm on the main page instead of becoming 69.9 kg / 170.2 cm. The white lb / ft / in inputs only round them for display. The banner text and the ≈ imperial hint (now to 0.1 lb / 0.1 in) are updated to match.
+
+### Fixed
+- A Patient Summary entry close to the main page's value could be silently discarded because it fell inside a ±0.1 cm / ±0.05 kg tolerance — e.g. changing 165.1 cm to 165.2 cm snapped back to 165.1. Now any typed value is kept exactly, unless it is just the number the field already showed for the main page (age to 1 yr, kg / cm to 0.1); the "values differ" banner compares exactly.
+
+---
+
 ## [1.8.1.0] - 2026-10-28
 
 ### Added

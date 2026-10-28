@@ -632,7 +632,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.8.1.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.8.1.1</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -1675,15 +1675,22 @@ function effectiveSummary() {
   };
 }
 
-// Which overridden fields actually differ from main state (within tolerance).
+const sameValue = (a, b) => a !== null && b !== null && Math.abs(a - b) < 1e-9;  // equal but for float noise
+
+// A typed summary value only restates main's if it is main's value as the
+// field shows it (age to 1 yr, kg / cm to 0.1); anything else typed is kept exactly.
+const SUMMARY_DP = { age: 0, kg: 1, cm: 1 };
+function restatesMain(key, v, mv) {
+  return sameValue(v, mv) || (v !== null && mv !== null && v === +mv.toFixed(SUMMARY_DP[key]));
+}
+
+// Which overridden fields actually differ from main state.
 function summaryMismatchKeys() {
   const m = mainDerived();
   const out = [];
-  if (summaryOverride.age !== null && summaryOverride.age !== m.age) out.push('age');
-  if (summaryOverride.kg  !== null &&
-      (m.kg === null || Math.abs(summaryOverride.kg - m.kg) > 0.05)) out.push('kg');
-  if (summaryOverride.cm  !== null &&
-      (m.cm === null || Math.abs(summaryOverride.cm - m.cm) > 0.1 )) out.push('cm');
+  ['age', 'kg', 'cm'].forEach(k => {
+    if (summaryOverride[k] !== null && !sameValue(summaryOverride[k], m[k])) out.push(k);
+  });
   if (summaryOverride.sex !== null && summaryOverride.sex !== m.sex) out.push('sex');
   return out;
 }
@@ -1735,7 +1742,7 @@ function buildRefPages(d) {
       warn.className = 'summary-warn';
       warn.innerHTML =
         'These values differ from the main conversion page. ' +
-        'Sync will round to the nearest lb / inch when writing back.' +
+        'Sync to main writes them back exactly.' +
         '<div class="summary-warn-actions">' +
           '<button class="summary-warn-btn" id="summarySyncBtn">Sync to main</button>' +
           '<button class="summary-warn-btn secondary" id="summaryResetBtn">Reset</button>' +
@@ -1767,13 +1774,8 @@ function buildRefPages(d) {
           if (Number.isNaN(val)) val = null;
           else val = Math.max(min, Math.min(max, val));
         }
-        var mv = mainDerived()[key];
-        var tol = key === 'age' ? 0 : (key === 'kg' ? 0.05 : 0.1);
-        if (val !== null && mv !== null && Math.abs(val - mv) <= tol) {
-          summaryOverride[key] = null;
-        } else {
-          summaryOverride[key] = val;
-        }
+        // Typed value is the truth unless it just restates what main shows
+        summaryOverride[key] = restatesMain(key, val, mainDerived()[key]) ? null : val;
         refreshRefPages();
       });
       f.appendChild(lb); f.appendChild(inp);
@@ -1808,16 +1810,14 @@ function buildRefPages(d) {
 
     container.appendChild(grid);
 
-    // Imperial equivalents hint (so user sees what Sync will round to)
+    // Imperial equivalents hint (to 0.1 — Sync writes the values exactly)
     if (d.kg !== null || d.cm !== null || d.age !== null) {
       var parts = [];
-      if (d.kg !== null) parts.push(refRound(d.kg / 0.45359237, 0) + ' lb');
+      if (d.kg !== null) parts.push(refRound(d.kg / 0.45359237, 1) + ' lb');
       if (d.cm !== null) {
-        var totIn = d.cm / 2.54;
-        var ft = Math.floor(totIn / 12);
-        var inc = Math.round(totIn - ft * 12);
-        if (inc === 12) { ft += 1; inc = 0; }
-        parts.push(ft + "\u2032" + inc + "\u2033");
+        var tenths = Math.round(d.cm / 2.54 * 10);  // total height in 0.1 in, so inches never read 12
+        var ft = Math.floor(tenths / 120);
+        parts.push(ft + "\u2032" + (tenths - ft * 120) / 10 + "\u2033");
       }
       if (d.age !== null) parts.push('born ' + (curYear() - d.age));
       var alt = document.createElement('div');
@@ -2035,16 +2035,12 @@ function refreshRefPages() {
 }
 
 // ── Push Patient Summary overrides back into main state ──
+// Exactly: values typed here are the truth (the white lb / ft / in inputs
+// only round them for display).
 function syncSummaryToMain() {
   if (summaryOverride.age !== null) state.birthYear = curYear() - summaryOverride.age;
-  if (summaryOverride.kg  !== null) state.lbs = Math.round(summaryOverride.kg / 0.45359237);
-  if (summaryOverride.cm  !== null) {
-    const totalIn = summaryOverride.cm / 2.54;
-    let ft = Math.floor(totalIn / 12);
-    let inc = Math.round(totalIn - ft * 12);
-    if (inc === 12) { ft += 1; inc = 0; }
-    state.feet = ft; state.inches = inc;
-  }
+  if (summaryOverride.kg  !== null) state.lbs = kgToLb(summaryOverride.kg);
+  if (summaryOverride.cm  !== null) Object.assign(state, cmToFtIn(summaryOverride.cm));
   if (summaryOverride.sex !== null) state.sex = summaryOverride.sex;
   summaryOverride.age = summaryOverride.kg = summaryOverride.cm = summaryOverride.sex = null;
   renderInputs();

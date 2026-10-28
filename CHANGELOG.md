@@ -10,6 +10,25 @@ Versioning follows **W.x.y.z** format:
 
 ---
 
+## [1.8.1.0] - 2026-10-28
+
+### Added
+- **Tap-to-type on every computed field.** Age, Centimetres, Metres, Kilograms, BMI, Weight factor, Adj. kg and Adj. lb (the orange / blue boxes) can now be tapped and typed into on the keypad. Everything else — including the white inputs — backfills live as you type:
+  - **Age** → birth year (current year − age).
+  - **Centimetres / Metres** → feet + inches.
+  - **Kilograms** → pounds.
+  - **BMI** → weight at the current height (kg = BMI × m²; needs a height).
+  - **Weight factor** → slider. **Adj. kg / Adj. lb** → weight factor, weight held (needs a weight).
+- Typed metric values are kept exactly rather than rounded through whole pounds / inches (70 kg stays 70.0 kg, not 69.9). The white inputs show the nearest value they can display: whole numbers on the wheel / popup, 0.1 in text entry. Wheel and popup ranges widen when a backfilled value falls outside them (e.g. a 15 kg child = 33 lb, age 0, 8 ft).
+- Ranges: age 0–120 yr (whole years), height 30–250 cm, weight 1–500 kg (same bounds as the Patient Summary editor), factor 0.60–1.40 (slider span). An entry above range turns the box red; one below range simply isn't applied yet. Leaving a field whose entry wasn't applied restores the previous values with a brief red flash. Enter commits, Esc cancels, and a decimal comma (e.g. `70,5`) is accepted.
+
+### Changed
+- Weight factor shows 3 decimals when it isn't a whole 0.01 step (e.g. after solving it from Adj. kg).
+- Changing feet or inches keeps the other's displayed value, so a rounded backfill (5′11.9″ shown as 6′0″ on the wheel) can't combine into a different height.
+- Computed boxes keep the unit right after the number and still wrap it on narrow screens, as before.
+
+---
+
 ## [1.8.0.0] - 2026-06-02
 
 ### Added

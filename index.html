@@ -121,19 +121,22 @@
     }
     .select-input:focus { outline: none; border-color: var(--accent); }
 
-    /* ── Metric output ── */
+    /* ── Metric output (tap to type — see DIRECT ENTRY) ── */
     .metric-out {
       background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
       padding: 5px 10px; font-family: var(--mono); font-size: 16px; font-weight: 500;
-      color: var(--accent2); min-height: 32px; display: flex; align-items: center;
+      color: var(--accent2); min-height: 32px; display: flex; flex-wrap: wrap;
+      align-items: baseline; align-content: center; cursor: text;
     }
-    .metric-out.dim { color: var(--dim); font-size: 13px; font-weight: 400; }
     .metric-out.metric-primary { color: var(--warn); border-color: rgba(244,162,97,.35); }
 
     /* ── Factor ── */
     .factor-row { display: flex; flex-direction: column; gap: 5px; }
     .factor-header { display: flex; justify-content: space-between; align-items: baseline; }
-    .factor-val { font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--warn); }
+    .factor-val {
+      font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--warn);
+      display: inline-flex; padding: 0 4px; border: 1px solid transparent; border-radius: 4px; cursor: text;
+    }
     .factor-result { font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: .06em; }
 
     /* ── Range slider ── */
@@ -155,9 +158,24 @@
     .slider-ticks span { font-family: var(--mono); font-size: 9px; color: var(--dim); }
 
     .adj-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 0; }
-    .adj-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 10px; }
+    .adj-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 10px; cursor: text; }
     .adj-item label { display: block; margin-bottom: 2px; }
-    .adj-item .val { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--warn); }
+    .adj-item .val { font-family: var(--mono); font-size: 15px; font-weight: 600; color: var(--warn); display: flex; align-items: baseline; }
+
+    /* ── Tap-to-type fields: input sized to its text (mono, 1ch per char), unit after it ── */
+    .out-input {
+      font: inherit; color: inherit; background: none; border: none; padding: 0;
+      width: 1ch; min-width: 0; outline: none; -webkit-appearance: none; appearance: none;
+    }
+    .out-input:not(:focus) { pointer-events: none; }  /* taps go to the box, which focuses + selects all (iOS would otherwise place the caret at the tap) */
+    .out-input::placeholder { color: var(--dim); opacity: 1; }
+    .out-input:focus::placeholder { color: transparent; }
+    .metric-out, .adj-item .val { column-gap: calc(1ch - 2px); }  /* a space before the unit, none if it wraps */
+    .out-input:placeholder-shown:not(:focus) + .out-unit { display: none; }
+    .metric-out:focus-within, .adj-item:focus-within, .factor-val:focus-within { border-color: var(--accent); }
+    .metric-out.invalid, .adj-item.invalid, .factor-val.invalid { border-color: #e74c3c; }
+    .rejected { animation: reject-flash .8s ease-out; }
+    @keyframes reject-flash { from { border-color: #e74c3c; } }
 
     .divider { border: none; border-top: 1px solid var(--border); }
 
@@ -614,7 +632,7 @@
 <body>
 
 <header>
-  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.8.0.0</span></div>
+  <div class="brand">Patient <span>Metrics</span> <span class="ver">v1.8.1.0</span></div>
   <button class="settings-btn" id="settingsToggle">⚙ SETTINGS</button>
 </header>
 
@@ -705,8 +723,8 @@
           <div id="htBirthYearWrap"></div>
         </div>
         <div class="field">
-          <label>Age (yr)</label>
-          <div class="metric-out dim" id="outAge">—</div>
+          <label for="outAge">Age (yr)</label>
+          <div class="metric-out metric-primary"><input class="out-input" id="outAge" placeholder="—"><span class="out-unit">yr</span></div>
         </div>
       </div>
     </div>
@@ -720,8 +738,8 @@
           <div class="field"><label>Inches</label><div id="htInchesWrap"></div></div>
         </div>
         <div class="field-row">
-          <div class="field"><label>Centimetres</label><div class="metric-out metric-primary" id="outCm">—</div></div>
-          <div class="field"><label>Metres</label><div class="metric-out" id="outM">—</div></div>
+          <div class="field"><label for="outCm">Centimetres</label><div class="metric-out metric-primary"><input class="out-input" id="outCm" placeholder="—"><span class="out-unit">cm</span></div></div>
+          <div class="field"><label for="outM">Metres</label><div class="metric-out"><input class="out-input" id="outM" placeholder="—"><span class="out-unit">m</span></div></div>
         </div>
       </div>
     </div>
@@ -734,15 +752,15 @@
     <div class="card-body">
       <div class="field"><label>Pounds (lb)</label><div id="wtImperialWrap"></div></div>
       <div class="field-row">
-        <div class="field"><label>Kilograms (kg)</label><div class="metric-out metric-primary" id="outKg">—</div></div>
-        <div class="field"><label>BMI</label><div class="metric-out" id="outBmi">—</div></div>
+        <div class="field"><label for="outKg">Kilograms (kg)</label><div class="metric-out metric-primary"><input class="out-input" id="outKg" placeholder="—"><span class="out-unit">kg</span></div></div>
+        <div class="field"><label for="outBmi">BMI</label><div class="metric-out"><input class="out-input" id="outBmi" placeholder="—"></div></div>
       </div>
       <hr class="divider">
       <!-- Factor -->
       <div class="factor-row">
         <div class="factor-header">
-          <label>Weight factor</label>
-          <div><span class="factor-val" id="factorDisplay">1.00</span><span class="factor-result" id="factorResultLabel"></span></div>
+          <label for="factorDisplay">Weight factor</label>
+          <div><span class="factor-val"><input class="out-input" id="factorDisplay"></span><span class="factor-result" id="factorResultLabel"></span></div>
         </div>
         <div class="slider-wrap">
           <input type="range" id="factorSlider" min="0" max="80" value="40" step="1">
@@ -752,8 +770,8 @@
           </div>
         </div>
         <div class="adj-grid">
-          <div class="adj-item"><label>Adj. kg</label><div class="val" id="adjKg">—</div></div>
-          <div class="adj-item"><label>Adj. lb</label><div class="val" id="adjLb">—</div></div>
+          <div class="adj-item"><label for="adjKg">Adj. kg</label><div class="val"><input class="out-input" id="adjKg" placeholder="—"><span class="out-unit">kg</span></div></div>
+          <div class="adj-item"><label for="adjLb">Adj. lb</label><div class="val"><input class="out-input" id="adjLb" placeholder="—"><span class="out-unit">lb</span></div></div>
         </div>
       </div>
     </div>
@@ -965,7 +983,9 @@ function updateSyncUi() {
 }
 
 const lbToKg    = lb  => lb * 0.45359237;
+const kgToLb    = kg  => kg / 0.45359237;
 const ftInToCm  = (ft, inch) => (ft * 12 + inch) * 2.54;
+const cmToFtIn  = cm  => { const t = cm / 2.54, feet = Math.floor(t / 12); return { feet, inches: t - feet * 12 }; };
 const calcBmi   = (kg, cm)   => kg / Math.pow(cm / 100, 2);
 const bmiCat    = b  => b < 18.5 ? 'Underweight' : b < 25 ? 'Normal' :
                          b < 30  ? 'Overweight'  : b < 35 ? 'Obese I' :
@@ -974,6 +994,25 @@ const bmiCat    = b  => b < 18.5 ? 'Underweight' : b < 25 ? 'Normal' :
 // ═══════════════════════════════════════════════════
 // RECALC
 // ═══════════════════════════════════════════════════
+let editingOut = null;  // tap-to-type field being typed in — recalc leaves its text alone
+
+// Show a computed value ('' → '—') in its tap-to-type field.
+function showOut(id, num) {
+  const el = $(id);
+  el.dataset.num = num;
+  if (el !== editingOut) { el.value = num; fitOut(el); }
+}
+
+// Size a tap-to-type field to its text so the unit sits right after it
+// (an empty field needs 1ch for its '—' placeholder, hidden while typing).
+function fitOut(el) {
+  const n = el.value.length || (el === editingOut ? 0 : 1);
+  el.style.width = 'calc(' + n + 'ch + 2px)';
+}
+
+// Factor to 2 dp, or 3 when it's off the slider's 0.01 grid (e.g. solved from Adj. kg).
+const fmtFactor = f => f.toFixed(Math.abs(f * 100 - Math.round(f * 100)) < 1e-6 ? 2 : 3);
+
 function recalc() {
   const kg = state.lbs !== null ? lbToKg(state.lbs) : null;
   const cm = state.feet !== null && state.inches !== null
@@ -982,33 +1021,21 @@ function recalc() {
   // Age from birth year
   const age = state.birthYear !== null
               ? new Date().getFullYear() - state.birthYear : null;
-  $('outAge').textContent = age !== null ? age + ' yr' : '—';
-  $('outAge').className   = age !== null ? 'metric-out metric-primary' : 'metric-out dim';
+  showOut('outAge', age !== null ? String(age) : '');
 
-  $('outKg').textContent = kg !== null ? kg.toFixed(1) + ' kg' : '—';
-  $('outCm').textContent = cm !== null ? cm.toFixed(1) + ' cm' : '—';
-  $('outM').textContent  = cm !== null ? (cm / 100).toFixed(2) + ' m' : '—';
+  showOut('outKg', kg !== null ? kg.toFixed(1) : '');
+  showOut('outCm', cm !== null ? cm.toFixed(1) : '');
+  showOut('outM',  cm !== null ? (cm / 100).toFixed(2) : '');
 
-  if (kg !== null && cm !== null) {
-    const b = calcBmi(kg, cm);
-    $('outBmi').textContent = b.toFixed(1);
-    $('outBmi').title = bmiCat(b);
-    $('outBmi').className = 'metric-out';
-  } else {
-    $('outBmi').textContent = '—';
-    $('outBmi').className = 'metric-out dim';
-  }
+  const b = kg !== null && cm !== null ? calcBmi(kg, cm) : null;
+  showOut('outBmi', b !== null ? b.toFixed(1) : '');
+  $('outBmi').parentNode.title = b !== null ? bmiCat(b) : '';
 
   const f = state.factor;
-  if (kg !== null) {
-    $('adjKg').textContent = (kg * f).toFixed(1) + ' kg';
-    $('adjLb').textContent = (state.lbs * f).toFixed(1) + ' lb';
-    $('factorResultLabel').textContent = '= ' + (kg * f).toFixed(1) + ' kg';
-  } else {
-    $('adjKg').textContent = '—';
-    $('adjLb').textContent = '—';
-    $('factorResultLabel').textContent = '';
-  }
+  showOut('factorDisplay', fmtFactor(f));
+  showOut('adjKg', kg !== null ? (kg * f).toFixed(1) : '');
+  showOut('adjLb', kg !== null ? (state.lbs * f).toFixed(1) : '');
+  $('factorResultLabel').textContent = kg !== null ? '= ' + (kg * f).toFixed(1) + ' kg' : '';
 
   savePersistedState();
   maybeScheduleSync();
@@ -1173,6 +1200,7 @@ function makeDrum(opts, initVal, onChange, unitSuffix = '', decay = 0.86) {
 
     // momentum coast then snap
     function coast() {
+      if (!wrap.isConnected) return;  // drum was rebuilt mid-coast — don't fire a stale value
       velY *= decay;
       if (Math.abs(velY) < 0.5) {
         commitSnap(currentY);
@@ -1225,10 +1253,40 @@ const WT_OPTS     = range(50, 500);
 const FEET_OPTS   = range(3, 7);
 const INCHES_OPTS = range(0, 11);
 
+// Option list widened to reach v, for backfilled values outside the
+// default range (e.g. a 15 kg child is 33 lb).
+function optsWith(opts, v) {
+  const a = opts[0], b = opts[opts.length - 1];
+  if (v === null || (v >= Math.min(a, b) && v <= Math.max(a, b))) return opts;
+  const r = range(Math.min(a, b, v), Math.max(a, b, v));
+  return a > b ? r.reverse() : r;
+}
+
 // ═══════════════════════════════════════════════════
 // RENDER INPUTS
+// State can hold fractional imperial values (backfilled from a typed
+// metric entry); the white inputs show the nearest value they can
+// display — whole numbers on the wheel / popup, 0.1 in text entry.
 // ═══════════════════════════════════════════════════
 function renderInputs() {
+  buildInputs();
+  recalc();
+}
+
+// State rounded to 1/k for the white inputs. Height is rounded as a
+// whole so inches never read 12.
+function shownInputs(k) {
+  const r = v => v === null ? null : Math.round(v * k) / k;
+  const s = { birthYear: r(state.birthYear), lbs: r(state.lbs), feet: r(state.feet), inches: r(state.inches) };
+  if (state.feet !== null && state.inches !== null) {
+    const t = Math.round((state.feet * 12 + state.inches) * k);  // total, in 1/k inches
+    s.feet   = Math.floor(t / (12 * k));
+    s.inches = (t - s.feet * 12 * k) / k;
+  }
+  return s;
+}
+
+function buildInputs() {
   const wWrap  = $('wtImperialWrap');
   const byWrap = $('htBirthYearWrap');
   const fWrap  = $('htFeetWrap');
@@ -1247,11 +1305,21 @@ function renderInputs() {
     if (state.feet      === null) state.feet      = 5;
     if (state.inches    === null) state.inches    = 6;
     if (state.birthYear === null) state.birthYear = defaultBy;
+  }
 
-    const byDrum = makeDrum(BY_OPTS, state.birthYear, v => { state.birthYear = v; recalc(); }, '', state.wtInertia);
-    const wDrum  = makeDrum(WT_OPTS,  state.lbs,      v => { state.lbs       = v; recalc(); }, 'lb', state.wtInertia);
-    const fDrum  = makeDrum(FEET_OPTS,  state.feet,   v => { state.feet      = v; recalc(); }, 'ft', 0.86);
-    const iDrum  = makeDrum(INCHES_OPTS, state.inches,v => { state.inches    = v; recalc(); }, 'in', 0.86);
+  const s = shownInputs(mode === 'text' ? 10 : 1);
+  const setBy = v => { state.birthYear = v; recalc(); };
+  const setLb = v => { state.lbs       = v; recalc(); };
+  // Feet and inches act as one: changing either keeps the other's shown
+  // value, so a rounded backfill (5′11.9″ shown as 6′0″) stays consistent.
+  const ht    = { feet: s.feet, inches: s.inches };
+  const setHt = (k, v) => { ht[k] = v; state.feet = ht.feet; state.inches = ht.inches; recalc(); };
+
+  if (mode === 'wheel') {
+    const byDrum = makeDrum(optsWith(BY_OPTS, s.birthYear),  s.birthYear, setBy, '', state.wtInertia);
+    const wDrum  = makeDrum(optsWith(WT_OPTS, s.lbs),        s.lbs,       setLb, 'lb', state.wtInertia);
+    const fDrum  = makeDrum(optsWith(FEET_OPTS, s.feet),     s.feet,      v => setHt('feet', v),   'ft', 0.86);
+    const iDrum  = makeDrum(optsWith(INCHES_OPTS, s.inches), s.inches,    v => setHt('inches', v), 'in', 0.86);
 
     byWrap.appendChild(byDrum);
     wWrap.appendChild(wDrum);
@@ -1259,19 +1327,17 @@ function renderInputs() {
     iWrap.appendChild(iDrum);
 
   } else if (mode === 'popup') {
-    byWrap.appendChild(mkSelect(BY_OPTS,     'Year',      v => { state.birthYear = v; recalc(); }, state.birthYear));
-    wWrap.appendChild(mkSelect(WT_OPTS,      'Select lb', v => { state.lbs       = v; recalc(); }, state.lbs));
-    fWrap.appendChild(mkSelect(FEET_OPTS,    'Feet',      v => { state.feet      = v; recalc(); }, state.feet));
-    iWrap.appendChild(mkSelect(INCHES_OPTS,  'Inches',    v => { state.inches    = v; recalc(); }, state.inches));
+    byWrap.appendChild(mkSelect(optsWith(BY_OPTS, s.birthYear),  'Year',      setBy, s.birthYear));
+    wWrap.appendChild(mkSelect(optsWith(WT_OPTS, s.lbs),         'Select lb', setLb, s.lbs));
+    fWrap.appendChild(mkSelect(optsWith(FEET_OPTS, s.feet),      'Feet',      v => setHt('feet', v),   s.feet));
+    iWrap.appendChild(mkSelect(optsWith(INCHES_OPTS, s.inches),  'Inches',    v => setHt('inches', v), s.inches));
 
   } else {
-    byWrap.appendChild(mkText('e.g. 1980', v => { state.birthYear = v; recalc(); }, state.birthYear, 1920, curYear - 1));
-    wWrap.appendChild(mkText('e.g. 160',  v => { state.lbs       = v; recalc(); }, state.lbs,    10, 1000));
-    fWrap.appendChild(mkText('ft',        v => { state.feet      = v; recalc(); }, state.feet,    1, 9));
-    iWrap.appendChild(mkText('in',        v => { state.inches    = v; recalc(); }, state.inches,  0, 11));
+    byWrap.appendChild(mkText('e.g. 1980', setBy, s.birthYear, 1920, curYear - 1));
+    wWrap.appendChild(mkText('e.g. 160',  setLb, s.lbs,       10, 1000));
+    fWrap.appendChild(mkText('ft',        v => setHt('feet', v),   s.feet,   1, 9));
+    iWrap.appendChild(mkText('in',        v => setHt('inches', v), s.inches, 0, 11));
   }
-
-  recalc();
 }
 
 function mkSelect(opts, placeholder, onChange, cur) {
@@ -1310,9 +1376,101 @@ function updateSliderBg() {
 }
 fSlider.addEventListener('input', () => {
   state.factor = 0.60 + Number(fSlider.value) * (0.80 / 80);
-  $('factorDisplay').textContent = state.factor.toFixed(2);
   updateSliderBg();
   recalc();
+});
+
+// ═══════════════════════════════════════════════════
+// DIRECT ENTRY
+// Tap any computed field and type a value on the keypad. It is solved
+// back into state, so the white inputs and every other field backfill
+// as you type. Ranges match the Patient Summary editor (age, kg, cm)
+// and the factor slider. A value below range isn't applied yet (still
+// typing); one above range turns the box red. Leaving a field whose
+// entry wasn't applied restores the values from before the edit, with
+// a red flash unless the field was simply cleared.
+// ═══════════════════════════════════════════════════
+const ENTRY_KINDS = {
+  age:    { lo: 0,   hi: 120, int: true, patch: a  => ({ birthYear: curYear() - a }) },
+  height: { lo: 30,  hi: 250, patch: cm => cmToFtIn(cm) },
+  weight: { lo: 1,   hi: 500, patch: kg => ({ lbs: kgToLb(kg) }) },
+  factor: { lo: 0.6, hi: 1.4, patch: f  => ({ factor: f }) },
+};
+
+// Field → [kind, typed value → that kind's quantity]  (d = mainDerived()).
+// BMI keeps height and solves weight; Adj. kg / lb keep weight and solve the factor.
+const DIRECT_ENTRY = {
+  outAge:        ['age',    v => v],
+  outCm:         ['height', v => v],
+  outM:          ['height', v => v * 100],
+  outKg:         ['weight', v => v],
+  outBmi:        ['weight', (v, d) => d.cm !== null ? v * (d.cm / 100) ** 2 : NaN],
+  factorDisplay: ['factor', v => v],
+  adjKg:         ['factor', (v, d) => d.kg !== null ? v / d.kg : NaN],
+  adjLb:         ['factor', v => state.lbs !== null ? v / state.lbs : NaN],
+};
+
+const EDIT_KEYS = ['birthYear', 'lbs', 'feet', 'inches', 'factor'];
+let editSnap = null, editDirty = false, editRejected = false;
+
+function applyEntry(patch) {
+  Object.assign(state, patch);
+  syncFactorSlider();
+  renderInputs();
+}
+
+Object.entries(DIRECT_ENTRY).forEach(([id, [kindName, toQty]]) => {
+  const el   = $(id);
+  const kind = ENTRY_KINDS[kindName];
+  const box  = el.closest('.metric-out, .adj-item, .factor-val');
+  el.setAttribute('inputmode', kind.int ? 'numeric' : 'decimal');
+  el.setAttribute('enterkeyhint', 'done');
+  el.setAttribute('autocomplete', 'off');
+  box.addEventListener('click', () => el.focus());
+
+  el.addEventListener('focus', () => {
+    editingOut = el;
+    editSnap = Object.fromEntries(EDIT_KEYS.map(k => [k, state[k]]));
+    editDirty = editRejected = false;
+    fitOut(el);
+    el.select();
+  });
+
+  el.addEventListener('input', () => {
+    fitOut(el);
+    const s = el.value.trim().replace(',', '.');  // decimal-comma keypads
+    const q = s === '' ? null : toQty(Number(s), mainDerived());
+    const bad = q !== null && !(q >= 0 && q <= kind.hi + 1e-9 && (!kind.int || Number.isInteger(q)));
+    const ok  = q !== null && !bad && q >= kind.lo - 1e-9;
+    box.classList.toggle('invalid', bad);
+    editRejected = q !== null && !ok;
+    if (ok) { applyEntry(kind.patch(q)); editDirty = true; }
+    else if (editDirty) { applyEntry(editSnap); editDirty = false; }
+  });
+
+  el.addEventListener('keydown', e => {
+    if (e.key === 'Enter') el.blur();
+    if (e.key === 'Escape') { el.value = ''; el.dispatchEvent(new Event('input')); el.blur(); }
+  });
+
+  el.addEventListener('blur', () => {
+    editingOut = null;
+    box.classList.remove('invalid');
+    el.value = el.dataset.num;
+    fitOut(el);
+    if (editRejected) {
+      box.classList.add('rejected');
+      box.addEventListener('animationend', () => box.classList.remove('rejected'), { once: true });
+    }
+  });
+});
+
+// End the edit on a tap elsewhere — iOS keeps the keypad up when the tap
+// lands on something that can't take focus (e.g. a wheel).
+document.addEventListener('pointerdown', e => {
+  if (editingOut && !e.target.closest('input:not([type=range]), select, label[for], .metric-out, .adj-item, .factor-val')) {
+    editingOut.blur();
+  }
 });
 
 // ═══════════════════════════════════════════════════
@@ -1344,15 +1502,8 @@ function updateInertiaDisplay() {
 inertiaSlider.addEventListener('input', () => {
   state.wtInertia = inertiaFromSlider(Number(inertiaSlider.value));
   updateInertiaDisplay();
-  // Rebuild weight and birth year drums with new inertia
-  if (state.inputMode === 'wheel') {
-    const wWrap  = $('wtImperialWrap');
-    const byWrap = $('htBirthYearWrap');
-    wWrap.innerHTML  = '';
-    byWrap.innerHTML = '';
-    wWrap.appendChild(makeDrum(WT_OPTS, state.lbs, v => { state.lbs = v; recalc(); }, 'lb', state.wtInertia));
-    byWrap.appendChild(makeDrum(BY_OPTS, state.birthYear, v => { state.birthYear = v; recalc(); }, '', state.wtInertia));
-  }
+  // Rebuild the drums with the new inertia
+  if (state.inputMode === 'wheel') buildInputs();
   savePersistedState();
 });
 
@@ -1482,11 +1633,11 @@ function syncModeUi() {
   });
 }
 
-// Sync factor slider position to state.factor (used after loading persisted state)
+// Sync factor slider position to state.factor (after loading persisted state or a typed entry)
 function syncFactorSlider() {
   const v = Math.round((state.factor - 0.60) / 0.80 * 80);
   fSlider.value = Math.max(0, Math.min(80, v));
-  $('factorDisplay').textContent = state.factor.toFixed(2);
+  updateSliderBg();
 }
 
 // Sync inertia slider position to state.wtInertia
@@ -2045,7 +2196,6 @@ syncModeUi();
 syncFactorSlider();
 syncInertiaSlider();
 updateInertiaRowVisibility();
-updateSliderBg();
 renderInputs();
 
 if ('serviceWorker' in navigator) {
